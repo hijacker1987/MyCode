@@ -1,5 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace MyCode_Backend_Server.Models.Tests
 {
@@ -10,7 +8,7 @@ namespace MyCode_Backend_Server.Models.Tests
         public void UserConstructor_SetsPropertiesCorrectly()
         {
             // Arrange
-            var codes = new List<Code> { new Code("prime", "code1"), new Code("filter", "code2") };
+            var codes = new List<Code> { new ("prime", "code1"), new ("filter", "code2") };
 
             // Act
             var user = new User(codes);
@@ -44,7 +42,7 @@ namespace MyCode_Backend_Server.Models.Tests
             bool isVisible = true;
 
             // Act
-            Code code = new Code(codeTitle, myCode, isVisible);
+            Code code = new (codeTitle, myCode, isVisible);
 
             // Assert
             Assert.AreEqual(codeTitle, code.CodeTitle);
@@ -56,10 +54,10 @@ namespace MyCode_Backend_Server.Models.Tests
         public void CodeDefaultConstructor_SetsPropertiesWithDefaults()
         {
             // Act
-            Code code = new Code();
+            Code code = new ();
 
             // Assert
-            Assert.AreEqual(default(Guid), code.Id);
+            Assert.AreEqual(default, code.Id);
             Assert.IsNull(code.UserId);
             Assert.IsNull(code.User);
             Assert.IsNull(code.CodeTitle);
