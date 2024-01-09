@@ -10,7 +10,7 @@ namespace MyCode_Backend_Server.Models.Tests
         public void UserConstructor_SetsPropertiesCorrectly()
         {
             // Arrange
-            var codes = new List<Code> { new Code("code1"), new Code("code2") };
+            var codes = new List<Code> { new Code("prime", "code1"), new Code("filter", "code2") };
 
             // Act
             var user = new User(codes);
@@ -39,13 +39,15 @@ namespace MyCode_Backend_Server.Models.Tests
         public void CodeConstructor_SetsPropertiesCorrectly()
         {
             // Arrange
+            string codeTitle = "testTitle";
             string myCode = "testCode";
             bool isVisible = true;
 
             // Act
-            Code code = new Code(myCode, isVisible);
+            Code code = new Code(codeTitle, myCode, isVisible);
 
             // Assert
+            Assert.AreEqual(codeTitle, code.CodeTitle);
             Assert.AreEqual(myCode, code.MyCode);
             Assert.AreEqual(isVisible, code.IsVisible);
         }
@@ -60,6 +62,7 @@ namespace MyCode_Backend_Server.Models.Tests
             Assert.AreEqual(default(Guid), code.Id);
             Assert.IsNull(code.UserId);
             Assert.IsNull(code.User);
+            Assert.IsNull(code.CodeTitle);
             Assert.IsNull(code.MyCode);
             Assert.IsFalse(code.IsVisible);
         }
