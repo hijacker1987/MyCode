@@ -63,16 +63,14 @@ namespace MyCode_Backend_Server
                     if (issueSign != null)
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            ClockSkew = TimeSpan.Zero,
+                            ClockSkew = TimeSpan.FromMinutes(5),
                             ValidateIssuer = true,
                             ValidateAudience = true,
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
                             ValidIssuer = issuer,
                             ValidAudience = issuer,
-                            IssuerSigningKey = new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(issueSign)
-                            ),
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign)),
                         };
                 });
 
@@ -107,7 +105,7 @@ namespace MyCode_Backend_Server
 
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
+                context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:7001");
                 context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
                 context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -144,7 +142,7 @@ namespace MyCode_Backend_Server
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-            var roleList = new List<string> { "Admin", "User", "Leader" };
+            var roleList = new List<string> { "Admin", "User" };
 
             foreach (var role in roleList)
             {

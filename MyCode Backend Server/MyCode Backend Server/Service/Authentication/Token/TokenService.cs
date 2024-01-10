@@ -42,7 +42,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             {
                 new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
+                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Name, user.UserName!),
                 new(ClaimTypes.Email, user.Email!)
