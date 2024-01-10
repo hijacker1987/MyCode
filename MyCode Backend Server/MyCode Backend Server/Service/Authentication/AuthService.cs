@@ -34,7 +34,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             foreach (var identityError in result.Errors)
             {
-                authenticationResult.ErrorMessages.Add(identityError.Code, identityError.Description);
+                authenticationResult.ErrorMessages.Add(identityError.Code ?? "", identityError.Description);
             }
 
             return authenticationResult;
@@ -78,5 +78,4 @@ namespace MyCode_Backend_Server.Service.Authentication
             return result;
         }
     }
-
 }
