@@ -11,11 +11,22 @@ namespace MyCode_Backend_Server.Models.Tests
             var codes = new List<Code> { new ("prime", "code1"), new ("filter", "code2") };
 
             // Act
-            var user = new User(codes);
+            var user = new User(codes)
+            {
+                Id = "1",
+                UserName = "Test",
+                PhoneNumber = "123",
+                Email = "testmail@test.ts",
+                Code = codes
+            };
 
             // Assert
             Assert.IsNotNull(user.Code);
             Assert.AreEqual(2, user.Code.Count);
+            Assert.AreEqual("1", user.Id);
+            Assert.AreEqual("Test", user.UserName);
+            Assert.AreEqual("123", user.PhoneNumber);
+            Assert.AreEqual ("testmail@test.ts", user.Email);
         }
 
         [TestMethod]
