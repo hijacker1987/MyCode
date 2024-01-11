@@ -5,17 +5,9 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Data
 {
-    public class DataContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         public DbSet<Code>? CodesDb { get; set; }
-
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
-        {
-        }
-
-        public DataContext()
-        {
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,27 +1,22 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.Globalization;
+﻿using Microsoft.IdentityModel.Tokens;
+using MyCode_Backend_Server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace MyCode_Backend_Server.Service.Authentication.Token
 {
-    public class TokenService : ITokenService
+    public class TokenService(IConfiguration configuration) : ITokenService
     {
         private const int ExpirationMinutes = 30;
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration = configuration;
 
-        public TokenService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public string CreateToken(IdentityUser user, string? role)
+        public string CreateToken(User user, string? role)
         {
             var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
             var token = CreateJwtToken(CreateClaims(user, role), CreateSigningCredentials(), expiration);
             var tokenHandler = new JwtSecurityTokenHandler();
+
             return tokenHandler.WriteToken(token);
         }
 
@@ -32,21 +27,21 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 claims,
                 expires: expiration,
                 signingCredentials: credentials
-            );
+                );
 
-        private List<Claim> CreateClaims(IdentityUser user, string? role)
+        private static List<Claim> CreateClaims(User user, string? role)
         {
             try
             {
                 var claims = new List<Claim>
-            {
-                new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-                new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, user.UserName!),
-                new(ClaimTypes.Email, user.Email!)
-            };
+                {
+                    new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
+                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+                    new(ClaimTypes.NameIdentifier, value: user.Id.ToString()),
+                    new(ClaimTypes.Name, user.UserName!),
+                    new(ClaimTypes.Email, user.Email!)
+                };
                 if (role != null)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));

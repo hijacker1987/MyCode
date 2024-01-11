@@ -4,9 +4,10 @@ namespace MyCode_Backend_Server.Contracts.Registers
 {
     public record UserRegRequest
     (
+        [Required] string Email,
         [Required] string Username,
         [Required] string Password,
-        [Required] string Email,
+        [Required] string DisplayName,
         [Required] string PhoneNumber
     );
 }

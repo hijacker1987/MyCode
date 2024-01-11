@@ -8,12 +8,15 @@ namespace MyCode_Backend_Server.Models.Tests
         public void UserConstructor_SetsPropertiesCorrectly()
         {
             // Arrange
-            var codes = new List<Code> { new ("prime", "code1"), new ("filter", "code2") };
+            var codes = new List<Code> { new ("prime", "code1", "css"), new ("filter", "code2", "script") };
+            var time = DateTime.Now;
 
             // Act
-            var user = new User(codes)
+            var user = new User()
             {
-                Id = "1",
+                Id = default,
+                DisplayName = "Test User",
+                LastTimeLogin = time,
                 UserName = "Test",
                 PhoneNumber = "123",
                 Email = "testmail@test.ts",
@@ -23,7 +26,9 @@ namespace MyCode_Backend_Server.Models.Tests
             // Assert
             Assert.IsNotNull(user.Code);
             Assert.AreEqual(2, user.Code.Count);
-            Assert.AreEqual("1", user.Id);
+            Assert.AreEqual(default, user.Id);
+            Assert.AreEqual("Test User", user.DisplayName);
+            Assert.AreEqual(time, user.LastTimeLogin);
             Assert.AreEqual("Test", user.UserName);
             Assert.AreEqual("123", user.PhoneNumber);
             Assert.AreEqual ("testmail@test.ts", user.Email);
@@ -50,14 +55,18 @@ namespace MyCode_Backend_Server.Models.Tests
             // Arrange
             string codeTitle = "testTitle";
             string myCode = "testCode";
+            string whatKindOfCode = "testMethod";
+            bool isBackend = true;
             bool isVisible = true;
 
             // Act
-            Code code = new (codeTitle, myCode, isVisible);
+            Code code = new (codeTitle, myCode, whatKindOfCode, isBackend, isVisible);
 
             // Assert
             Assert.AreEqual(codeTitle, code.CodeTitle);
             Assert.AreEqual(myCode, code.MyCode);
+            Assert.AreEqual(whatKindOfCode, code.WhatKindOfCode);
+            Assert.AreEqual(isBackend, code.IsBackend);
             Assert.AreEqual(isVisible, code.IsVisible);
         }
 
@@ -69,10 +78,12 @@ namespace MyCode_Backend_Server.Models.Tests
 
             // Assert
             Assert.AreEqual(default, code.Id);
-            Assert.IsNull(code.UserId);
+            Assert.IsNotNull(code.UserId);
             Assert.IsNull(code.User);
             Assert.IsNull(code.CodeTitle);
             Assert.IsNull(code.MyCode);
+            Assert.IsNull(code.WhatKindOfCode);
+            Assert.IsFalse(code.IsBackend);
             Assert.IsFalse(code.IsVisible);
         }
     }

@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using MyCode_Backend_Server.Contracts.Registers;
-using MyCode_Backend_Server.Service.Authentication;
+﻿using MyCode_Backend_Server.Contracts.Registers;
 using System.Net.Http.Json;
 using System.Net;
 using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Assert = Xunit.Assert;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
@@ -69,7 +66,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 AllowAutoRedirect = false
             });
 
-            var invalidRequest = new UserRegRequest("", "", "", "");
+            var invalidRequest = new UserRegRequest("", "", "", "", "");
 
             // Act
             var response = await client.PostAsync("/registerUser", JsonContent.Create(invalidRequest));

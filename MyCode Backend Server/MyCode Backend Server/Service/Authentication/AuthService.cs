@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Service.Authentication
 {
-        public class AuthService : IAuthService
+        public class AuthService(UserManager<User> userManager, ITokenService tokenService) : IAuthService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly ITokenService _tokenService;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly ITokenService _tokenService = tokenService;
 
-        public AuthService(UserManager<IdentityUser> userManager, ITokenService tokenService)
+        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber, string role)
         {
-            _userManager = userManager;
-            _tokenService = tokenService;
-        }
-
-        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string phoneNumber, string role)
-        {
-            var user = new IdentityUser { UserName = username, Email = email, PhoneNumber = phoneNumber };
+            var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
-                return FailedRegistration(user.Id, result, email, username);
+                return FailedRegistration(user.Id.ToString(), result, email, username);
             }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, role);
 
-            await _userManager.AddToRoleAsync(user, role);
-            return new AuthResult(user.Id, true, email, username, "");
+                return new AuthResult(user.Id.ToString(), true, email, username, "");
+            }
         }
 
         private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)
@@ -59,7 +57,7 @@ namespace MyCode_Backend_Server.Service.Authentication
             var roles = await _userManager.GetRolesAsync(managedUser);
             var accessToken = _tokenService.CreateToken(managedUser, roles[0]);
 
-            return new AuthResult(managedUser.Id, true, managedUser.Email!, managedUser.UserName!, accessToken);
+            return new AuthResult(managedUser.Id.ToString(), true, managedUser.Email!, managedUser.UserName!, accessToken);
         }
 
         private static AuthResult InvalidEmail(string email)

@@ -11,30 +11,21 @@ using MyCode_Backend_Server.Service.Authentication;
 namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(
+        ILogger<UserController> logger,
+        IConfiguration configuration,
+        IAuthService authenticationService,
+        DataContext dataContext,
+        UserManager<User> userManager) : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-        private readonly IConfiguration _configuration;
-        private readonly IAuthService _authenticationService;
-        private readonly DataContext _dataContext;
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public UserController(
-            ILogger<UserController> logger,
-            IConfiguration configuration,
-            IAuthService authenticationService,
-            DataContext dataContext,
-            UserManager<IdentityUser> userManager)
-        {
-            _logger = logger;
-            _configuration = configuration;
-            _authenticationService = authenticationService;
-            _dataContext = dataContext;
-            _userManager = userManager;
-        }
+        private readonly ILogger<UserController> _logger = logger;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IAuthService _authenticationService = authenticationService;
+        private readonly DataContext _dataContext = dataContext;
+        private readonly UserManager<User> _userManager = userManager;
 
         [HttpGet("/getUsers"), Authorize(Roles = "Admin")]
-        public ActionResult<List<IdentityUser>> GetAllUsers()
+        public ActionResult<List<User>> GetAllUsers()
         {
             try
             {
@@ -66,18 +57,19 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _authenticationService.RegisterAsync(request.Email, request.Username, request.Password, request.PhoneNumber, "User");
+                var result = await _authenticationService.RegisterAsync(request.Email,
+                                                                        request.Username,
+                                                                        request.Password,
+                                                                        request.DisplayName,
+                                                                        request.PhoneNumber,
+                                                                        "User"
+                                                                        );
 
                 if (!result.Success)
                 {
                     AddErrors(result);
                     return BadRequest(ModelState);
                 }
-
-                var newUser = new User();
-
-                _dataContext.Users.Add(newUser);
-                await _dataContext.SaveChangesAsync();
 
                 return Ok(new UserRegResponse(result.Email, result.UserName));
             }
@@ -102,7 +94,7 @@ namespace MyCode_Backend_Server.Controllers
                 return BadRequest(result);
             }
 
-            var roleId = _dataContext.UserRoles.First(r => r.UserId == result.Id).RoleId;
+            var roleId = _dataContext.UserRoles.First(r => r.UserId.Equals(result.Id)).RoleId;
             var role = _dataContext.Roles.First(r => r.Id == roleId).Name;
 
             Response.Cookies.Append("Authentication", result.Token);
@@ -149,25 +141,25 @@ namespace MyCode_Backend_Server.Controllers
                 return NotFound("Not Found!");
             }
 
-            if (_configuration["AEmail"]!.ToLower() == email!.ToLower())
+            if (_configuration["AEmail"]!.Equals(email, StringComparison.CurrentCultureIgnoreCase))
             {
                 return Unauthorized();
             }
 
             try
             {
-                var identityUser = await _userManager.FindByEmailAsync(email);
-                var dbUser = _dataContext.Users!.FirstOrDefault(e => e.Id == identityUser!.Id);
+                var user = await _userManager.FindByEmailAsync(email);
+                var dbUser = _dataContext.Users!.FirstOrDefault(e => e.Id.Equals(user!.Id));
 
                 _dataContext.Users.Remove(dbUser!);
                 await _dataContext.SaveChangesAsync();
 
-                if (identityUser == null)
+                if (user == null)
                 {
                     return BadRequest("Something went wrong!");
                 }
 
-                var result = await _userManager.DeleteAsync(identityUser);
+                var result = await _userManager.DeleteAsync(user);
 
                 if (result.Succeeded)
                 {

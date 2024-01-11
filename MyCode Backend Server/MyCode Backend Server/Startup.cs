@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server
 {
@@ -42,7 +43,7 @@ namespace MyCode_Backend_Server
                                 Id = "Bearer"
                             }
                         },
-                        new string[] { }
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -58,39 +59,38 @@ namespace MyCode_Backend_Server
             var issueSign = _configuration["IssueSign"];
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    if (issueSign != null)
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ClockSkew = TimeSpan.FromMinutes(5),
-                            ValidateIssuer = true,
-                            ValidateAudience = true,
-                            ValidateLifetime = true,
-                            ValidateIssuerSigningKey = true,
-                            ValidIssuer = issuer,
-                            ValidAudience = issuer,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign)),
-                        };
-                });
+                    .AddJwtBearer(options =>
+                    {
+                        if (issueSign != null)
+                            options.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                ClockSkew = TimeSpan.FromMinutes(5),
+                                ValidateIssuer = true,
+                                ValidateAudience = true,
+                                ValidateLifetime = true,
+                                ValidateIssuerSigningKey = true,
+                                ValidIssuer = issuer,
+                                ValidAudience = issuer,
+                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign)),
+                            };
+                    });
 
-            services
-                .AddIdentityCore<IdentityUser>(options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = false;
-                    options.User.RequireUniqueEmail = true;
-                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 6;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                })
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<DataContext>();
+            services.AddIdentityCore<User>(options =>
+                    {
+                        options.SignIn.RequireConfirmedAccount = false;
+                        options.User.RequireUniqueEmail = true;
+                        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                        options.Password.RequireDigit = false;
+                        options.Password.RequiredLength = 6;
+                        options.Password.RequireNonAlphanumeric = false;
+                        options.Password.RequireUppercase = false;
+                        options.Password.RequireLowercase = false;
+                    })
+                    .AddRoles<IdentityRole<Guid>>()
+                    .AddEntityFrameworkStores<DataContext>();
         }
 
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, DataContext dataContext)
         {
             if (env.IsDevelopment())
             {
@@ -105,7 +105,9 @@ namespace MyCode_Backend_Server
 
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:7001");
+                var connection = _configuration["FEAddress"];
+
+                context.Response.Headers.Append("Access-Control-Allow-Origin", connection);
                 context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
                 context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -133,14 +135,17 @@ namespace MyCode_Backend_Server
                 endpoints.MapControllers();
             });
 
-            await AddRolesAndAdmin(app);
+            lifetime.ApplicationStarted.Register(async () =>
+            {
+                await AddRolesAndAdmin(app);
+            });
         }
 
-        async Task AddRolesAndAdmin(IApplicationBuilder app)
+        public async Task AddRolesAndAdmin(IApplicationBuilder app)
         {
             using var scope = app.ApplicationServices.CreateScope();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
             var roleList = new List<string> { "Admin", "User" };
 
@@ -152,12 +157,12 @@ namespace MyCode_Backend_Server
             await CreateAdminIfNotExists(userManager);
         }
 
-        async Task CreateRole(RoleManager<IdentityRole> roleManager, string role)
+        public async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)
         {
-            await roleManager.CreateAsync(new IdentityRole(role));
+            await roleManager.CreateAsync(new IdentityRole<Guid>(Guid.NewGuid().ToString()) { Name = role });
         }
 
-        async Task CreateAdminIfNotExists(UserManager<IdentityUser> userManager)
+        public async Task CreateAdminIfNotExists(UserManager<User> userManager)
         {
             var pass = _configuration["APass"];
             var mail = _configuration["AEmail"];
@@ -165,7 +170,7 @@ namespace MyCode_Backend_Server
 
             if (adminInDb == null)
             {
-                var admin = new IdentityUser { UserName = "Admin", Email = mail };
+                var admin = new User { UserName = "Admin", Email = mail };
                 var adminCreated = await userManager.CreateAsync(admin, pass!);
 
                 if (adminCreated.Succeeded)
