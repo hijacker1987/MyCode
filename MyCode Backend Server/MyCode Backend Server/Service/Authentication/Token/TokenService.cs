@@ -35,13 +35,13 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             {
                 var claims = new List<Claim>
                 {
-                    new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                     new(ClaimTypes.NameIdentifier, value: user.Id.ToString()),
                     new(ClaimTypes.Name, user.UserName!),
                     new(ClaimTypes.Email, user.Email!)
                 };
+
                 if (role != null)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
@@ -55,6 +55,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 throw;
             }
         }
+
 
         private SigningCredentials CreateSigningCredentials()
         {

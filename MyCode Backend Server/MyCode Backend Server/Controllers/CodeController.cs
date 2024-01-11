@@ -20,16 +20,24 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (string.IsNullOrEmpty(userId))
+                if (userIdClaim == null)
                 {
-                    _logger.LogError("Unable to retrieve UserId from the ClaimsPrincipal.");
-                    return BadRequest("Unable to retrieve UserId.");
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
                 }
 
                 var codes = _dataContext.CodesDb!
-                                        .Where(c => c.UserId == Guid.Parse(userId))
+                                        .Where(c => c.UserId == userIdGuid)
                                         .ToList();
 
                 return Ok(codes);
@@ -47,16 +55,24 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (string.IsNullOrEmpty(userId))
+                if (userIdClaim == null)
                 {
-                    _logger.LogError("Unable to retrieve UserId from the ClaimsPrincipal.");
-                    return BadRequest("Unable to retrieve UserId.");
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
                 }
 
                 var codes = _dataContext.CodesDb!
-                                        .Where(c => c.UserId == Guid.Parse(userId) || c.IsVisible)
+                                        .Where(c => c.IsVisible)
                                         .ToList();
 
                 return Ok(codes);
@@ -102,14 +118,21 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (string.IsNullOrEmpty(userId))
+                if (userIdClaim == null)
                 {
-                    _logger.LogError("Unable to retrieve UserId from the ClaimsPrincipal.");
-                    return BadRequest("Unable to retrieve UserId.");
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
                 }
-                var userIdGuid = Guid.Parse(userId);
+
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
 
                 var code = new Code(
                     codeRequest.CodeTitle,
@@ -119,7 +142,7 @@ namespace MyCode_Backend_Server.Controllers
                     codeRequest.IsVisible)
                     {
                         UserId = userIdGuid
-                    };
+                };
 
                 _dataContext.CodesDb!.Add(code);
                 _dataContext.SaveChanges();
@@ -154,14 +177,21 @@ namespace MyCode_Backend_Server.Controllers
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (userIdClaim == null || string.IsNullOrEmpty(userIdClaim.Value))
+                if (userIdClaim == null)
                 {
-                    _logger.LogError("Unable to retrieve UserId from the ClaimsPrincipal.");
-                    return BadRequest("Unable to retrieve UserId.");
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var existingCode = _dataContext.CodesDb!
-                    .FirstOrDefault(c => c.Id == id && c.UserId == Guid.Parse(userIdClaim.Value));
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId == userIdGuid);
 
                 if (existingCode == null)
                 {
@@ -200,67 +230,29 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("U-{id}")]
-        [Authorize(Roles = "User")]
-        public ActionResult<Code> UpdateCodeByUser(Guid id, [FromBody] Code updatedCode)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    _logger.LogError("Unable to retrieve UserId from the ClaimsPrincipal.");
-                    return BadRequest("Unable to retrieve UserId.");
-                }
-
-                var existingCode = _dataContext.CodesDb!
-                    .FirstOrDefault(c => c.Id == id && c.UserId == Guid.Parse(userId));
-
-                if (existingCode == null)
-                {
-                    _logger.LogInformation($"Code with id {id} not found or does not belong to the authenticated user.");
-                    return NotFound();
-                }
-
-                existingCode.CodeTitle = updatedCode.CodeTitle;
-                existingCode.MyCode = updatedCode.MyCode;
-                existingCode.WhatKindOfCode = updatedCode.WhatKindOfCode;
-                existingCode.IsBackend = updatedCode.IsBackend;
-                existingCode.IsVisible = updatedCode.IsVisible;
-
-                _dataContext.SaveChanges();
-
-                return Ok(existingCode);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Error: {e.Message}", e);
-                return BadRequest();
-            }
-        }
-
         [HttpDelete("U-{id}")]
         [Authorize(Roles = "User")]
         public ActionResult DeleteCodeByUser(Guid id)
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (string.IsNullOrEmpty(userId))
+                if (userIdClaim == null)
                 {
-                    _logger.LogError("Unable to retrieve UserId from the ClaimsPrincipal.");
-                    return BadRequest("Unable to retrieve UserId.");
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var code = _dataContext.CodesDb!
-                                       .FirstOrDefault(c => c.Id == id && c.UserId == Guid.Parse(userId));
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId == userIdGuid);
 
                 if (code == null)
                 {
