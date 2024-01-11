@@ -147,7 +147,7 @@ namespace MyCode_Backend_Server.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Error: {e.Message}", e);
-                return NotFound("Error occured!");
+                return NotFound("Error occurred!");
             }
         }
 
