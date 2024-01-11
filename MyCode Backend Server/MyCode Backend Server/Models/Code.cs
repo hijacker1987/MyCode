@@ -6,10 +6,6 @@ namespace MyCode_Backend_Server.Models
     {
         [Key]
         public Guid Id { get; set; }
-
-        public Guid UserId { get; set; }
-        public User? User { get; set; }
-
         public string? CodeTitle { get; set; }
         public string? MyCode { get; set; }
         public string? WhatKindOfCode { get; set; }
@@ -28,5 +24,8 @@ namespace MyCode_Backend_Server.Models
         public Code()
         {
         }
+
+        public Guid UserId { get; set; }
+        public User? User { get; set; }
     }
 }

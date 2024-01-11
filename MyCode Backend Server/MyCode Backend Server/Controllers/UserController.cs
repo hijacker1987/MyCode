@@ -27,29 +27,6 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
-        [HttpGet("/getUsers"), Authorize(Roles = "Admin")]
-        public ActionResult<List<User>> GetAllUsers()
-        {
-            try
-            {
-                var users = _dataContext.Users.ToList();
-                var returningList = users.Where(user => user != null).ToList();
-
-                if (returningList.Count == 0)
-                {
-                    _logger.LogInformation("There are no users in the database.");
-                    return Ok(returningList);
-                }
-
-                return Ok(returningList);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Error: {e.Message}", e);
-                return NotFound();
-            }
-        }
-
         [HttpPost("/registerUser")]
         public async Task<ActionResult<UserRegResponse>> RegisterUserAsync(UserRegRequest request)
         {
