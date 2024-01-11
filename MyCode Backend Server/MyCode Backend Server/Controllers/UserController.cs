@@ -7,6 +7,7 @@ using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
+using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -15,12 +16,14 @@ namespace MyCode_Backend_Server.Controllers
         ILogger<UserController> logger,
         IConfiguration configuration,
         IAuthService authenticationService,
+        ITokenService tokenService,
         DataContext dataContext,
         UserManager<User> userManager) : ControllerBase
     {
         private readonly ILogger<UserController> _logger = logger;
         private readonly IConfiguration _configuration = configuration;
         private readonly IAuthService _authenticationService = authenticationService;
+        private readonly ITokenService _tokenService = tokenService;
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
@@ -91,14 +94,30 @@ namespace MyCode_Backend_Server.Controllers
             if (!result.Success)
             {
                 AddErrors(result);
-                return BadRequest(result);
+                return BadRequest(ModelState);
             }
 
-            var roleId = _dataContext.UserRoles.First(r => r.UserId.Equals(result.Id)).RoleId;
-            var role = _dataContext.Roles.First(r => r.Id == roleId).Name;
+            var managedUser = await _userManager.FindByEmailAsync(request.Email);
 
-            Response.Cookies.Append("Authentication", result.Token);
-            return Ok(new AuthResponse(result.Email, result.UserName, result.Token, role!));
+            if (managedUser == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, request.Password);
+
+            if (!isPasswordValid)
+            {
+                return BadRequest("PW not valid.");
+            }
+
+            var roles = await _userManager.GetRolesAsync(managedUser);
+
+            await _userManager.AddToRolesAsync(managedUser, roles);
+
+            var accessToken = _tokenService.CreateToken(managedUser, roles.First());
+
+            return new AuthResponse(result.Email, result.UserName, accessToken, roles.First());
         }
 
         [HttpPatch("/changePassword"), Authorize(Roles = "Admin, User")]
@@ -131,7 +150,6 @@ namespace MyCode_Backend_Server.Controllers
                 return NotFound("Error occured!");
             }
         }
-
 
         [HttpDelete("/deleteAccount"), Authorize(Roles = "User")]
         public async Task<ActionResult> DeleteAccountAsync(string email)
