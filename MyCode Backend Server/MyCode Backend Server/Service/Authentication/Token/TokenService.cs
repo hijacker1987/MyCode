@@ -6,15 +6,16 @@ using System.Text;
 
 namespace MyCode_Backend_Server.Service.Authentication.Token
 {
-    public class TokenService(IConfiguration configuration) : ITokenService
+    public class TokenService(IConfiguration configuration, ILogger<TokenService> logger) : ITokenService
     {
         private const int ExpirationMinutes = 30;
         private readonly IConfiguration _configuration = configuration;
+        private readonly ILogger<TokenService> _logger = logger;
 
         public string CreateToken(User user, string? role)
         {
             var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
-            var token = CreateJwtToken(CreateClaims(user, role), CreateSigningCredentials(), expiration);
+            var token = CreateJwtToken(CreateClaims(user, role, _logger), CreateSigningCredentials(), expiration);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             return tokenHandler.WriteToken(token);
@@ -29,7 +30,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 signingCredentials: credentials
                 );
 
-        private static List<Claim> CreateClaims(User user, string? role)
+        private static List<Claim> CreateClaims(User user, string? role, ILogger<TokenService> _logger)
         {
             try
             {
@@ -51,11 +52,10 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError($"Error: {e.Message}", e);
                 throw;
             }
         }
-
 
         private SigningCredentials CreateSigningCredentials()
         {

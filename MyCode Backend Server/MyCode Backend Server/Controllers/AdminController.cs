@@ -5,9 +5,9 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Controllers
 {
-    public class AdminController(ILogger<CodeController> logger, DataContext dataContext) : ControllerBase
+    public class AdminController(ILogger<AdminController> logger, DataContext dataContext) : ControllerBase
     {
-        private readonly ILogger<CodeController> _logger = logger;
+        private readonly ILogger<AdminController> _logger = logger;
         private readonly DataContext _dataContext = dataContext;
 
         [HttpGet("/getUsers"), Authorize(Roles = "Admin")]

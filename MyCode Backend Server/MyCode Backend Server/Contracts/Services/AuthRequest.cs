@@ -1,4 +1,4 @@
-﻿namespace MyCode_Backend_Server.Service.Authentication
+﻿namespace MyCode_Backend_Server.Contracts.Services
 {
     public record AuthRequest(string Email, string Password);
 }
