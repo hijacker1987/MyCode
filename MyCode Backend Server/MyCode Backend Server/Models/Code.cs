@@ -12,7 +12,7 @@ namespace MyCode_Backend_Server.Models
         public bool IsBackend { get; set; }
         public bool IsVisible { get; set; }
 
-        public Code(string codeTitle, string myCode, string whatKindOfCode, bool isBackend = false, bool isVisible = false)
+        public Code(string? codeTitle, string? myCode, string? whatKindOfCode, bool isBackend = false, bool isVisible = false)
         {
             CodeTitle = codeTitle;
             MyCode = myCode;
