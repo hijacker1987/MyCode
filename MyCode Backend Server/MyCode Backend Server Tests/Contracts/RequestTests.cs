@@ -148,6 +148,81 @@ namespace MyCode_Backend_Server_Tests.Contracts
             Assert.True(IsValid(changePassRegRequest));
         }
 
+        [Fact]
+        public void UserRegRequest_Validation_Fail_When_Required_Fields_Null_Or_Empty()
+        {
+            // Arrange
+            var userRegRequest1 = new UserRegRequest
+            (
+                "test@example.com",
+                null!,
+                "StrongPassword123",
+                "Test User",
+                "123456789"
+            );
+
+            var userRegRequest2 = new UserRegRequest
+            (
+                "test@example.com",
+                "HelloWorld",
+                null!,
+                "Test User",
+                "123456789"
+            );
+
+            // Act & Assert
+            Assert.False(IsValid(userRegRequest1, nameof(UserRegRequest.Username)));
+            Assert.False(IsValid(userRegRequest2, nameof(UserRegRequest.Password)));
+        }
+
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_CodeContent_Is_Null()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest
+            (
+                "Test Title",
+                null!,
+                "Test",
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void AuthRegRequest_Validation_Fail_When_Password_Null_Or_Empty()
+        {
+            // Arrange
+            var authRegRequest1 = new AuthRequest("test@example.com", null!);
+            var authRegRequest2 = new AuthRequest("test@example.com", string.Empty);
+            var authRegRequest3 = new AuthRequest("test@example.com", null!);
+
+            // Act & Assert
+            Assert.False(IsValid(authRegRequest1, nameof(AuthRequest.Password)));
+            Assert.False(IsValid(authRegRequest2, nameof(AuthRequest.Password)));
+            Assert.False(IsValid(authRegRequest3, nameof(AuthRequest.Password)));
+        }
+
+        [Fact]
+        public void ChangePassRequest_Validation_Fail_When_CurrentPassword_Null_Or_Empty()
+        {
+            // Arrange
+            var changePassRegRequest1 = new ChangePassRequest("test@example.com", null!, "NewPassword");
+            var changePassRegRequest2 = new ChangePassRequest("test@example.com", string.Empty, "NewPassword");
+            var changePassRegRequest3 = new ChangePassRequest("test@example.com", null!, "NewPassword");
+
+            // Act & Assert
+            Assert.False(IsValid(changePassRegRequest1, nameof(ChangePassRequest.CurrentPassword)));
+            Assert.False(IsValid(changePassRegRequest2, nameof(ChangePassRequest.CurrentPassword)));
+            Assert.False(IsValid(changePassRegRequest3, nameof(ChangePassRequest.CurrentPassword)));
+        }
+
         private static bool IsValid(object instance, string propertyName = null!)
         {
             var validationContext = new ValidationContext(instance, null, null);
