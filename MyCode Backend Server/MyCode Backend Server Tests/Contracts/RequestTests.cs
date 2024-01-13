@@ -14,17 +14,15 @@ namespace MyCode_Backend_Server_Tests.Contracts
             // Arrange
             var codeRegRequest = new CodeRegRequest
             (
-                CodeTitle: "Test Title",
-                MyCode: "console.log('Hello, World!');",
-                WhatKindOfCode: "Test",
-                IsBackend: true,
-                IsVisible: true
+                "Test Title",
+                "console.log('Hello, World!');",
+                "Test",
+                true,
+                true
             );
 
             // Act
-            var validationContext = new ValidationContext(codeRegRequest, null, null);
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(codeRegRequest, validationContext, validationResults, true);
+            var isValid = IsValid(codeRegRequest);
 
             // Assert
             Assert.True(isValid);
@@ -36,17 +34,15 @@ namespace MyCode_Backend_Server_Tests.Contracts
             // Arrange
             var userRegRequest = new UserRegRequest
             (
-                Email: "Test@Title.Mail",
-                Username: "Hello World!",
-                Password: "Test",
-                DisplayName: "Test User",
-                PhoneNumber: "123"
+                "Test@Title.Mail",
+                "Hello World!",
+                "Test",
+                "Test User",
+                "123"
             );
 
             // Act
-            var validationContext = new ValidationContext(userRegRequest, null, null);
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(userRegRequest, validationContext, validationResults, true);
+            var isValid = IsValid(userRegRequest);
 
             // Assert
             Assert.True(isValid);
@@ -56,16 +52,10 @@ namespace MyCode_Backend_Server_Tests.Contracts
         public void AuthRegRequest_Validation_Success()
         {
             // Arrange
-            var authRegRequest = new AuthRequest
-            (
-                Email: "Test@Title.Mail",
-                Password: "Test"
-            );
+            var authRegRequest = new AuthRequest("Test@Title.Mail", "Test");
 
             // Act
-            var validationContext = new ValidationContext(authRegRequest, null, null);
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(authRegRequest, validationContext, validationResults, true);
+            var isValid = IsValid(authRegRequest);
 
             // Assert
             Assert.True(isValid);
@@ -75,20 +65,94 @@ namespace MyCode_Backend_Server_Tests.Contracts
         public void ChangePassRequest_Validation_Success()
         {
             // Arrange
-            var changePassRegRequest = new ChangePassRequest
-            (
-                Email: "Test@Title.Mail",
-                CurrentPassword: "Test",
-                NewPassword: "Tester"
-            );
+            var changePassRegRequest = new ChangePassRequest("Test@Title.Mail", "Test", "Tester");
 
             // Act
-            var validationContext = new ValidationContext(changePassRegRequest, null, null);
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(changePassRegRequest, validationContext, validationResults, true);
+            var isValid = IsValid(changePassRegRequest);
 
             // Assert
             Assert.True(isValid);
+        }
+
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_CodeTitle_Is_Null()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest
+            (
+                null!,
+                "console.log('Hello, World!');",
+                "Test",
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void UserRegRequest_Validation_Fail_When_Email_InvalidFormat()
+        {
+            // Arrange
+            var userRegRequest = new UserRegRequest
+            (
+                "InvalidEmail",
+                "Hello World!",
+                "Test",
+                "Test User",
+                "123"
+            );
+
+            // Act
+            var isValid = IsValid(userRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void AuthRegRequest_Validation_Fail_When_Email_Null_Or_Empty()
+        {
+            // Arrange
+            var authRegRequest1 = new AuthRequest("invalid-email", "Test");
+            var authRegRequest2 = new AuthRequest(string.Empty, "Test");
+            var authRegRequest3 = new AuthRequest(null!, "Test");
+
+            // Act & Assert
+            Assert.False(IsValid(authRegRequest1, nameof(AuthRequest.Email)));
+            Assert.False(IsValid(authRegRequest2, nameof(AuthRequest.Email)));
+            Assert.False(IsValid(authRegRequest3, nameof(AuthRequest.Email)));
+        }
+
+        [Fact]
+        public void ChangePassRequest_Validation_Fail_When_NewPassword_TooShort()
+        {
+            // Arrange
+            var changePassRegRequest = new ChangePassRequest("test@example.com", "Test", "Ab1");
+
+            // Act & Assert
+            Assert.False(IsValid(changePassRegRequest, nameof(ChangePassRequest.NewPassword)));
+        }
+
+        [Fact]
+        public void ChangePassRequest_Validation_Success_When_NewPassword_Valid()
+        {
+            // Arrange
+            var changePassRegRequest = new ChangePassRequest("test@example.com", "Test", "StrongPassword123");
+
+            // Act & Assert
+            Assert.True(IsValid(changePassRegRequest));
+        }
+
+        private static bool IsValid(object instance, string propertyName = null!)
+        {
+            var validationContext = new ValidationContext(instance, null, null);
+            var validationResults = new List<ValidationResult>();
+            return Validator.TryValidateObject(instance, validationContext, validationResults, true);
         }
     }
 }

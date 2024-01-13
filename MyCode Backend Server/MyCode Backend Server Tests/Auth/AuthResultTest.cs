@@ -21,12 +21,17 @@ namespace MyCode_Backend_Server_Tests.Auth
             );
 
             // Act
-            var validationContext = new ValidationContext(codeRegRequest, null, null);
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(codeRegRequest, validationContext, validationResults, true);
+            var isValid = IsValid(codeRegRequest);
 
             // Assert
             Assert.True(isValid);
+        }
+
+        private static bool IsValid(object instance, string propertyName = null!)
+        {
+            var validationContext = new ValidationContext(instance, null, null);
+            var validationResults = new List<ValidationResult>();
+            return Validator.TryValidateObject(instance, validationContext, validationResults, true);
         }
     }
 }
