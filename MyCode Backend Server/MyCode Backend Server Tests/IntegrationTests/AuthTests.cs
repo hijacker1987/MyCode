@@ -7,15 +7,11 @@ using Assert = Xunit.Assert;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
-    public class AuthTests : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
+    public class AuthTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
+           : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
     {
-        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
+        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
-        public AuthTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
-        {
-            _factory = factory;
-        }
- 
         [Fact]
         public async Task ChangePasswordAsync_InvalidCredentials_ReturnsUnauthorized()
         {

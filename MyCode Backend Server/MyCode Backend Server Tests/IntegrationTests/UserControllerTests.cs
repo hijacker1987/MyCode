@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using Assert = Xunit.Assert;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
@@ -23,7 +23,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.GetAsync(url);
 
-            Assert.IsTrue(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized);
+            Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized);
         }
 
         [Theory]
@@ -39,7 +39,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.PostAsJsonAsync(url, invalidUserRegRequest);
 
-            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Theory]
@@ -55,7 +55,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.PostAsJsonAsync(url, invalidAuthRequest);
 
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
     }
 }

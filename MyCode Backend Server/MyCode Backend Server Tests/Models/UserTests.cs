@@ -1,3 +1,4 @@
+using Assert = Xunit.Assert;
 
 namespace MyCode_Backend_Server.Models.Tests
 {
@@ -24,14 +25,14 @@ namespace MyCode_Backend_Server.Models.Tests
             };
 
             // Assert
-            Assert.IsNotNull(user.Code);
-            Assert.AreEqual(2, user.Code.Count);
-            Assert.AreEqual(default, user.Id);
-            Assert.AreEqual("Test User", user.DisplayName);
-            Assert.AreEqual(time, user.LastTimeLogin);
-            Assert.AreEqual("Test", user.UserName);
-            Assert.AreEqual("123", user.PhoneNumber);
-            Assert.AreEqual ("testmail@test.ts", user.Email);
+            Assert.NotNull(user.Code);
+            Assert.Equal(2, user.Code!.Count);
+            Assert.Equal(default, user.Id);
+            Assert.Equal("Test User", user.DisplayName);
+            Assert.Equal(time, user.LastTimeLogin);
+            Assert.Equal("Test", user.UserName);
+            Assert.Equal("123", user.PhoneNumber);
+            Assert.Equal ("testmail@test.ts", user.Email);
         }
 
         [TestMethod]
@@ -41,8 +42,7 @@ namespace MyCode_Backend_Server.Models.Tests
             var user = new User();
 
             // Assert
-            Assert.IsNotNull(user.Code);
-            Assert.AreEqual(0, user.Code.Count);
+            Assert.Empty(user.Code!);
         }
     }
 
@@ -63,11 +63,11 @@ namespace MyCode_Backend_Server.Models.Tests
             Code code = new (codeTitle, myCode, whatKindOfCode, isBackend, isVisible);
 
             // Assert
-            Assert.AreEqual(codeTitle, code.CodeTitle);
-            Assert.AreEqual(myCode, code.MyCode);
-            Assert.AreEqual(whatKindOfCode, code.WhatKindOfCode);
-            Assert.AreEqual(isBackend, code.IsBackend);
-            Assert.AreEqual(isVisible, code.IsVisible);
+            Assert.Equal(codeTitle, code.CodeTitle);
+            Assert.Equal(myCode, code.MyCode);
+            Assert.Equal(whatKindOfCode, code.WhatKindOfCode);
+            Assert.Equal(isBackend, code.IsBackend);
+            Assert.Equal(isVisible, code.IsVisible);
         }
 
         [TestMethod]
@@ -77,14 +77,13 @@ namespace MyCode_Backend_Server.Models.Tests
             Code code = new ();
 
             // Assert
-            Assert.AreEqual(default, code.Id);
-            Assert.IsNotNull(code.UserId);
-            Assert.IsNull(code.User);
-            Assert.IsNull(code.CodeTitle);
-            Assert.IsNull(code.MyCode);
-            Assert.IsNull(code.WhatKindOfCode);
-            Assert.IsFalse(code.IsBackend);
-            Assert.IsFalse(code.IsVisible);
+            Assert.Equal(default, code.Id);
+            Assert.Null(code.User);
+            Assert.Null(code.CodeTitle);
+            Assert.Null(code.MyCode);
+            Assert.Null(code.WhatKindOfCode);
+            Assert.False(code.IsBackend);
+            Assert.False(code.IsVisible);
         }
     }
 }

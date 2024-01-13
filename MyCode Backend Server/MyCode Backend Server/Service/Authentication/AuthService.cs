@@ -4,41 +4,48 @@ using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Service.Authentication
 {
-        public class AuthService(UserManager<User> userManager, ITokenService tokenService) : IAuthService
+        public class AuthService(UserManager<User> userManager, ITokenService tokenService, ILogger<AuthService> logger) : IAuthService
         {
-            private readonly UserManager<User> _userManager = userManager;
-            private readonly ITokenService _tokenService = tokenService;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly ITokenService _tokenService = tokenService;
+        private readonly ILogger<AuthService> _logger = logger;
 
-            public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber, string role)
+        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber, string role)
+        {
+            var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (result == null || user == null)
             {
-                var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
-                var result = await _userManager.CreateAsync(user, password);
-
-                if (!result.Succeeded)
-                {
-                    return FailedRegistration(user.Id.ToString(), result, email, username);
-                }
-                else
-                {
-                    await _userManager.AddToRoleAsync(user, role);
-
-                    return new AuthResult(user.Id.ToString(), true, email, username, "");
-                }
+                _logger.LogError($"Registration failed: result is null or user is null");
+                return FailedRegistration("", result ?? IdentityResult.Failed(new IdentityError { Code = "UnknownError", Description = "Registration failed." }),
+                                                                                                  email, username);
             }
 
-            private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)
+            if (!result.Succeeded)
             {
-                var authenticationResult = new AuthResult(id, false, email, username, "");
+                return FailedRegistration(user.Id.ToString(), result, email, username);
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, role);
+                return new AuthResult(user.Id.ToString(), true, email, username, "");
+            }
+        }
 
-                foreach (var identityError in result.Errors)
-                {
-                    authenticationResult.ErrorMessages.Add(identityError.Code ?? "", identityError.Description);
-                }
+        private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)
+        {
+            var authenticationResult = new AuthResult(id, false, email, username, "");
 
-                return authenticationResult;
+            foreach (var identityError in result.Errors)
+            {
+                authenticationResult.ErrorMessages.Add(identityError.Code ?? "", identityError.Description);
             }
 
-            public async Task<AuthResult> LoginAsync(string email, string password)
+            return authenticationResult;
+        }
+
+        public async Task<AuthResult> LoginAsync(string email, string password)
             {
                 var managedUser = await _userManager.FindByEmailAsync(email);
 

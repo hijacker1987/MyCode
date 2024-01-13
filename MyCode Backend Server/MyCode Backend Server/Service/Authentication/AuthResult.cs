@@ -8,6 +8,6 @@
         string Token
     )
     {
-        public readonly Dictionary<string, string> ErrorMessages = new();
+        public readonly Dictionary<string, string> ErrorMessages = [];
     }
 }
