@@ -17,5 +17,4 @@ namespace MyCode_Backend_Server.Contracts.Services
             Password = password;
         }
     }
-
 }

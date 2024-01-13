@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
@@ -7,8 +8,7 @@ using Assert = Xunit.Assert;
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
     [Collection("firstSequence")]
-    public class UsersControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
-                      : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
+    public class UsersControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory) : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
     {
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
