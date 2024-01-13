@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MyCode_Backend_Server.Contracts.Registers;
+using MyCode_Backend_Server.Contracts.Services;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -10,14 +12,14 @@ namespace MyCode_Backend_Server_Tests.Contracts
         public void CodeRegRequest_Validation_Success()
         {
             // Arrange
-            var codeRegRequest = new
-            {
-                CodeTitle = "Test Title",
-                MyCode = "console.log('Hello, World!');",
-                WhatKindOfCode = "Test",
-                IsBackend = true,
-                IsVisible = true
-            };
+            var codeRegRequest = new CodeRegRequest
+            (
+                CodeTitle: "Test Title",
+                MyCode: "console.log('Hello, World!');",
+                WhatKindOfCode: "Test",
+                IsBackend: true,
+                IsVisible: true
+            );
 
             // Act
             var validationContext = new ValidationContext(codeRegRequest, null, null);
@@ -32,14 +34,14 @@ namespace MyCode_Backend_Server_Tests.Contracts
         public void UserRegRequest_Validation_Success()
         {
             // Arrange
-            var userRegRequest = new
-            {
-                Email = "Test@Title.Mail",
-                Username = "Hello World!",
-                Password = "Test",
-                DisplayName = "Test User",
-                PhoneNumber = "123"
-            };
+            var userRegRequest = new UserRegRequest
+            (
+                Email: "Test@Title.Mail",
+                Username: "Hello World!",
+                Password: "Test",
+                DisplayName: "Test User",
+                PhoneNumber: "123"
+            );
 
             // Act
             var validationContext = new ValidationContext(userRegRequest, null, null);
@@ -54,11 +56,11 @@ namespace MyCode_Backend_Server_Tests.Contracts
         public void AuthRegRequest_Validation_Success()
         {
             // Arrange
-            var authRegRequest = new
-            {
-                Email = "Test@Title.Mail",
-                Password = "Test"
-            };
+            var authRegRequest = new AuthRequest
+            (
+                Email: "Test@Title.Mail",
+                Password: "Test"
+            );
 
             // Act
             var validationContext = new ValidationContext(authRegRequest, null, null);
@@ -73,12 +75,12 @@ namespace MyCode_Backend_Server_Tests.Contracts
         public void ChangePassRequest_Validation_Success()
         {
             // Arrange
-            var changePassRegRequest = new
-            {
-                Email = "Test@Title.Mail",
-                Password = "Test",
-                NewPassword = "Tester"
-            };
+            var changePassRegRequest = new ChangePassRequest
+            (
+                Email: "Test@Title.Mail",
+                CurrentPassword: "Test",
+                NewPassword: "Tester"
+            );
 
             // Act
             var validationContext = new ValidationContext(changePassRegRequest, null, null);

@@ -55,7 +55,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.PostAsJsonAsync(url, invalidAuthRequest);
 
-            Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
     }
 }

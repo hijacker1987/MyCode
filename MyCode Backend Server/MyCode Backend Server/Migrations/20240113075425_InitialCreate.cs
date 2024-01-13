@@ -163,12 +163,12 @@ namespace MyCode_Backend_Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CodeTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MyCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WhatKindOfCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsBackend = table.Column<bool>(type: "bit", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false)
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,4 +1,6 @@
-﻿namespace MyCode_Backend_Server.Contracts.Services
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MyCode_Backend_Server.Contracts.Services
 {
-    public record AuthRequest(string? Email, string? Password);
+    public record AuthRequest([Required] string? Email, [Required] string? Password);
 }

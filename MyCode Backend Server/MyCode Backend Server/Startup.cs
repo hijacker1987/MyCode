@@ -166,11 +166,15 @@ namespace MyCode_Backend_Server
         {
             var pass = _configuration["APass"];
             var mail = _configuration["AEmail"];
+            var phone = _configuration["ACall"];
+            var uName = _configuration["UName"];
+            var dName = _configuration["AName"];
+
             var adminInDb = await userManager.FindByEmailAsync(mail!);
 
             if (adminInDb == null)
             {
-                var admin = new User { UserName = "Admin", Email = mail };
+                var admin = new User { UserName = uName, Email = mail, DisplayName = dName, PhoneNumber = phone };
                 var adminCreated = await userManager.CreateAsync(admin, pass!);
 
                 if (adminCreated.Succeeded)
