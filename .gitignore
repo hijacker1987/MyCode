@@ -50,3 +50,16 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/.vs
+/MyCode Backend Server/.vs/MyCode Backend Server
+/MyCode Backend Server/MC BE Server Test/obj
+/MyCode Backend Server/MyCode Backend Server/obj
+/MyCode Backend Server/MC BE Server Test/MC BE Server Test.csproj
+/MyCode Backend Server/MyCode Backend Server/MyCode Backend Server.csproj
+/MyCode Backend Server/MyCode Backend Server/MyCode Backend Server.csproj.user
+/MyCode Backend Server/MyCode Backend Server/MyCode Backend Server.http
+/MyCode Backend Server/MyCode Backend Server/bin/Debug/net8.0
+/MyCode Backend Server/MC BE Server Test/bin/Debug/net8.0
+/MyCode Backend Server/.vs/ProjectEvaluation
+/MyCode Backend Server/MyCode Backend Server Tests/bin/Debug/net8.0
+/MyCode Backend Server/MyCode Backend Server Tests/obj
