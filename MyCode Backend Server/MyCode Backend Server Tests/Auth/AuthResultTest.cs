@@ -31,6 +31,7 @@ namespace MyCode_Backend_Server_Tests.Auth
         {
             var validationContext = new ValidationContext(instance, null, null);
             var validationResults = new List<ValidationResult>();
+
             return Validator.TryValidateObject(instance, validationContext, validationResults, true);
         }
     }

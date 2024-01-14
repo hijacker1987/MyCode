@@ -88,6 +88,10 @@ namespace MyCode_Backend_Server.Controllers
                 return BadRequest("PW not valid.");
             }
 
+            managedUser.LastTimeLogin = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(managedUser);
+
             var roles = await _userManager.GetRolesAsync(managedUser);
 
             await _userManager.AddToRolesAsync(managedUser, roles);
@@ -96,6 +100,7 @@ namespace MyCode_Backend_Server.Controllers
 
             return new AuthResponse(result.Email, result.UserName, accessToken, roles.First());
         }
+
 
         [HttpPatch("/changePassword"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<ChangePassResponse>> ChangePasswordAsync([FromBody] ChangePassRequest request)

@@ -60,12 +60,10 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
 
             var tokenServiceMock = new Mock<ITokenService>();
 
-            var errors = new List<IdentityError> { new IdentityError { Code = "ErrorCode", Description = "ErrorDescription" } };
+            var errors = new List<IdentityError> { new() { Code = "ErrorCode", Description = "ErrorDescription" } };
 
             userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                                                          .ReturnsAsync(IdentityResult.Failed([.. errors]));
-
-
 
             var authService = new AuthService(userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 

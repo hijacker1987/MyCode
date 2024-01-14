@@ -9,7 +9,6 @@ namespace MyCode_Backend_Server.Models.Tests
         public void UserConstructor_SetsPropertiesCorrectly()
         {
             // Arrange
-            var codes = new List<Code> { new ("prime", "code1", "css"), new ("filter", "code2", "script") };
             var time = DateTime.Now;
 
             // Act
@@ -20,29 +19,16 @@ namespace MyCode_Backend_Server.Models.Tests
                 LastTimeLogin = time,
                 UserName = "Test",
                 PhoneNumber = "123",
-                Email = "testmail@test.ts",
-                Code = codes
+                Email = "testmail@test.ts"
             };
 
             // Assert
-            Assert.NotNull(user.Code);
-            Assert.Equal(2, user.Code!.Count);
             Assert.Equal(default, user.Id);
             Assert.Equal("Test User", user.DisplayName);
             Assert.Equal(time, user.LastTimeLogin);
             Assert.Equal("Test", user.UserName);
             Assert.Equal("123", user.PhoneNumber);
             Assert.Equal ("testmail@test.ts", user.Email);
-        }
-
-        [TestMethod]
-        public void UserDefaultConstructor_CreatesUserWithEmptyCodeList()
-        {
-            // Act
-            var user = new User();
-
-            // Assert
-            Assert.Empty(user.Code!);
         }
     }
 
