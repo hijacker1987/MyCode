@@ -34,6 +34,13 @@ namespace MyCode_Backend_Server.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    foreach (var modelState in ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            _logger.LogError($"ModelState Error: {error.ErrorMessage}");
+                        }
+                    }
                     return BadRequest(ModelState);
                 }
 
