@@ -44,9 +44,9 @@ const PassChange = ({ onPassChange, user, onCancel }) => {
                     <InputForm
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        name="username"
-                        id="username"
-                        placeholder="Username"
+                        name="email"
+                        id="email"
+                        placeholder="E-mail address"
                         autoComplete="off"
                     />
                 </InputWrapper>
@@ -58,9 +58,9 @@ const PassChange = ({ onPassChange, user, onCancel }) => {
                     <InputForm
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        name="oldPassword"
-                        id="oldPassword"
-                        placeholder="Password"
+                        name="currentPassword"
+                        id="currentPassword"
+                        placeholder="Old Password"
                         autoComplete="off"
                         type="password"
                     />
@@ -73,9 +73,9 @@ const PassChange = ({ onPassChange, user, onCancel }) => {
                     <InputForm
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        name="newPassword1"
-                        id="newPassword1"
-                        placeholder="Password"
+                        name="newPassword"
+                        id="newPassword"
+                        placeholder="New Password"
                         autoComplete="off"
                         type="password"
                     />

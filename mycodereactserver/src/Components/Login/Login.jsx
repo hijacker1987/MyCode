@@ -29,14 +29,14 @@ const Login = ({ onLogin, user, onCancel }) => {
         <Form onSubmit={onSubmit}>
 
             <FormRow>
-                <TextContainer>Email:</TextContainer>
+                <TextContainer>E-mail:</TextContainer>
                 <InputWrapper>
                     <InputForm
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        name="username"
-                        id="username"
-                        placeholder="Username"
+                        name="email"
+                        id="email"
+                        placeholder="E-mail address"
                     />
                 </InputWrapper>
             </FormRow>

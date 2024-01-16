@@ -39,7 +39,6 @@ export const patchApi = async (user, token, endpoint) => {
         }
 
         const data = await response.json();
-        console.log('Server Response:', data);
 
         return data;
     } catch (error) {
