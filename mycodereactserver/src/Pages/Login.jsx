@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
+import { userLogin } from "../Services/Backend.Endpoints";
 import Login from "../Components/Login/Login";
 import Loading from "../Components/Loading/Loading";
 import Cookies from "js-cookie";
@@ -12,7 +13,7 @@ const UserLogin = () => {
     const handleOnLogin = (user) => {
         setLoading(true);
 
-        postApi(user, "login")
+        postApi(user, userLogin)
             .then((data) => {
                 setLoading(false);
                 if (data.token) {

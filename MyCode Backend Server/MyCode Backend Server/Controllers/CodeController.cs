@@ -8,14 +8,13 @@ using System.Security.Claims;
 namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
-    [Route("api/codes")]
+    [Route("/codes")]
     public class CodeController(ILogger<CodeController> logger, DataContext dataContext) : ControllerBase
     {
         private readonly ILogger<CodeController> _logger = logger;
         private readonly DataContext _dataContext = dataContext;
 
-        [HttpGet("by-user")]
-        [Authorize(Roles = "Admin, User")]
+        [HttpGet("by-user"), Authorize(Roles = "Admin, User")]
         public ActionResult<List<Code>> GetAllCodesByUser()
         {
             try
@@ -49,8 +48,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("by-visibility")]
-        [Authorize(Roles = "Admin, User")]
+        [HttpGet("by-visibility"), Authorize(Roles = "Admin, User")]
         public ActionResult<List<Code>> GetAllCodesByVisibility()
         {
             try
@@ -84,8 +82,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("by-id:{id}")]
-        [Authorize(Roles = "Admin, User")]
+        [HttpGet("ci-{id}"), Authorize(Roles = "Admin, User")]
         public ActionResult<Code> GetCodeById(Guid id)
         {
             try
@@ -107,8 +104,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPost("codeRegister")]
-        [Authorize(Roles = "Admin, User")]
+        [HttpPost("register"), Authorize(Roles = "Admin, User")]
         public ActionResult<CodeRegResponse> CreateCode([FromBody] CodeRegRequest codeRequest)
         {
             try
@@ -164,8 +160,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin, User")]
+        [HttpPut("cu-{id}"), Authorize(Roles = "Admin, User")]
         public ActionResult<CodeRegResponse> UpdateCode(Guid id, [FromBody] CodeRegRequest updatedCode)
         {
             try
@@ -230,8 +225,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("U-{id}")]
-        [Authorize(Roles = "User")]
+        [HttpDelete("cd-{id}"), Authorize(Roles = "User")]
         public ActionResult DeleteCodeByUser(Guid id)
         {
             try

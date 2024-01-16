@@ -5,12 +5,14 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Controllers
 {
+    [ApiController]
+    [Route("/admin")]
     public class AdminController(ILogger<AdminController> logger, DataContext dataContext) : ControllerBase
     {
         private readonly ILogger<AdminController> _logger = logger;
         private readonly DataContext _dataContext = dataContext;
 
-        [HttpGet("/getUsers"), Authorize(Roles = "Admin")]
+        [HttpGet("getUsers"), Authorize(Roles = "Admin")]
         public ActionResult<List<User>> GetAllUsers()
         {
             try
@@ -33,8 +35,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("getCodes"), Authorize(Roles = "Admin")]
         public ActionResult<List<Code>> GetAllCodes()
         {
             try
@@ -49,8 +50,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("A-{id}")]
-        [Authorize(Roles = "Admin")]
+        [HttpPut("au-{id}"), Authorize(Roles = "Admin")]
         public ActionResult<Code> UpdateCode(Guid id, [FromBody] Code updatedCode)
         {
             try
@@ -85,8 +85,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("A-{id}")]
-        [Authorize(Roles = "Admin")]
+        [HttpDelete("ad-{id}"), Authorize(Roles = "Admin")]
         public ActionResult DeleteCode(Guid id)
         {
             try

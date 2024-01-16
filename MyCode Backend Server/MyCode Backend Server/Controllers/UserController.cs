@@ -12,6 +12,7 @@ using MyCode_Backend_Server.Service.Authentication.Token;
 namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
+    [Route("/users")]
     public class UserController(
         ILogger<UserController> logger,
         IConfiguration configuration,
@@ -27,7 +28,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
-        [HttpPost("/registerUser")]
+        [HttpPost("register")]
         public async Task<ActionResult<UserRegResponse>> RegisterUserAsync(UserRegRequest request)
         {
             try
@@ -67,7 +68,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> LoginAsync([FromBody] AuthRequest request)
         {
             if (!ModelState.IsValid)
@@ -108,8 +109,7 @@ namespace MyCode_Backend_Server.Controllers
             return new AuthResponse(result.Email, result.UserName, accessToken, roles.First());
         }
 
-
-        [HttpPatch("/changePassword"), Authorize(Roles = "Admin, User")]
+        [HttpPatch("changePassword"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<ChangePassResponse>> ChangePasswordAsync([FromBody] ChangePassRequest request)
         {
             try
@@ -126,11 +126,11 @@ namespace MyCode_Backend_Server.Controllers
                 if (result.Succeeded)
                 {
                     await _dataContext.SaveChangesAsync();
-                    return Ok($"Successful password change on {request.Email}");
+                    return Ok(new { Message = $"Successful password change on {request.Email}" });
                 }
                 else
                 {
-                    return BadRequest($"Unable to change password on {request.Email}");
+                    return BadRequest(new { ErrorMessage = "Unable to change password.", result.Errors });
                 }
             }
             catch (Exception e)
@@ -140,7 +140,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("/deleteAccount"), Authorize(Roles = "User")]
+        [HttpDelete("delete"), Authorize(Roles = "User")]
         public async Task<ActionResult> DeleteAccountAsync(string email)
         {
             if (string.IsNullOrEmpty(email))

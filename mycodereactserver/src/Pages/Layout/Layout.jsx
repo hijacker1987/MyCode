@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
+import { uReg, uLogin, uPwChange } from "../../Services/Frontend.Endpoints";
 import '../../index.css';
 
 const Layout = () => {
@@ -26,12 +27,12 @@ const Layout = () => {
             <nav>
                 {!jwtToken ? (
                     <ButtonRowContainer>
-                        {location.pathname !== "/account/login" && (
-                            <Link to="/account/login" className="link">
+                        {location.pathname !== uLogin && (
+                            <Link to={uLogin} className="link">
                                 <ButtonContainer type="button">Login</ButtonContainer>
                             </Link>
                         )}
-                        <Link to="/account/register" className="link">
+                        <Link to={uReg} className="link">
                             <ButtonContainer type="button">Registration</ButtonContainer>
                         </Link>
                     </ButtonRowContainer>
@@ -40,8 +41,8 @@ const Layout = () => {
                         <ButtonContainer type="button" onClick={handleLogout}>Logout</ButtonContainer>
                         <Link to="/" className="link">
                             <ButtonContainer type="button">MyCode Home</ButtonContainer>
-                        </Link>
-                        <Link to="/pwchange" className="link">
+                            </Link>
+                            <Link to={uPwChange} className="link">
                             <ButtonContainer type="button">Password Change</ButtonContainer>
                         </Link>
                     </ButtonRowContainer>

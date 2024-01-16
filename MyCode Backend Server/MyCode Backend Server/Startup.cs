@@ -159,7 +159,10 @@ namespace MyCode_Backend_Server
 
         public async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)
         {
-            await roleManager.CreateAsync(new IdentityRole<Guid>(Guid.NewGuid().ToString()) { Name = role });
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole<Guid>(Guid.NewGuid().ToString()) { Name = role });
+            }
         }
 
         public async Task CreateAdminIfNotExists(UserManager<User> userManager)
