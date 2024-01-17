@@ -7,7 +7,7 @@ import { uReg, uLogin, uPwChange } from "../src/Services/Frontend.Endpoints";
 
 import Layout from './Pages/Layout/Layout';
 import UserRegister from './Pages/Register';
-import Login from './Pages/Login';
+import UserLogin from './Pages/Login';
 import PwChange from "./Pages/PasswordChange";
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
                 },
                 {
                     path: uLogin,
-                    element: isAuthenticated ? <Login /> : <div className="welcome-text">You are already logged in!</div>
+                    element: isAuthenticated ? <UserLogin /> : <div className="welcome-text">You are already logged in!</div>
                 },
                 {
                     path: uPwChange,

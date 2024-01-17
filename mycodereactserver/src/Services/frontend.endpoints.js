@@ -1,6 +1,6 @@
 //USERS
 const u = "/account/";
 
-export const uReg = 'register';
-export const uLogin = 'login';
-export const uPwChange = 'pwchange';
+export const uReg = `${u}register`;
+export const uLogin = `${u}login`;
+export const uPwChange = `${u}pwchange`;

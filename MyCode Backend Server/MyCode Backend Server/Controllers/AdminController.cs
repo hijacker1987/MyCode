@@ -41,7 +41,14 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var codes = _dataContext.CodesDb!.ToList();
-                return Ok(codes);
+                var returningList = codes.Where(code => code != null).ToList();
+
+                if (returningList.Count == 0)
+                {
+                    _logger.LogInformation("There are no users in the database.");
+                    return Ok(returningList);
+                }
+                return Ok(returningList);
             }
             catch (Exception e)
             {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { changePassword } from "../Services/Backend.Endpoints";
 import { patchApi } from "../Services/Api";
+import { changePassword } from "../Services/Backend.Endpoints";
 import Cookies from "js-cookie";
 import Loading from "../Components/Loading/Loading";
 import PassChange from "../Components/PassChange/PassChange";
