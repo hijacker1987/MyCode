@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { postApi } from "../Services/Api";
-import { userLogin } from "../Services/Backend.Endpoints";
-import Login from "../Components/Login/Login";
-import Loading from "../Components/Loading/Loading";
-import Cookies from "js-cookie";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { postApi } from '../Services/Api';
+import { userLogin } from '../Services/Backend.Endpoints';
+import { jwtDecode } from "jwt-decode";
+import Login from '../Components/Login/Login';
+import Loading from '../Components/Loading/Loading';
+import Cookies from 'js-cookie';
 
 const UserLogin = () => {
     const navigate = useNavigate();
@@ -18,28 +19,28 @@ const UserLogin = () => {
             .then((data) => {
                 setLoading(false);
                 if (data.token) {
-                    const decodedToken = jwt_decode(data.token);
+                    const decodedToken = jwtDecode(data.token);
                     const expirationTime = decodedToken.exp * 1000;
-                    const userRoles = decodedToken.roles;
+                    const roles = decodedToken.roles;
 
-                    Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
+                    Cookies.set('jwtToken', data.token, { expires: new Date(expirationTime) });
                     setUserRoles(roles);
 
-                    navigate("/");
+                    navigate('/');
                 } else {
-                    console.log("Login unsuccessful. Please check your credentials.");
+                    console.log('Login unsuccessful. Please check your credentials.');
                 }
             })
             .catch((error) => {
                 setLoading(false);
-                console.error("Error occurred during login:", error);
+                console.error('Error occurred during login:', error);
             });
     };
 
     const checkTokenExpiration = () => {
-        const token = Cookies.get("jwtToken");
+        const token = Cookies.get('jwtToken');
         if (token) {
-            const decodedToken = jwt_decode(token);
+            const decodedToken = jwtDecode(token);
             const expirationTime = decodedToken.exp * 1000;
 
             if (expirationTime < Date.now()) {
@@ -49,14 +50,13 @@ const UserLogin = () => {
     };
 
     const handleLogout = () => {
-        Cookies.remove("jwtToken");
-        navigate("/");
-        setJwtToken(null);
+        Cookies.remove('jwtToken');
+        navigate('/');
         setUserRoles([]);
     };
 
     const handleCancel = () => {
-        navigate("/");
+        navigate('/');
     };
 
     useEffect(() => {
@@ -73,12 +73,7 @@ const UserLogin = () => {
         return <Loading />;
     }
 
-    return (
-        <Login
-            onLogin={handleOnLogin}
-            onCancel={handleCancel}
-        />
-    );
+    return <Login onLogin={handleOnLogin} onCancel={handleCancel} />;
 };
 
 export default UserLogin;
