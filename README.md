@@ -1,6 +1,6 @@
 # MyCode - Full Stack Code Storage
 
-MyCode is a full-stack ASP.NET application designed to store and share users' favorite codes in a database with a React Frontend Server.
+MyCode is a full-stack ASP.NET application designed to store and share users favorite codes in a database with a React Frontend Server.
 
 ## Project Status
 
