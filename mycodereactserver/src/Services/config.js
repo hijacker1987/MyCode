@@ -1,6 +1,5 @@
-//Frontend
-export const portFE = 5173;
-export const frontendUrl = `https://localhost:${portFE}/`;
-//Backend
-export const portBE = 7001;
-export const backendUrl = `https://localhost:${portBE}/`;
+export const portFE = import.meta.env.VITE_FRONTEND_PORT;
+export const frontendUrl = `${import.meta.env.VITE_FRONTEND_URL}:${portFE}/`;
+
+export const portBE = import.meta.env.VITE_BACKEND_PORT;
+export const backendUrl = `${import.meta.env.VITE_BACKEND_URL}:${portBE}/`;
