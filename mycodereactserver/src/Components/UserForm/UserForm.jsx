@@ -53,7 +53,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
                         onChange={(e) => setEmail(e.target.value)}
                         name="email"
                         id="email"
-                        placeholder="E-mail"
+                        placeholder="E-mail address"
                         autoComplete="off"
                     />
                 </InputWrapper>
@@ -69,21 +69,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
                         id="username"
                         placeholder="Username"
                         autoComplete="off"
-                    />
-                </InputWrapper>
-            </FormRow>
-
-            <FormRow className="control">
-                <TextContainer>Password:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        name="password"
-                        id="password"
-                        placeholder="Password"
-                        autoComplete="off"
-                        type="password"
                     />
                 </InputWrapper>
             </FormRow>
@@ -112,6 +97,21 @@ const UserForm = ({ onSave, user, onCancel }) => {
                         id="phoneNumber"
                         placeholder="PhoneNumber"
                         autoComplete="off"
+                    />
+                </InputWrapper>
+            </FormRow>
+
+            <FormRow className="control">
+                <TextContainer>Password:</TextContainer>
+                <InputWrapper>
+                    <InputForm
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        name="password"
+                        id="password"
+                        placeholder="Password"
+                        autoComplete="off"
+                        type="password"
                     />
                 </InputWrapper>
             </FormRow>

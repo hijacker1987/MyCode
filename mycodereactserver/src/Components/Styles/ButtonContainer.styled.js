@@ -16,6 +16,7 @@ export const ButtonContainer = styled.button`
   gap: 12px;
   border-radius: 8px;
   cursor: pointer;
+  overflow: hidden; /* Prevent content overflow */
 
   &::before {
     content: '';
@@ -58,5 +59,5 @@ export const ButtonContainer = styled.button`
 
 export const CancelButtonWrapper = styled.div`
   margin-top: 50px;
-  margin-left: 130px;
+  margin-left: 80px; /* Adjust the margin as needed */
 `;
