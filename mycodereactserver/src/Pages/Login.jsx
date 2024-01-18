@@ -73,7 +73,10 @@ const UserLogin = () => {
         return <Loading />;
     }
 
-    return <Login onLogin={handleOnLogin} onCancel={handleCancel} />;
+    return <Login
+              onLogin={handleOnLogin}
+              onCancel={handleCancel}
+           />;
 };
 
 export default UserLogin;

@@ -1,5 +1,18 @@
 import { backendUrl } from '../Services/config';
 
+export const getApi = async (token, endpoint) => {
+        const response = await fetch(`${backendUrl}${endpoint}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        const data = await response.json();
+        return data;
+};
+
 export const postApi = async (user, endpoint) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: 'POST',
@@ -9,7 +22,8 @@ export const postApi = async (user, endpoint) => {
         body: JSON.stringify(user),
     });
 
-    return response.json();
+    const data = await response.json();
+    return data;
 };
 
 export const patchApi = async (user, token, endpoint) => {
@@ -22,5 +36,6 @@ export const patchApi = async (user, token, endpoint) => {
         body: JSON.stringify(user)
     });
 
-    return response.json();
+    const data = await response.json();
+    return data;
 };

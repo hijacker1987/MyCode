@@ -96,13 +96,14 @@ namespace MyCode_Backend_Server.Controllers
                 return BadRequest("PW not valid.");
             }
 
-            managedUser.LastTimeLogin = DateTime.UtcNow;
-
-            await _userManager.UpdateAsync(managedUser);
-
             var roles = await _userManager.GetRolesAsync(managedUser);
 
             await _userManager.AddToRolesAsync(managedUser, roles);
+
+            managedUser.LastTimeLogin = DateTime.UtcNow.AddHours(1);
+
+            await _userManager.UpdateAsync(managedUser);
+            await _dataContext.SaveChangesAsync();
 
             var accessToken = _tokenService.CreateToken(managedUser, roles.First());
 
