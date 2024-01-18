@@ -15,7 +15,16 @@ const UsersTable = ({ users, headers }) => {
         const hourFormat = hours <= 1 ? "hour" : "hours";
         const minuteFormat = minutes <= 1 ? "minute" : "minutes";
 
-        return `${days} ${dayFormat}, ${hours} ${hourFormat}, ${minutes} ${minuteFormat} ago`;
+        let result = "";
+
+        if (days == 0 && hours == 0 && minutes == 0) {
+            result = "Just now";
+        }
+        else {
+            result = `${days} ${dayFormat}, ${hours} ${hourFormat}, ${minutes} ${minuteFormat} ago`;
+        }
+
+        return result;
     };
 
     return (

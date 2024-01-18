@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
-import { uReg, uLogin, uPwChange, uList } from "../../Services/Frontend.Endpoints";
+import { uReg, uLogin, uPwChange, uList, cList } from "../../Services/Frontend.Endpoints";
 import '../../index.css';
 
 const Layout = () => {
@@ -44,6 +44,9 @@ const Layout = () => {
                             </Link>
                             <Link to={uList} className="link">
                                 <ButtonContainer type="button">List Users</ButtonContainer>
+                            </Link>
+                            <Link to={cList} className="link">
+                                <ButtonContainer type="button">List Codes</ButtonContainer>
                             </Link>
                             <Link to={uPwChange} className="link">
                             <ButtonContainer type="button">Password Change</ButtonContainer>

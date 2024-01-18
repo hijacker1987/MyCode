@@ -3,13 +3,14 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import reportWebVitals from './reportWebVitals';
 import './App.css';
 
-import { uReg, uLogin, uPwChange, uList } from '../src/Services/Frontend.Endpoints';
+import { uReg, uLogin, uPwChange, uList, cList } from '../src/Services/Frontend.Endpoints';
 
 import Layout from './Pages/Layout/Layout';
 import UserRegister from './Pages/Register';
 import UserLogin from './Pages/Login';
 import PwChange from './Pages/PasswordChange';
-import UsersList from './Pages/UsersList';
+import UsersList from "./Pages/Lists/UsersList";
+import CodesList from "./Pages/Lists/CodesList";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -42,6 +43,10 @@ function App() {
                 {
                     path: uList,
                     element: isAuthenticated ? <UsersList /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: cList,
+                    element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
                 },
             ],
         },

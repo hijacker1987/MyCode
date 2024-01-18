@@ -9,3 +9,4 @@ export const uPwChange = `${u}pwchange`;
 const a = "/watcher/";
 
 export const uList = `${a}users`;
+export const cList = `${a}codes`;
