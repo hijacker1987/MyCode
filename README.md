@@ -21,13 +21,14 @@ The backend is built on the ASP.NET 8 framework, with the main goals of being:
   - Transparent
   - Easy to use
   - Object-Oriented
+  - MSSQL database
 
 The frontend is powered by React using VITE to provide a fast and an interactive user interface:
   - also Transparent
   - Easy to use: for example -> Centralized data structure in the Services folder
   
 ## Security
-The application implements secure practices such as JWT token usage and secure password storage.
+The application implements secure practices such as JWT token usage and secure password storage, currently running dockerized MSSQL database.
 
 ## Configuration
 
