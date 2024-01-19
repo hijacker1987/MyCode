@@ -25,6 +25,8 @@ The backend is built on the ASP.NET 8 framework, with the main goals of being:
 
 The frontend is powered by React using VITE to provide a fast and an interactive user interface:
   - also Transparent
+  - .ENV
+  - Style Components
   - Easy to use: for example -> Centralized data structure in the Services folder
   
 ## Security
