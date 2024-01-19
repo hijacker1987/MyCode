@@ -1,30 +1,36 @@
 import React from 'react';
+import { TableContainer } from '../../Styles/TableContainer.styled';
+import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from '../../Styles/TableRow.styled';
 
 const CodesTable = ({ codes, headers }) => {
-
     return (
-        <div className="table-responsive">
-            <table className="table table-striped table-hover">
+        <TableContainer>
+            <StyledTable className="table table-striped table-hover">
                 <thead>
                     <tr>
-                        {headers.map(header => (
-                            <th key={header} className='table-primary' style={{ color: "darkred" }}>{header}</th>
+                        {headers.map((header) => (
+                            <StyledTh key={header}>{header}</StyledTh>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {codes && codes.map((code, index) => (
-                        <tr key={code.codeTitle} style={{ color: "black", backgroundColor: index % 2 === 1 ? '#f2f2f2' : '' }}>
-                            <td>{code.codeTitle}</td>
-                            <td>{code.myCode}</td>
-                            <td>{code.whatKindOfCode}</td>
-                            <td>{code.isBackend ? "Backend" : "Frontend"}</td>
-                            <td>{code.isVisible ? "Yes" : "Hidden"}</td>
-                        </tr>
-                    ))}
+                    {codes &&
+                        codes.map((code, index) => (
+                            <React.Fragment key={code.codeTitle}>
+                                <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
+                                    <StyledTd>{index + 1}</StyledTd>
+                                    <StyledTd>{code.codeTitle}</StyledTd>
+                                    <StyledTd>{code.myCode}</StyledTd>
+                                    <StyledTd>{code.whatKindOfCode}</StyledTd>
+                                    <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
+                                    <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
+                                </StyledTr>
+                                <RowSpacer />
+                            </React.Fragment>
+                        ))}
                 </tbody>
-            </table>
-        </div>
+            </StyledTable>
+        </TableContainer>
     );
 };
 

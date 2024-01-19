@@ -11,7 +11,7 @@ const CodesList = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [codes, setCodes] = useState(null);
-    const headers = ["Code Title", "The Code itself", "What kind of code", "Back or Front", "Is it visible to others?"];
+    const headers = ["Counter", "Code Title", "The Code itself", "What kind of code", "Back or Front", "Is it visible to others?"];
 
     useEffect(() => {
         const handleGet = async () => {
