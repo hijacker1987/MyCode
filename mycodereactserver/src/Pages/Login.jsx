@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postApi } from '../Services/Api';
 import { userLogin } from '../Services/Backend.Endpoints';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 import Login from '../Components/Login/Login';
 import Loading from '../Components/Loading/Loading';
 import Cookies from 'js-cookie';
+import ErrorPage from './Service/ErrorPage';
 
 const UserLogin = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [userRoles, setUserRoles] = useState([]);
+    const [errorMessage, setLoginError] = useState('');
 
     const handleOnLogin = (user) => {
         setLoading(true);
@@ -28,12 +30,13 @@ const UserLogin = () => {
 
                     navigate('/');
                 } else {
-                    console.log('Login unsuccessful. Please check your credentials.');
+                    setLoginError('Login unsuccessful. Please check your credentials.');
                 }
             })
             .catch((error) => {
                 setLoading(false);
                 console.error('Error occurred during login:', error);
+                setLoginError('An error occurred during login. Please try again.');
             });
     };
 
@@ -73,10 +76,18 @@ const UserLogin = () => {
         return <Loading />;
     }
 
-    return <Login
-              onLogin={handleOnLogin}
-              onCancel={handleCancel}
-           />;
+    return <div>
+                {errorMessage == '' ? (
+                    <Login
+                        onLogin={handleOnLogin}
+                        onCancel={handleCancel}
+                    />
+                ) : (
+                    <ErrorPage
+                        errorMessage={errorMessage}
+                    />
+                 )}   
+            </div>
 };
 
 export default UserLogin;
