@@ -2,6 +2,8 @@ import styled from "styled-components";
 
 export const TextContainer = styled.div`
   margin-top: 24px;
+  margin-bottom: 25px;
+  position: relative;
   width: 95px;
   height: 17px;
   background-color: #000;
@@ -32,9 +34,11 @@ export const TextContainer = styled.div`
 `;
 
 export const TextWrapper = styled.div`
-  margin-top: 24px;
+  margin-top: -600px;
   margin-left: 50px;
+  margin-right: 1535px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-column-gap: 20px; /* Adjust the gap as needed */
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
 `;
