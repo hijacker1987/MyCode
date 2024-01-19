@@ -8,7 +8,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 {
     public class TokenService(IConfiguration configuration, ILogger<TokenService> logger) : ITokenService
     {
-        private const int ExpirationMinutes = 30;
+        private const int ExpirationMinutes = 10;
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<TokenService> _logger = logger;
 

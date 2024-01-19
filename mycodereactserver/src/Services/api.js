@@ -1,20 +1,41 @@
-import { backendUrl } from '../Services/config'
+import { backendUrl } from '../Services/config';
 
-export const postApi = async (user, endpoint) => {
-    try {
+export const getApi = async (token, endpoint) => {
         const response = await fetch(`${backendUrl}${endpoint}`, {
-            method: 'POST',
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify(user),
         });
 
         const data = await response.json();
-
         return data;
-    } catch (error) {
-        console.error(`Error occurred during ${endpoint} request:`, error);
-        throw error;
-    }
+};
+
+export const postApi = async (user, endpoint) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+    });
+
+    const data = await response.json();
+    return data;
+};
+
+export const patchApi = async (user, token, endpoint) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(user)
+    });
+
+    const data = await response.json();
+    return data;
 };

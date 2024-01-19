@@ -1,11 +1,12 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
-import { portFE, backendUrl } from './src/Services/config';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const baseFolder =
     process.env.APPDATA !== undefined && process.env.APPDATA !== ''
@@ -48,14 +49,14 @@ export default defineConfig({
     server: {
         proxy: {
             '^/mycodeapp': {
-                target: `${backendUrl}`,
+                target: `${process.env.VITE_BACKEND_URL}`,
                 secure: false
             }
         },
-        port: portFE,
+        port: Number(process.env.VITE_FRONTEND_PORT),
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
         }
     }
-})
+});
