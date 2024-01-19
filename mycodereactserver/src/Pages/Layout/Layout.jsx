@@ -9,6 +9,7 @@ import '../../index.css';
 const Layout = () => {
     const location = useLocation();
     const [jwtToken, setJwtToken] = useState(Cookies.get("jwtToken"));
+    const [buttonsVisible, setButtonsVisible] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,6 +21,11 @@ const Layout = () => {
         Cookies.remove("jwtToken");
         navigate("/");
         setJwtToken(null);
+        setButtonsVisible(true);
+    };
+
+    const handleButtonClick = () => {
+        setButtonsVisible(false);
     };
 
     return (
@@ -27,14 +33,16 @@ const Layout = () => {
             <nav>
                 {!jwtToken ? (
                     <ButtonRowContainer>
-                        {location.pathname !== uLogin && (
-                            <Link to={uLogin} className="link">
-                                <ButtonContainer type="button">Login</ButtonContainer>
-                            </Link>
+                        {location.pathname !== uLogin && location.pathname !== uReg && (
+                            <ButtonRowContainer>
+                                <Link to={uLogin} className="link">
+                                    <ButtonContainer type="button" onClick={handleButtonClick}>Login</ButtonContainer>
+                                </Link>
+                                <Link to={uReg} className="link">
+                                    <ButtonContainer type="button" onClick={handleButtonClick}>Registration</ButtonContainer>
+                                </Link>
+                            </ButtonRowContainer>
                         )}
-                        <Link to={uReg} className="link">
-                            <ButtonContainer type="button">Registration</ButtonContainer>
-                        </Link>
                     </ButtonRowContainer>
                 ) : (
                     <ButtonRowContainer>

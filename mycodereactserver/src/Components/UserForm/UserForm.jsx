@@ -43,88 +43,82 @@ const UserForm = ({ onSave, user, onCancel }) => {
     }
 
     return (
-        <Form onSubmit={onSubmit}>
+        <div>
+            <Form onSubmit={onSubmit}>
 
-            <FormRow className="control">
-                <TextContainer>E-mail:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        name="email"
-                        id="email"
-                        placeholder="E-mail address"
-                        autoComplete="off"
-                    />
-                </InputWrapper>
-            </FormRow>
+                <FormRow className="control">
+                    <TextContainer>E-mail:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            id="email"
+                            placeholder="E-mail address"
+                            autoComplete="off"
+                        />
+                    </InputWrapper>
 
-            <FormRow className="control">
-                <TextContainer>Username:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        name="username"
-                        id="username"
-                        placeholder="Username"
-                        autoComplete="off"
-                    />
-                </InputWrapper>
-            </FormRow>
+                    <TextContainer>Username:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            name="username"
+                            id="username"
+                            placeholder="Username"
+                            autoComplete="off"
+                        />
+                    </InputWrapper>
 
-            <FormRow className="control">
-                <TextContainer>Displayname:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={displayname}
-                        onChange={(e) => setDisplayname(e.target.value)}
-                        name="displayname"
-                        id="displayname"
-                        placeholder="Displayname"
-                        autoComplete="off"
-                    />
-                </InputWrapper>
-            </FormRow>
+                    <TextContainer>Displayname:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={displayname}
+                            onChange={(e) => setDisplayname(e.target.value)}
+                            name="displayname"
+                            id="displayname"
+                            placeholder="Displayname"
+                            autoComplete="off"
+                        />
+                    </InputWrapper>
 
-            <FormRow className="control">
-                <TextContainer>Phone number:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={phoneNumber}
-                        onChange={(e) => setPhone(e.target.value)}
-                        name="phoneNumber"
-                        id="phoneNumber"
-                        placeholder="PhoneNumber"
-                        autoComplete="off"
-                    />
-                </InputWrapper>
-            </FormRow>
+                    <TextContainer>Phone number:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={phoneNumber}
+                            onChange={(e) => setPhone(e.target.value)}
+                            name="phoneNumber"
+                            id="phoneNumber"
+                            placeholder="PhoneNumber"
+                            autoComplete="off"
+                        />
+                    </InputWrapper>
 
-            <FormRow className="control">
-                <TextContainer>Password:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        name="password"
-                        id="password"
-                        placeholder="Password"
-                        autoComplete="off"
-                        type="password"
-                    />
-                </InputWrapper>
-            </FormRow>
+                    <TextContainer>Password:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            name="password"
+                            id="password"
+                            placeholder="Password"
+                            autoComplete="off"
+                            type="password"
+                        />
+                    </InputWrapper>
+                </FormRow>
 
-            <ButtonRowContainer>
-                <ButtonContainer type="submit">
-                    {user ? "Update User" : "Register"}
-                </ButtonContainer>
-                <ButtonContainer type="button" onClick={onCancel}>
-                    Cancel
-                </ButtonContainer>
-            </ButtonRowContainer>
-        </Form>
+                <ButtonRowContainer>
+                    <ButtonContainer type="submit">
+                        {user ? "Update User" : "Register"}
+                    </ButtonContainer>
+                    <ButtonContainer type="button" onClick={onCancel}>
+                        Cancel
+                    </ButtonContainer>
+                </ButtonRowContainer>
+            </Form>
+        </div>
     );
 };
 

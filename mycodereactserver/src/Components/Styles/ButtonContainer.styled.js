@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ButtonContainer = styled.button`
+export const ButtonContainer = styled.button`/
   margin-top: 20px;
   margin-right: 10px;
   position: relative;
@@ -42,6 +42,10 @@ export const ButtonContainer = styled.button`
     background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
     transform: translate3d(0, 0, 0) scale(0.95);
     filter: blur(20px);
+  }
+
+   &:hover {
+    color: lime;
   }
 
   &:hover::after {

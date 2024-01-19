@@ -39,9 +39,7 @@ const Login = ({ onLogin, user, onCancel }) => {
                         placeholder="E-mail address"
                     />
                 </InputWrapper>
-            </FormRow>
 
-            <FormRow>
                 <TextContainer>Password:</TextContainer>
                 <InputWrapper>
                     <InputForm
@@ -56,11 +54,11 @@ const Login = ({ onLogin, user, onCancel }) => {
                 </InputWrapper>
             </FormRow>
 
-
             <ButtonRowContainer>
                 <ButtonContainer type="submit">
                     Login
                 </ButtonContainer>
+
                 <ButtonContainer type="button" onClick={onCancel}>
                     Cancel
                 </ButtonContainer>

@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
 export const TextContainer = styled.div`
-  margin-top: 24px;
-  margin-bottom: 25px;
+  margin-top: 23px;
+  margin-bottom: 14px;
   position: relative;
-  width: 95px;
-  height: 17px;
+  width: 98px;
+  height: 16px;
   background-color: #000;
   display: flex;
   align-items: center;
@@ -13,7 +13,7 @@ export const TextContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   border: none;
-  padding: 12px;
+  padding: 13px;
   gap: 12px;
   border-radius: 8px;
 
@@ -21,7 +21,7 @@ export const TextContainer = styled.div`
     content: '';
     position: absolute;
     inset: 0;
-    left: -4px;
+    left: -2px;
     margin-top: -3px;
     width: 128px;
     height: 47px;

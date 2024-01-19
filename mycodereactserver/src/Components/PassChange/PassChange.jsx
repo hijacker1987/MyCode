@@ -36,61 +36,63 @@ const PassChange = ({ onPassChange, user, onCancel }) => {
     }
 
     return (
-        <Form onSubmit={onSubmit}>
+        <div>
+            <Form onSubmit={onSubmit}>
 
-            <FormRow className="control">
-                <TextContainer>E-mail:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        name="email"
-                        id="email"
-                        placeholder="E-mail address"
-                        autoComplete="off"
-                    />
-                </InputWrapper>
-            </FormRow>
+                <FormRow className="control">
+                    <TextContainer>E-mail:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            id="email"
+                            placeholder="E-mail address"
+                            autoComplete="off"
+                        />
+                    </InputWrapper>
+                </FormRow>
 
-            <FormRow className="control">
-                <TextContainer>Current Password:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        name="currentPassword"
-                        id="currentPassword"
-                        placeholder="Old Password"
-                        autoComplete="off"
-                        type="password"
-                    />
-                </InputWrapper>
-            </FormRow>
+                <FormRow className="control">
+                    <TextContainer>Current Password:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            name="currentPassword"
+                            id="currentPassword"
+                            placeholder="Old Password"
+                            autoComplete="off"
+                            type="password"
+                        />
+                    </InputWrapper>
+                </FormRow>
 
-            <FormRow className="control">
-                <TextContainer>New Password:</TextContainer>
-                <InputWrapper>
-                    <InputForm
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        name="newPassword"
-                        id="newPassword"
-                        placeholder="New Password"
-                        autoComplete="off"
-                        type="password"
-                    />
-                </InputWrapper>
-            </FormRow>
+                <FormRow className="control">
+                    <TextContainer>New Password:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            name="newPassword"
+                            id="newPassword"
+                            placeholder="New Password"
+                            autoComplete="off"
+                            type="password"
+                        />
+                    </InputWrapper>
+                </FormRow>
 
-            <ButtonRowContainer>
-                <ButtonContainer type="submit">
-                    Change Password
-                </ButtonContainer>
-                <ButtonContainer type="button" onClick={onCancel}>
-                    Cancel
-                </ButtonContainer>
-            </ButtonRowContainer>
-        </Form>
+                <ButtonRowContainer>
+                    <ButtonContainer type="submit">
+                        Change Password
+                    </ButtonContainer>
+                    <ButtonContainer type="button" onClick={onCancel}>
+                        Cancel
+                    </ButtonContainer>
+                </ButtonRowContainer>
+            </Form>
+        </div>
     );
 };
 
