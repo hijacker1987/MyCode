@@ -1,3 +1,6 @@
+//SERVICE
+export const errorOccured = "/somethingWentWrong"
+
 //USERS
 const u = "/account/";
 
