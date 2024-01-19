@@ -11,7 +11,7 @@ const UsersList = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [users, setUsers] = useState(null); 
-    const headers = ["Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number"];
+    const headers = ["Counter", "Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number"];
 
     useEffect(() => {
         const handleGet = async () => {
