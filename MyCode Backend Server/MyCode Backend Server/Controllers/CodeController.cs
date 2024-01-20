@@ -83,7 +83,7 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpGet("ci-{id}"), Authorize(Roles = "Admin, User")]
-        public ActionResult<Code> GetCodeById(Guid id)
+        public ActionResult<Code> GetCodeById([FromRoute] Guid id)
         {
             try
             {
@@ -161,7 +161,7 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpPut("cu-{id}"), Authorize(Roles = "Admin, User")]
-        public ActionResult<CodeRegResponse> UpdateCode(Guid id, [FromBody] CodeRegRequest updatedCode)
+        public ActionResult<CodeRegResponse> UpdateCode([FromRoute] Guid id, [FromBody] CodeRegRequest updatedCode)
         {
             try
             {
@@ -226,7 +226,7 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpDelete("cd-{id}"), Authorize(Roles = "User")]
-        public ActionResult DeleteCodeByUser(Guid id)
+        public ActionResult DeleteCodeByUser([FromRoute] Guid id)
         {
             try
             {

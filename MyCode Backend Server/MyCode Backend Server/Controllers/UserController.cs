@@ -45,7 +45,8 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _authenticationService.RegisterAsync(request.Email,
+                var result = await _authenticationService.RegisterAsync(
+                                                                        request.Email,
                                                                         request.Username,
                                                                         request.Password,
                                                                         request.DisplayName,
@@ -59,7 +60,7 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                return Ok(new UserRegResponse(result.Email, result.UserName));
+                return Ok(new UserRegResponse(result.Id, result.Email, result.UserName));
             }
             catch (Exception e)
             {
@@ -108,6 +109,30 @@ namespace MyCode_Backend_Server.Controllers
             var accessToken = _tokenService.CreateToken(managedUser, roles.First());
 
             return new AuthResponse(result.Email, result.UserName, accessToken, roles.First());
+        }
+
+        [HttpGet("user-by:{id}"), Authorize(Roles = "Admin, User")]
+        public async Task<ActionResult<UserRegResponse>> GetUserById([FromRoute] Guid id)
+        {
+            try
+            {
+                var idString = id.ToString();
+                var user = await _userManager.FindByIdAsync(idString);
+
+                if (user == null)
+                {
+                    return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
+                }
+
+                var response = new UserRegResponse(idString, user.Email!, user.UserName!);
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
+            }
         }
 
         [HttpPatch("changePassword"), Authorize(Roles = "Admin, User")]

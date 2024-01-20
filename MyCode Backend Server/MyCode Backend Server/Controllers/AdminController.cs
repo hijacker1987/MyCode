@@ -58,7 +58,42 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpPut("au-{id}"), Authorize(Roles = "Admin")]
-        public ActionResult<Code> UpdateCode(Guid id, [FromBody] Code updatedCode)
+        public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var existingUser = _dataContext.Users.FirstOrDefault(u => u.Id == id);
+
+                if (existingUser == null)
+                {
+                    _logger.LogInformation($"User with id {id} not found.");
+                    return NotFound();
+                }
+
+                existingUser.DisplayName = updatedUser.DisplayName;
+                existingUser.UserName = updatedUser.UserName;
+                existingUser.Email = updatedUser.Email;
+                existingUser.PhoneNumber = updatedUser.PhoneNumber;
+
+                _dataContext.SaveChanges();
+
+                return Ok(existingUser);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return BadRequest();
+            }
+        }
+
+
+        [HttpPut("acu-{id}"), Authorize(Roles = "Admin")]
+        public ActionResult<Code> UpdateCode([FromRoute] Guid id, [FromBody] Code updatedCode)
         {
             try
             {
@@ -93,7 +128,7 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpDelete("ad-{id}"), Authorize(Roles = "Admin")]
-        public ActionResult DeleteCode(Guid id)
+        public ActionResult DeleteCode([FromRoute] Guid id)
         {
             try
             {

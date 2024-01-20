@@ -4,6 +4,7 @@ const u = "users/"
 
 //USERS
     //GET
+    export const userById = `${u}user-by:`; //{id}                Authorized to admin too
 
     //POST
     export const userLogin = `${u}login`;
@@ -36,7 +37,8 @@ const u = "users/"
     export const getAllCodes = `${a}getCodes`;
 
     //PUT
-    export const codeSuperUpdate = `${a}au-{id}`;
+    export const userSuperUpdate = `${a}au-`;  //{id}
+    export const codeSuperUpdate = `${a}acu-`; //{id}
 
     //DELETE
     export const deleteSuperCode = `${a}ad-{id}`;
