@@ -39,3 +39,17 @@ export const patchApi = async (user, token, endpoint) => {
     const data = await response.json();
     return data;
 };
+
+export const putApi = async (user, token, endpoint) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(user)
+    });
+
+    const data = await response.json();
+    return data;
+};

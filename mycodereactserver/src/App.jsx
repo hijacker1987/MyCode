@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import reportWebVitals from './reportWebVitals';
 import './App.css';
 
-import { uReg, uLogin, uPwChange, uList, cList, errorOccured } from '../src/Services/Frontend.Endpoints';
+import { uReg, uLogin, uPwChange, uList, cList, uUpdate, errorOccured } from '../src/Services/Frontend.Endpoints';
 
 import Layout from './Pages/Layout/Layout';
 import UserRegister from './Pages/Register';
@@ -11,6 +11,7 @@ import UserLogin from './Pages/Login';
 import PwChange from './Pages/PasswordChange';
 import UsersList from './Pages/Lists/UsersList';
 import CodesList from './Pages/Lists/CodesList';
+import UserUpdate from './Pages/UserUpdate';
 import ErrorPage from './Pages/Service/ErrorPage';
 
 function App() {
@@ -48,6 +49,10 @@ function App() {
                 {
                     path: cList,
                     element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: `${uUpdate}:userId`,
+                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
                 },
                 {
                     path: errorOccured,
