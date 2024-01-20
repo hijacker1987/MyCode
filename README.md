@@ -43,7 +43,10 @@ VITE_BACKEND_URL=https://
 VITE_BACKEND_PORT=
 ```
 
-On the backend side, sensitive data is stored in the `secrets.json` file. To set up the application, create a `secrets.json` file in the root directory and populate it with the following keys and values:
+On the backend side, sensitive data is stored in the `secrets.json` file. To set up the application, create a `secrets.json` file in the user profile directory:
+   - Windows: %APPDATA%\microsoft\UserSecrets\<userSecretsId>\secrets.json
+   - Linux: ~/. microsoft/usersecrets/<userSecretsId>/secrets.json
+   - Mac: ~/. microsoft/usersecrets/<userSecretsId>/secrets.json
 
 ```json
 {
