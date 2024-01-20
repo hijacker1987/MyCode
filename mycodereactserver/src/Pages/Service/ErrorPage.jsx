@@ -24,7 +24,7 @@ const ErrorPage = ({ errorMessage }) => {
     }, [countdown, navigate]);
 
     return (
-        <Form>
+        <Form style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
             <FormRow>
                 <ColumnTextWrapper>
                     <ErrorTextContainerRed>

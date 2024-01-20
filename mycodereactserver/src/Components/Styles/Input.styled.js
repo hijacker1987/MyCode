@@ -3,7 +3,8 @@ import styled from "styled-components";
 export const InputWrapper = styled.div`
   content: '';
   margin-top: 21px;
-  margin-left: -100px;
+  margin-left: 20px;
+  margin-right: 21px;
   width: 215px;
   height: 47px;
   border-radius: 10px;

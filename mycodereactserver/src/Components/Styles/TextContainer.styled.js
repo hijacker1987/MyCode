@@ -33,6 +33,7 @@ export const TextContainer = styled.div`
   }
 `;
 
+
 export const ErrorTextContainerRed = styled.div`
   position: relative;
   top: 30%;
@@ -121,7 +122,7 @@ export const TextWrapper = styled.div`
 
 export const ColumnTextWrapper = styled.div`
   margin-top: 50px;
-  margin-left: 50px;
+  margin-left: 150%;
   display: flex;
   flex-direction: column;
   align-items: center;
