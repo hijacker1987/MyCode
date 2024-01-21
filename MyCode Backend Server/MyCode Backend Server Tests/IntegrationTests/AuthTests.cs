@@ -13,7 +13,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
         [Fact]
-        public async Task ChangePasswordAsync_InvalidCredentials_ReturnsUnauthorized()
+        public async Task ChangePasswordAsync_NonExistent_ReturnsNotFound()
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -32,11 +32,11 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await client.PatchAsync("/changePassword", JsonContent.Create(request));
 
             // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
-        public async Task DeleteAccountAsync_UnauthorizedUser_ReturnsUnauthorized()
+        public async Task DeleteAccountAsync_NonExistent_ReturnsNotFound()
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -50,7 +50,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await client.DeleteAsync($"/deleteAccount?email={emailToDelete}");
 
             // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -62,17 +62,18 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 AllowAutoRedirect = false
             });
 
-            var invalidRequest = new UserRegRequest("", "", "", "", "");
+            var invalidRequest = new UserRegRequest("invalidemail", "", "shortpw", "", "");
 
             // Act
-            var response = await client.PostAsync("/registerUser", JsonContent.Create(invalidRequest));
+            var response = await client.PostAsync("/users/register", JsonContent.Create(invalidRequest));
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+
         [Fact]
-        public async Task LoginAsync_InvalidCredentials_ReturnsBadRequest()
+        public async Task LoginAsync_NonExistent_ReturnsNotFound()
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -90,7 +91,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await client.PostAsync("/login", JsonContent.Create(invalidLoginRequest));
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

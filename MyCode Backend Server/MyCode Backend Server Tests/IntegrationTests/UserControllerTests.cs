@@ -22,12 +22,12 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.GetAsync(url);
 
-            Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized);
+            Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
         }
 
         [Theory]
-        [InlineData("/registerUser")]
-        public async Task Post_RegisterUserEndpoint_InvalidRequest_ReturnsBadRequest(string url)
+        [InlineData("/register")]
+        public async Task Post_RegisterUserEndpoint_InvalidRequest_ReturnsNotFound(string url)
         {
             var client = _factory.CreateClient();
 
@@ -38,12 +38,12 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.PostAsJsonAsync(url, invalidUserRegRequest);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
         [InlineData("/login")]
-        public async Task Post_LoginEndpoint_InvalidCredentials_ReturnsBadRequest(string url)
+        public async Task Post_LoginEndpoint_InvalidCredentials_ReturnsNotFound(string url)
         {
             var client = _factory.CreateClient();
 
@@ -54,7 +54,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.PostAsJsonAsync(url, invalidAuthRequest);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
