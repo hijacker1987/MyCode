@@ -94,6 +94,63 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
             Assert.False(IsValid(codeRegRequest2, nameof(CodeRegRequest.WhatKindOfCode)));
         }
 
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_CodeTitle_Exceeds_MaxLength()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest(
+                new string('A', CodeRegRequest.MaxCodeTitleLength + 1),
+                "console.log('Hello, World!');",
+                "Test",
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest, nameof(CodeRegRequest.CodeTitle));
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_WhatKindOfCode_Contains_SpecialCharacters()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest(
+                "Test Title",
+                "console.log('Hello, World!');",
+                "!@#$%^&*", 
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest, nameof(CodeRegRequest.WhatKindOfCode));
+
+            // Assert
+            Assert.True(isValid);
+        }
+
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_Multiple_Properties_Invalid()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest(
+                null!,
+                string.Empty,
+                null!,
+                false,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
         private static bool IsValid(object instance, string propertyName = null!)
         {
             var validationContext = new ValidationContext(instance, null, null);

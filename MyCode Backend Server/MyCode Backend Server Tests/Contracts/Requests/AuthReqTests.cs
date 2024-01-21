@@ -11,7 +11,7 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
         public void AuthRegRequest_Validation_Success()
         {
             // Arrange
-            var authRegRequest = new AuthRequest("Test@Title.Mail", "Test");
+            var authRegRequest = new AuthRequest("Test@Title.Mail", "Tester");
 
             // Act
             var isValid = IsValid(authRegRequest);
@@ -24,8 +24,8 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
         public void AuthRegRequest_Validation_Fail_When_Email_Null_Or_Empty()
         {
             // Arrange
-            var authRegRequest1 = new AuthRequest(string.Empty, "Test");
-            var authRegRequest2 = new AuthRequest(null!, "Test");
+            var authRegRequest1 = new AuthRequest(string.Empty, "Tester");
+            var authRegRequest2 = new AuthRequest(null!, "Tester");
 
             // Act & Assert
             Assert.False(IsValid(authRegRequest1, nameof(AuthRequest.Email)));
@@ -48,7 +48,59 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
         public void AuthRequest_Validation_Fail_When_Email_Invalid_Format()
         {
             // Arrange
-            var authRegRequest = new AuthRequest("InvalidEmail", "Test");
+            var authRegRequest = new AuthRequest("InvalidEmail", "Tester");
+
+            // Act
+            var isValid = IsValid(authRegRequest, nameof(AuthRequest.Email));
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void AuthRegRequest_Validation_Fail_When_Password_TooShort()
+        {
+            // Arrange
+            var authRegRequest = new AuthRequest("test@example.com", "Short");
+
+            // Act
+            var isValid = IsValid(authRegRequest, nameof(AuthRequest.Password));
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void AuthRegRequest_Validation_Fail_When_Password_TooLong()
+        {
+            // Arrange
+            var authRegRequest = new AuthRequest("test@example.com", new string('A', AuthRequest.MaxPasswordLength + 1));
+
+            // Act
+            var isValid = IsValid(authRegRequest, nameof(AuthRequest.Password));
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void AuthRegRequest_Validation_Fail_When_Email_And_Password_Invalid()
+        {
+            // Arrange
+            var authRegRequest = new AuthRequest("InvalidEmail", "Short");
+
+            // Act
+            var isValid = IsValid(authRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void AuthRegRequest_Validation_Fail_When_Email_Without_AtSymbol()
+        {
+            // Arrange
+            var authRegRequest = new AuthRequest("testexample.com", "Tester");
 
             // Act
             var isValid = IsValid(authRegRequest, nameof(AuthRequest.Email));

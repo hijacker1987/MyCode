@@ -4,7 +4,10 @@ namespace MyCode_Backend_Server.Contracts.Registers
 {
     public record CodeRegRequest
     {
+        public static readonly int MaxCodeTitleLength = 255;
+
         [Required]
+        [MaxLength(255)]
         public string CodeTitle { get; init; }
 
         [Required]

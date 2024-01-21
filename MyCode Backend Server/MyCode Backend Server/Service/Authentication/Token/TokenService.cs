@@ -59,7 +59,15 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
         private SigningCredentials CreateSigningCredentials()
         {
-            return new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["IssueSign"]!)), SecurityAlgorithms.HmacSha256);
+            string issueSignKey = _configuration["IssueSign"]!;
+
+            if (issueSignKey.Length < 32)
+            {
+                throw new InvalidOperationException("The 'IssueSign' key must be at least 256 bits long.");
+            }
+
+            return new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSignKey)), SecurityAlgorithms.HmacSha256);
         }
+
     }
 }

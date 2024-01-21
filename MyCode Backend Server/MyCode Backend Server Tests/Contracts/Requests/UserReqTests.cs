@@ -16,7 +16,7 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
             (
                 "Test@Title.Mail",
                 "Hello World!",
-                "Test",
+                "Tester",
                 "Test User",
                 "123"
             );
@@ -36,7 +36,7 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
             (
                 "InvalidEmail",
                 "Hello World!",
-                "Test",
+                "Tester",
                 "Test User",
                 "123"
             );
@@ -103,6 +103,46 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
             Assert.False(IsValid(userRegRequest3, nameof(UserRegRequest.Password)));
             Assert.False(IsValid(userRegRequest4, nameof(UserRegRequest.DisplayName)));
             Assert.False(IsValid(userRegRequest5, nameof(UserRegRequest.PhoneNumber)));
+        }
+
+        [Fact]
+        public void UserRegRequest_Validation_Fail_When_Password_TooShort()
+        {
+            // Arrange
+            var userRegRequest = new UserRegRequest
+            (
+                "test@example.com",
+                "HelloWorld",
+                "Short",
+                "Test User",
+                "123456789"
+            );
+
+            // Act
+            var isValid = IsValid(userRegRequest, nameof(UserRegRequest.Password));
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void UserRegRequest_Validation_Fail_When_Password_TooLong()
+        {
+            // Arrange
+            var userRegRequest = new UserRegRequest
+            (
+                "test@example.com",
+                "HelloWorld",
+                new string('A', UserRegRequest.MaxPasswordLength + 1),
+                "Test User",
+                "123456789"
+            );
+
+            // Act
+            var isValid = IsValid(userRegRequest, nameof(UserRegRequest.Password));
+
+            // Assert
+            Assert.False(isValid);
         }
 
         private static bool IsValid(object instance, string propertyName = null!)

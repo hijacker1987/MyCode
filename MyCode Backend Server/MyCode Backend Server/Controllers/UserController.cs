@@ -60,7 +60,7 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                return Ok(new UserRegResponse(result.Id, result.Email, result.UserName));
+                return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!));
             }
             catch (Exception e)
             {
@@ -108,7 +108,7 @@ namespace MyCode_Backend_Server.Controllers
 
             var accessToken = _tokenService.CreateToken(managedUser, roles.First());
 
-            return new AuthResponse(result.Email, result.UserName, accessToken, roles.First());
+            return new AuthResponse(result.Email!, result.UserName!, accessToken, roles.First());
         }
 
         [HttpGet("user-by:{id}"), Authorize(Roles = "Admin, User")]

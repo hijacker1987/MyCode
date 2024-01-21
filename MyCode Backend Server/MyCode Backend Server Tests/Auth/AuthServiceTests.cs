@@ -77,5 +77,57 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             Assert.Contains("ErrorCode", result.ErrorMessages.Keys);
             Assert.Equal("ErrorDescription", result.ErrorMessages["ErrorCode"]);
         }
+
+        [Fact]
+        public async Task LoginAsync_InvalidEmail_ReturnsAuthResultWithErrorMessage()
+        {
+            // Arrange
+            var userManagerMock = new Mock<UserManager<User>>(
+                new Mock<IUserStore<User>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<User>>().Object,
+                Array.Empty<IUserValidator<User>>(),
+                Array.Empty<IPasswordValidator<User>>(),
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<User>>>().Object);
+
+            var authService = new AuthService(userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+
+            // Act
+            var result = await authService.LoginAsync("nonexistent@example.com", "password");
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Bad credentials", result.ErrorMessages.First().Key);
+            Assert.Equal("Invalid email", result.ErrorMessages.First().Value);
+        }
+
+        [Fact]
+        public async Task LoginAsync_InvalidPassword_ReturnsAuthResultWithErrorMessage()
+        {
+            // Arrange
+            var userManagerMock = new Mock<UserManager<User>>(
+                new Mock<IUserStore<User>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<User>>().Object,
+                Array.Empty<IUserValidator<User>>(),
+                Array.Empty<IPasswordValidator<User>>(),
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<User>>>().Object);
+
+            var authService = new AuthService(userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+
+            // Act
+            var result = await authService.LoginAsync("testexample.com", "password");
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Bad credentials", result.ErrorMessages.First().Key);
+            Assert.Equal("Invalid email", result.ErrorMessages.First().Value);
+        }
     }
 }

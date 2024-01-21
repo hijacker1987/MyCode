@@ -4,6 +4,8 @@ namespace MyCode_Backend_Server.Contracts.Registers
 {
     public record UserRegRequest
     {
+        public readonly static int MaxPasswordLength = 20;
+
         [Required]
         [EmailAddress]
         public string Email { get; init; }
@@ -12,6 +14,7 @@ namespace MyCode_Backend_Server.Contracts.Registers
         public string Username { get; init; }
 
         [Required]
+        [MinLength(6), MaxLength(20)]
         public string Password { get; init; }
 
         [Required]

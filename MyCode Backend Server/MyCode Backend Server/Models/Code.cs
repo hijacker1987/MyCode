@@ -6,6 +6,7 @@ namespace MyCode_Backend_Server.Models
     {
         [Key]
         public Guid Id { get; set; }
+        [MaxLength(255)]
         public string? CodeTitle { get; set; }
         public string? MyCode { get; set; }
         public string? WhatKindOfCode { get; set; }
