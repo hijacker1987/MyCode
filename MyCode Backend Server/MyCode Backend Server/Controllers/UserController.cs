@@ -45,14 +45,12 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _authenticationService.RegisterAsync(
-                                                                        request.Email,
+                var result = await _authenticationService.RegisterAsync(request.Email,
                                                                         request.Username,
                                                                         request.Password,
                                                                         request.DisplayName,
                                                                         request.PhoneNumber,
-                                                                        "User"
-                                                                        );
+                                                                        "User");
 
                 if (!result.Success)
                 {
@@ -106,7 +104,7 @@ namespace MyCode_Backend_Server.Controllers
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
 
-            var accessToken = _tokenService.CreateToken(managedUser, roles.First());
+            var accessToken = _tokenService.CreateToken(managedUser, roles);
 
             return new AuthResponse(result.Email!, result.UserName!, accessToken, roles.First());
         }
@@ -132,6 +130,42 @@ namespace MyCode_Backend_Server.Controllers
             {
                 _logger.LogError($"Error: {e.Message}", e);
                 return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
+            }
+        }
+
+        [HttpPut("u-{id}"), Authorize(Roles = "User")]
+        public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var existingUser = _dataContext.Users.FirstOrDefault(u => u.Id == id);
+
+                if (existingUser == null)
+                {
+                    _logger.LogInformation($"User with id {id} not found.");
+                    return NotFound();
+                }
+
+                existingUser.DisplayName = updatedUser.DisplayName;
+                existingUser.UserName = updatedUser.UserName;
+                existingUser.NormalizedUserName = updatedUser.UserName!.ToUpper();
+                existingUser.Email = updatedUser.Email;
+                existingUser.NormalizedEmail = updatedUser.Email!.ToUpper();
+                existingUser.PhoneNumber = updatedUser.PhoneNumber;
+
+                _dataContext.SaveChanges();
+
+                return Ok(existingUser);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return BadRequest();
             }
         }
 

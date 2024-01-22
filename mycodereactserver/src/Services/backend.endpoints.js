@@ -11,6 +11,7 @@ const u = "users/"
     export const userRegistration = `${u}register`;
 
     //PATCH
+    export const userUpdate = `${u}u-`; //{id}
     export const changePassword = `${u}changePassword`;         //Authorized to admin too
 
     //DELETE
@@ -20,16 +21,16 @@ const u = "users/"
     //GET
     export const getCodesByUser = `${c}by-user`;                //Authorized to admin too
     export const getCodesByVisibility = `${c}by-visibility`;    //Authorized to admin too
-    export const getCodesByUserId = `${c}ci-{id}`;              //Authorized to admin too
+    export const getCodesByUserId = `${c}ci-`; //{id}             Authorized to admin too
 
     //POST
     export const codeRegistration = `${c}register`;             //Authorized to admin too
 
     //PUT
-    export const codeUpdate = `${c}cu-{id}`;                    //Authorized to admin too
+    export const codeUpdate = `${c}cu-`; //{id}                   Authorized to admin too
 
     //DELETE
-    export const deleteCode = `${u}cd-{id}`;
+    export const deleteCode = `${u}cd-`; //{id}
 
 //ADMIN
     //GET
@@ -41,4 +42,4 @@ const u = "users/"
     export const codeSuperUpdate = `${a}acu-`; //{id}
 
     //DELETE
-    export const deleteSuperCode = `${a}ad-{id}`;
+    export const deleteSuperCode = `${a}ad-`; //{id}

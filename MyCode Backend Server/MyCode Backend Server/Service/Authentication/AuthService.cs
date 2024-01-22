@@ -62,7 +62,7 @@ namespace MyCode_Backend_Server.Service.Authentication
             }
 
             var roles = await _userManager.GetRolesAsync(managedUser);
-            var accessToken = _tokenService.CreateToken(managedUser, roles.First());
+            var accessToken = _tokenService.CreateToken(managedUser, roles);
 
             return new AuthResult(managedUser.Id.ToString(), true, managedUser.Email!, managedUser.UserName!, accessToken);
         }

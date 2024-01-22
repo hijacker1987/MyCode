@@ -77,7 +77,9 @@ namespace MyCode_Backend_Server.Controllers
 
                 existingUser.DisplayName = updatedUser.DisplayName;
                 existingUser.UserName = updatedUser.UserName;
+                existingUser.NormalizedUserName = updatedUser.UserName!.ToUpper();
                 existingUser.Email = updatedUser.Email;
+                existingUser.NormalizedEmail = updatedUser.Email!.ToUpper();
                 existingUser.PhoneNumber = updatedUser.PhoneNumber;
 
                 _dataContext.SaveChanges();
@@ -90,7 +92,6 @@ namespace MyCode_Backend_Server.Controllers
                 return BadRequest();
             }
         }
-
 
         [HttpPut("acu-{id}"), Authorize(Roles = "Admin")]
         public ActionResult<Code> UpdateCode([FromRoute] Guid id, [FromBody] Code updatedCode)

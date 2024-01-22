@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getApi, putApi } from '../Services/Api';
-import { userById, userSuperUpdate } from '../Services/Backend.Endpoints';
+import { jwtDecode } from 'jwt-decode';
+import { userById, userUpdate, userSuperUpdate } from '../Services/Backend.Endpoints';
 import Cookies from "js-cookie";
 import UserForm from '../Components/UserForm/UserForm';
 import Loading from '../Components/Loading/Loading';
@@ -12,6 +13,7 @@ const UserUpdate = () => {
     const { userId } = useParams();
     const [loading, setLoading] = useState(true);
     const [errorMessage, setUpdateError] = useState('');
+    const [userRoles, setUserRoles] = useState([]);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -32,7 +34,14 @@ const UserUpdate = () => {
     const handleOnSave = (user) => {
         const token = getToken();
 
-        putApi(user, token, userSuperUpdate + userId)
+        const decodedToken = jwtDecode(token);
+        const roles = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
+        setUserRoles(roles);
+
+        const endpoint = userRoles.includes("Admin") ? userSuperUpdate : userUpdate;
+        const apiUrl = `${endpoint}${userId}`;
+
+        putApi(user, token, apiUrl)
             .then((data) => {
                 setLoading(false);
                 if (data) {

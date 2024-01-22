@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using MyCode_Backend_Server.Models;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,10 +13,10 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<TokenService> _logger = logger;
 
-        public string CreateToken(User user, string? role)
+        public string CreateToken(User user, IList<string> roles)
         {
             var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
-            var token = CreateJwtToken(CreateClaims(user, role, _logger), CreateSigningCredentials(), expiration);
+            var token = CreateJwtToken(CreateClaims(user, roles, _logger), CreateSigningCredentials(), expiration);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             return tokenHandler.WriteToken(token);
@@ -30,20 +31,20 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 signingCredentials: credentials
                 );
 
-        private static List<Claim> CreateClaims(User user, string? role, ILogger<TokenService> _logger)
+        private static List<Claim> CreateClaims(User user, IList<string> roles, ILogger<TokenService> _logger)
         {
             try
             {
                 var claims = new List<Claim>
-                {
-                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-                    new(ClaimTypes.NameIdentifier, value: user.Id.ToString()),
-                    new(ClaimTypes.Name, user.UserName!),
-                    new(ClaimTypes.Email, user.Email!)
-                };
+            {
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+                new(ClaimTypes.NameIdentifier, value: user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName!),
+                new(ClaimTypes.Email, user.Email!)
+            };
 
-                if (role != null)
+                foreach (var role in roles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }

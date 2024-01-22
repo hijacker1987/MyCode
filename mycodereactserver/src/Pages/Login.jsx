@@ -23,7 +23,8 @@ const UserLogin = () => {
                 if (data.token) {
                     const decodedToken = jwtDecode(data.token);
                     const expirationTime = decodedToken.exp * 1000;
-                    const roles = decodedToken.roles;
+                    const roles = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
+                    console.log(roles);
 
                     Cookies.set('jwtToken', data.token, { expires: new Date(expirationTime) });
                     setUserRoles(roles);
