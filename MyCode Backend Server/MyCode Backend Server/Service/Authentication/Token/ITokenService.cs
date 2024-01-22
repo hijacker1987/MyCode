@@ -4,6 +4,6 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 {
     public interface ITokenService
     {
-        string CreateToken(User user, string? role);
+        string CreateToken(User user, IList<string> roles);
     }
 }
