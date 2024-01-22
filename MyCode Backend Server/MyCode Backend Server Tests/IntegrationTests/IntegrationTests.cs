@@ -3,9 +3,6 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using MyCode_Backend_Server;
 using Assert = Xunit.Assert;
-using System.Net.Http.Json;
-using MyCode_Backend_Server.Service.Authentication.Token;
-using Microsoft.OpenApi.Models;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {

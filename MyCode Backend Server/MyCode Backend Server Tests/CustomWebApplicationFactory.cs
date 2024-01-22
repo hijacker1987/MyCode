@@ -14,8 +14,7 @@ namespace MyCode_Backend_Server_Tests
             builder.ConfigureTestServices(services =>
             {
                 var dbContextDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType ==
-                         typeof(DbContextOptions<DataContext>));
+                    d => d.ServiceType == typeof(DbContextOptions<DataContext>));
 
                 services.Remove(dbContextDescriptor!);
 

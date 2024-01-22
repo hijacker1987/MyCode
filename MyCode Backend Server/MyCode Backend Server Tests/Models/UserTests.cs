@@ -1,5 +1,3 @@
-using MyCode_Backend_Server.Contracts.Registers;
-using System.ComponentModel.DataAnnotations;
 using Assert = Xunit.Assert;
 
 namespace MyCode_Backend_Server.Models.Tests
