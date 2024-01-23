@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const TextContainer = styled.div`
   margin-top: 23px;
   margin-bottom: 14px;
+  margin-left: 80px;
   position: relative;
   width: 98px;
   height: 16px;

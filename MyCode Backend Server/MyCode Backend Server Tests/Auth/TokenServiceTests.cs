@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using System.Data;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -29,8 +30,10 @@ namespace MyCode_Backend_Server_Tests.Auth
                 Email = "test@example.com"
             };
 
+            var roles = new List<string> { "UserRole" };
+
             // Act
-            var accessToken = tokenService.CreateToken(user, "UserRole");
+            var accessToken = tokenService.CreateToken(user, roles);
 
             // Assert
             Assert.NotNull(accessToken);
@@ -48,8 +51,10 @@ namespace MyCode_Backend_Server_Tests.Auth
 
             User user = null!;
 
+            var roles = new List<string> { "UserRole" };
+
             // Act and Assert
-            Assert.Throws<NullReferenceException>(() => tokenService.CreateToken(user, "UserRole"));
+            Assert.Throws<NullReferenceException>(() => tokenService.CreateToken(user, roles));
         }
     }
 

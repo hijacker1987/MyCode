@@ -1,8 +1,12 @@
-import React from 'react';
-import { TableContainer } from '../../Styles/TableContainer.styled';
-import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from '../../Styles/TableRow.styled';
+import React from "react";
+import { TableContainer } from "../../Styles/TableContainer.styled";
+import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 
 const CodesTable = ({ codes, headers }) => {
+    if (!codes || codes.length === 0) {
+        return <p>No user data available.</p>;
+    }
+
     return (
         <TableContainer>
             <StyledTable className="table table-striped table-hover">

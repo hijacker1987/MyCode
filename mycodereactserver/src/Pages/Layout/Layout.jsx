@@ -1,11 +1,11 @@
-import Cookies from "js-cookie";
 import React, { useState, useEffect } from "react";
-import { jwtDecode } from 'jwt-decode';
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
+import { jwtDecode } from "jwt-decode";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
-import { uReg, uLogin, uPwChange, uUpdate, uList, cList } from "../../Services/Frontend.Endpoints";
-import '../../index.css';
+import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
+import { uReg, uLogin, uPwChange, uUpdateOwn, uList, cList } from "../../Services/Frontend.Endpoints";
+import Cookies from "js-cookie";
+import "../../index.css";
 
 const Layout = () => {
     const location = useLocation();
@@ -18,7 +18,7 @@ const Layout = () => {
         try {
             const token = Cookies.get("jwtToken");
 
-            if (typeof token === 'string' && token.length > 0) {
+            if (typeof token === "string" && token.length > 0) {
                 setJwtToken(token);
 
                 const decodedToken = jwtDecode(token);
@@ -27,8 +27,6 @@ const Layout = () => {
                 
                 setUserRoles(roles);
                 setUpdateUrl(userIdFromToken);
-            } else {
-                console.log("Not logged in yet!");
             }
         } catch (error) {
             console.error("Error decoding JWT token:", error);
@@ -77,7 +75,7 @@ const Layout = () => {
                                 </>
                             ) : (
                                 <>
-                                    <Link to={uUpdate + updateUrl} className="link">
+                                    <Link to={uUpdateOwn + updateUrl} className="link">
                                         <ButtonContainer type="button">My Account</ButtonContainer>
                                     </Link>
                                 </>

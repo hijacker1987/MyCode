@@ -1,4 +1,4 @@
-import { backendUrl } from '../Services/config';
+import { backendUrl } from "../Services/config";
 
 export const getApi = async (token, endpoint) => {
         const response = await fetch(`${backendUrl}${endpoint}`, {
@@ -15,9 +15,9 @@ export const getApi = async (token, endpoint) => {
 
 export const postApi = async (user, endpoint) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': "application/json",
         },
         body: JSON.stringify(user),
     });

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { ErrorTextContainerRed, ErrorTextContainerWhite, ColumnTextWrapper } from "../../Components/Styles/TextContainer.styled";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Form, FormRow } from "../../Components/Styles/Form.styled";
-import { useNavigate } from 'react-router-dom';
+import { ErrorTextContainerRed, ErrorTextContainerWhite, ColumnTextWrapper } from "../../Components/Styles/TextContainer.styled";
 
 const ErrorPage = ({ errorMessage }) => {
     const [countdown, setCountdown] = useState(5);
@@ -19,19 +19,19 @@ const ErrorPage = ({ errorMessage }) => {
 
     useEffect(() => {
         if (countdown === 0) {
-            navigate('/');
+            navigate("/");
         }
     }, [countdown, navigate]);
 
     return (
-        <Form style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+        <Form style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
             <FormRow>
                 <ColumnTextWrapper>
                     <ErrorTextContainerRed>
                         {errorMessage}
                     </ErrorTextContainerRed>
                     <ErrorTextContainerWhite>
-                        Redirecting to Home page in {countdown} seconds
+                        Redirecting to the Home page in {countdown} seconds
                     </ErrorTextContainerWhite>
                 </ColumnTextWrapper>
             </FormRow>

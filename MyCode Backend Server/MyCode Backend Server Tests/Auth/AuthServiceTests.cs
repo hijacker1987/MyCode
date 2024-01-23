@@ -35,7 +35,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var authService = new AuthService(userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789", "UserRole");
+            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
 
             // Assert
             Assert.True(result.Success);
@@ -68,7 +68,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var authService = new AuthService(userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789", "UserRole");
+            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
 
             // Assert
             Assert.False(result.Success);

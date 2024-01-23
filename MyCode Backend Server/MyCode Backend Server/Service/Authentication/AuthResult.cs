@@ -5,6 +5,8 @@
         bool Success,
         string? Email,
         string? UserName,
+        string? DisplayName,
+        string? PhoneNumber,
         string? Token
     )
     {

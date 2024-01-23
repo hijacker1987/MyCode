@@ -1,48 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { postApi } from '../Services/Api';
-import { userLogin } from '../Services/Backend.Endpoints';
-import { jwtDecode } from 'jwt-decode';
-import Login from '../Components/Login/Login';
-import Loading from '../Components/Loading/Loading';
-import Cookies from 'js-cookie';
-import ErrorPage from './Service/ErrorPage';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { postApi } from "../Services/Api";
+import { userLogin } from "../Services/Backend.Endpoints";
+import { jwtDecode } from "jwt-decode";
+import Login from "../Components/Login/Login";
+import Loading from "../Components/Loading/Loading";
+import ErrorPage from "./Service/ErrorPage";
+import Cookies from "js-cookie";
 
 const UserLogin = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [userRoles, setUserRoles] = useState([]);
-    const [errorMessage, setLoginError] = useState('');
+    const [errorMessage, setLoginError] = useState("");
 
     const handleOnLogin = (user) => {
         setLoading(true);
-
         postApi(user, userLogin)
             .then((data) => {
                 setLoading(false);
                 if (data.token) {
                     const decodedToken = jwtDecode(data.token);
                     const expirationTime = decodedToken.exp * 1000;
-                    const roles = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
-                    console.log(roles);
 
-                    Cookies.set('jwtToken', data.token, { expires: new Date(expirationTime) });
-                    setUserRoles(roles);
+                    Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
 
-                    navigate('/');
+                    navigate("/");
                 } else {
-                    setLoginError('Login unsuccessful. Please check your credentials.');
+                    setLoginError("An error occurred during login. Please try again.");
                 }
             })
             .catch((error) => {
                 setLoading(false);
-                console.error('Error occurred during login:', error);
-                setLoginError('An error occurred during login. Please try again.');
+                console.error("Error occurred during login: ", error);
             });
     };
 
     const checkTokenExpiration = () => {
-        const token = Cookies.get('jwtToken');
+        const token = Cookies.get("jwtToken");
         if (token) {
             const decodedToken = jwtDecode(token);
             const expirationTime = decodedToken.exp * 1000;
@@ -54,13 +48,12 @@ const UserLogin = () => {
     };
 
     const handleLogout = () => {
-        Cookies.remove('jwtToken');
-        navigate('/');
-        setUserRoles([]);
+        Cookies.remove("jwtToken");
+        navigate("/");
     };
 
     const handleCancel = () => {
-        navigate('/');
+        navigate("/");
     };
 
     useEffect(() => {
@@ -78,7 +71,7 @@ const UserLogin = () => {
     }
 
     return <div>
-                {errorMessage == '' ? (
+                {errorMessage == "" ? (
                     <Login
                         onLogin={handleOnLogin}
                         onCancel={handleCancel}
