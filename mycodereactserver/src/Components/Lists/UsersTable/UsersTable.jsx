@@ -1,13 +1,15 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { formatElapsedTime } from '../../../Services/elapsedTime';
-import { uUpdate } from '../../../Services/frontend.endpoints';
-import { TableContainer } from '../../Styles/TableContainer.styled';
-import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from '../../Styles/TableRow.styled';
-import { ButtonContainer } from '../../Styles/ButtonContainer.styled';
+import React from "react";
+import { Link } from "react-router-dom";
+import { formatElapsedTime } from "../../../Services/elapsedTime";
+import { uUpdate } from "../../../Services/frontend.endpoints";
+import { TableContainer } from "../../Styles/TableContainer.styled";
+import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
+import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 
 const UsersTable = ({ users, headers }) => {
-    const navigate = useNavigate();
+    if (!users || users.length === 0) {
+        return <p>No user data available.</p>;
+    }
 
     return (
         <TableContainer>
@@ -30,11 +32,9 @@ const UsersTable = ({ users, headers }) => {
                                 <StyledTd>{user.email}</StyledTd>
                                 <StyledTd>{user.phoneNumber}</StyledTd>
                                 <StyledTd>
-                                    <ButtonContainer type="button">
                                         <Link to={`${uUpdate}${user.id}`} >
-                                            Edit
+                                            <ButtonContainer type="button">Edit</ButtonContainer>
                                         </Link>
-                                    </ButtonContainer>
                                 </StyledTd>
                             </StyledTr>
                             <RowSpacer />

@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import reportWebVitals from './reportWebVitals';
-import './App.css';
+import reportWebVitals from "./reportWebVitals";
+import "./App.css";
 
-import { uReg, uLogin, uPwChange, uList, cList, uUpdate, errorOccured } from '../src/Services/Frontend.Endpoints';
+import { uReg, uLogin, uPwChange, uList, cList, uUpdate, uUpdateOwn, errorOccured } from "../src/Services/Frontend.Endpoints";
 
-import Layout from './Pages/Layout/Layout';
-import UserRegister from './Pages/Register';
-import UserLogin from './Pages/Login';
-import PwChange from './Pages/PasswordChange';
-import UsersList from './Pages/Lists/UsersList';
-import CodesList from './Pages/Lists/CodesList';
-import UserUpdate from './Pages/UserUpdate';
-import ErrorPage from './Pages/Service/ErrorPage';
+import Layout from "./Pages/Layout/Layout";
+import UserRegister from "./Pages/Register";
+import UserLogin from "./Pages/Login";
+import PwChange from "./Pages/PasswordChange";
+import UsersList from "./Pages/Lists/UsersList";
+import CodesList from "./Pages/Lists/CodesList";
+import UserUpdate from "./Pages/UserUpdate";
+import ErrorPage from "./Pages/Service/ErrorPage";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,12 +23,12 @@ function App() {
 
     const router = createBrowserRouter([
         {
-            path: '/',
+            path: "/",
             element: <Layout />,
             children: [
                 {
-                    path: '/',
-                    element: <div className="welcome-text">Welcome to the page!</div>,
+                    path: "/",
+                    element: <div className="welcome-text">Welcome Code Fanatic!</div>,
                 },
                 {
                     path: uReg,
@@ -49,6 +49,10 @@ function App() {
                 {
                     path: cList,
                     element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: `${uUpdateOwn}:userId`,
+                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
                 },
                 {
                     path: `${uUpdate}:userId`,

@@ -1,41 +1,51 @@
-import Loading from "../Loading/Loading";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { uPwChange } from "../../Services/Frontend.Endpoints";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
+import { InputForm, InputWrapper } from "../Styles/Input.styled";
 import { TextContainer } from "../Styles/TextContainer.styled";
 import { Form, FormRow } from "../Styles/Form.styled";
-import { InputForm, InputWrapper } from "../Styles/Input.styled";
+import Loading from "../Loading/Loading";
 
-const UserForm = ({ onSave, user, onCancel }) => {
-
+const UserForm = ({ onSave, user, role, onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState(user?.email ?? "");
-    const [username, setUsername] = useState(user?.username ?? "");
+    const [username, setUsername] = useState(user?.userName ?? "");
     const [password, setPassword] = useState(user?.password ?? "");
-    const [displayname, setDisplayname] = useState(user?.displayname ?? "");
+    const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
+    const [isRegistration, setIsRegistration] = useState(!user);
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
-        if (user) {
-            return onSave({
-                ...user,
-                email,
-                username,
-                password,
-                displayname,
-                phoneNumber
-            });
-        }
+        try {
+            setLoading(true);
 
-        return onSave({
-            email,
-            username,
-            password,
-            displayname,
-            phoneNumber
-        });
+            if (user) {
+                await onSave({
+                    ...user,
+                    email,
+                    username,
+                    password,
+                    displayname,
+                    phoneNumber
+                });
+            } else {
+                await onSave({
+                    email,
+                    username,
+                    password,
+                    displayname,
+                    phoneNumber
+                });
+            }
+        } catch (error) {
+            console.error("Error occurred during form submission: ", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (loading) {
@@ -45,7 +55,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
     return (
         <div>
             <Form onSubmit={onSubmit}>
-
                 <FormRow className="control">
                     <TextContainer>E-mail:</TextContainer>
                     <InputWrapper>
@@ -54,7 +63,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
                             onChange={(e) => setEmail(e.target.value)}
                             name="email"
                             id="email"
-                            placeholder="E-mail address"
+                            placeholder="Your E-mail address"
                             autoComplete="off"
                         />
                     </InputWrapper>
@@ -66,7 +75,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
                             onChange={(e) => setUsername(e.target.value)}
                             name="username"
                             id="username"
-                            placeholder="Username"
+                            placeholder="Desired Username"
                             autoComplete="off"
                         />
                     </InputWrapper>
@@ -78,7 +87,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
                             onChange={(e) => setDisplayname(e.target.value)}
                             name="displayname"
                             id="displayname"
-                            placeholder="Displayname"
+                            placeholder="Desired Displayname"
                             autoComplete="off"
                         />
                     </InputWrapper>
@@ -90,24 +99,35 @@ const UserForm = ({ onSave, user, onCancel }) => {
                             onChange={(e) => setPhone(e.target.value)}
                             name="phoneNumber"
                             id="phoneNumber"
-                            placeholder="PhoneNumber"
+                            placeholder="Add Your Phone Number"
                             autoComplete="off"
                         />
                     </InputWrapper>
 
-                    <TextContainer>Password:</TextContainer>
-                    <InputWrapper>
-                        <InputForm
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            name="password"
-                            id="password"
-                            placeholder="Password"
-                            autoComplete="off"
-                            type="password"
-                        />
-                    </InputWrapper>
+                    {isRegistration && (
+                        <>
+                            <TextContainer>Password:</TextContainer>
+                            <InputWrapper>
+                                <InputForm
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    name="password"
+                                    id="password"
+                                    placeholder="Set a Password"
+                                    autoComplete="off"
+                                />
+                            </InputWrapper>
+                        </>
+                    )}
                 </FormRow>
+
+                {user && role === "User" && (
+                    <ButtonRowContainer style={{ marginLeft: '250px' }}>
+                        <Link to={uPwChange} className="link">
+                            <ButtonContainer type="button">Password Change</ButtonContainer>
+                        </Link>
+                    </ButtonRowContainer>
+                )}
 
                 <ButtonRowContainer>
                     <ButtonContainer type="submit">
@@ -118,6 +138,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
                     </ButtonContainer>
                 </ButtonRowContainer>
             </Form>
+            {loading && <Loading />}
         </div>
     );
 };

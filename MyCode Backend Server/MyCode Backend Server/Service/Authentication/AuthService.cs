@@ -10,7 +10,7 @@ namespace MyCode_Backend_Server.Service.Authentication
         private readonly ITokenService _tokenService = tokenService;
         private readonly ILogger<AuthService> _logger = logger;
 
-        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber, string role)
+        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber)
         {
             var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
             var result = await _userManager.CreateAsync(user, password);
@@ -28,14 +28,14 @@ namespace MyCode_Backend_Server.Service.Authentication
             }
             else
             {
-                await _userManager.AddToRoleAsync(user, role);
-                return new AuthResult(user.Id.ToString(), true, email, username, "");
+                await _userManager.AddToRoleAsync(user, "User");
+                return new AuthResult(user.Id.ToString(), true, email, username, displayname, phoneNumber,"");
             }
         }
 
         private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)
         {
-            var authenticationResult = new AuthResult(id, false, email, username, "");
+            var authenticationResult = new AuthResult(id, false, email, username, "", "", "");
 
             foreach (var identityError in result.Errors)
             {
@@ -64,12 +64,12 @@ namespace MyCode_Backend_Server.Service.Authentication
             var roles = await _userManager.GetRolesAsync(managedUser);
             var accessToken = _tokenService.CreateToken(managedUser, roles);
 
-            return new AuthResult(managedUser.Id.ToString(), true, managedUser.Email!, managedUser.UserName!, accessToken);
+            return new AuthResult(managedUser.Id.ToString(), true, managedUser.Email, managedUser.UserName, managedUser.DisplayName, managedUser.PhoneNumber, accessToken);
         }
 
         private static AuthResult InvalidEmail(string email)
             {
-                var result = new AuthResult("", false, email, "", "");
+                var result = new AuthResult("", false, email, "", "", "", "");
                 result.ErrorMessages.Add("Bad credentials", "Invalid email");
 
                 return result;
@@ -77,7 +77,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public static AuthResult InvalidPassword(string email, string userName)
         {
-            var result = new AuthResult("", false, email, userName, "");
+            var result = new AuthResult("", false, email, userName, "", "", "");
             result.ErrorMessages.Add("Bad credentials", "Invalid password");
 
             return result;

@@ -4,18 +4,23 @@ import { postApi } from "../Services/Api";
 import { userRegistration } from "../Services/Backend.Endpoints";
 import UserForm from "../Components/UserForm";
 import Loading from "../Components/Loading/Loading";
+import ErrorPage from "./Service/ErrorPage";
 
 const UserRegister = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setRegError] = useState("");
 
     const handleCreateUser = (user) => {
         setLoading(true);
-
         postApi(user, userRegistration)
-            .then(() => {
+            .then((data) => {
                 setLoading(false);
-                navigate("/");
+                if (data) {
+                    navigate("/");
+                } else {
+                    setRegError("An error occurred during registration. Please try again.");
+                }
             })
             .catch((error) => {
                 setLoading(false);
@@ -31,12 +36,18 @@ const UserRegister = () => {
         return <Loading />;
     }
 
-    return (
-        <UserForm
-            onSave={handleCreateUser}
-            onCancel={handleCancel}
-        />
-    );
+    return <div>
+                {errorMessage == "" ? (
+                    <UserForm
+                        onSave={handleCreateUser}
+                        onCancel={handleCancel}
+                    />
+                ) : (
+                    <ErrorPage
+                        errorMessage={errorMessage}
+                    />
+                )}
+            </div>
 };
 
 export default UserRegister;

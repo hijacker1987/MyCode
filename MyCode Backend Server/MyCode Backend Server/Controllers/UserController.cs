@@ -49,8 +49,7 @@ namespace MyCode_Backend_Server.Controllers
                                                                         request.Username,
                                                                         request.Password,
                                                                         request.DisplayName,
-                                                                        request.PhoneNumber,
-                                                                        "User");
+                                                                        request.PhoneNumber);
 
                 if (!result.Success)
                 {
@@ -58,7 +57,7 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!));
+                return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!, result.DisplayName!, result.PhoneNumber!));
             }
             catch (Exception e)
             {
@@ -106,7 +105,7 @@ namespace MyCode_Backend_Server.Controllers
 
             var accessToken = _tokenService.CreateToken(managedUser, roles);
 
-            return new AuthResponse(result.Email!, result.UserName!, accessToken, roles.First());
+            return new AuthResponse(result.Email!, result.UserName!, accessToken);
         }
 
         [HttpGet("user-by:{id}"), Authorize(Roles = "Admin, User")]
@@ -122,7 +121,7 @@ namespace MyCode_Backend_Server.Controllers
                     return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
                 }
 
-                var response = new UserRegResponse(idString, user.Email!, user.UserName!);
+                var response = new UserRegResponse(idString, user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
 
                 return Ok(response);
             }

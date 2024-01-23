@@ -17,6 +17,8 @@ namespace MyCode_Backend_Server_Tests.Auth
                 Success: true,
                 Email: "Test@example.hu",
                 UserName: "TestUser",
+                DisplayName: "Test User",
+                PhoneNumber: "1234567890",
                 Token: "TestToken"
             );
 
