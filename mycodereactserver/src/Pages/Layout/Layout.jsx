@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
-import { uReg, uLogin, uPwChange, uUpdateOwn, uList, cList } from "../../Services/Frontend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cUpdateOwn, uList, cList } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris } from "../../Services/Backend.Endpoints";
 import Cookies from "js-cookie";
 import "../../index.css";
@@ -99,7 +99,13 @@ const Layout = () => {
                                 </>
                             ) : (
                                 <>
-                                    <Link to={uUpdateOwn + updateUrl} className="link">
+                                    <Link to={cReg} className="link">
+                                        <ButtonContainer type="button">Add Code</ButtonContainer>
+                                    </Link>
+                                    <Link to={cOwn} className="link">
+                                        <ButtonContainer type="button">My Codes</ButtonContainer>
+                                    </Link>
+                                    <Link to={uUpdateOwn} className="link">
                                         <ButtonContainer type="button">My Account</ButtonContainer>
                                     </Link>
                                 </>

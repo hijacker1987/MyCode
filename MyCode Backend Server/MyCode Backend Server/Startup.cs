@@ -103,23 +103,16 @@ namespace MyCode_Backend_Server
 
             app.UseRouting();
 
-            app.Use(async (context, next) =>
-            {
+
                 var connection = _configuration["FEAddress"];
 
-                context.Response.Headers.Append("Access-Control-Allow-Origin", connection);
-                context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-                context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-                if (context.Request.Method == "OPTIONS")
+            app.UseCors(builder =>
                 {
-                    context.Response.StatusCode = 200;
-                }
-                else
-                {
-                    await next();
-                }
-            });
+                    builder.WithOrigins(connection!)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                });
 
             app.UseAuthentication();
 

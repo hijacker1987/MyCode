@@ -3,20 +3,26 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import reportWebVitals from "./reportWebVitals";
 import "./App.css";
 
-import { uReg, uLogin, uPwChange, uList, cList, uUpdate, uUpdateOwn, cUpdate, errorOccured } from "../src/Services/Frontend.Endpoints";
+import { uLogin, errorOccured,
+         uReg, uUpdateOwn, uUpdate, uPwChange,
+         cReg, cUpdateOwn, cUpdate, cOwn,
+         uList, cList
+       } from "../src/Services/Frontend.Endpoints";
 
 import Layout from "./Pages/Layout/Layout";
-import UserRegister from "./Pages/Register";
 import UserLogin from "./Pages/Login";
+import UserRegister from "./Pages/Register";
+import UserUpdate from "./Pages/UserUpdate";
 import PwChange from "./Pages/PasswordChange";
+import CodeRegister from "./Pages/CodeRegister";
+import CodeUpdate from "./Pages/CodeUpdate";
 import UsersList from "./Pages/Lists/UsersList";
 import CodesList from "./Pages/Lists/CodesList";
-import UserUpdate from "./Pages/UserUpdate";
-import CodeUpdate from "./Pages/CodeUpdate";
 import ErrorPage from "./Pages/Service/ErrorPage";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userRole, setUserRole] = useState([]);
 
     useEffect(() => {
         setIsAuthenticated(prevState => !prevState);
@@ -44,15 +50,19 @@ function App() {
                     element: isAuthenticated ? <PwChange /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: uList,
-                    element: isAuthenticated ? <UsersList /> : <Navigate to={uLogin} />
+                    path: uUpdateOwn,
+                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: cList,
+                    path: cReg,
+                    element: isAuthenticated ? <CodeRegister /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: cOwn,
                     element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: `${uUpdateOwn}:userId`,
+                    path: cUpdateOwn,
                     element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
                 },
                 {
@@ -62,6 +72,14 @@ function App() {
                 {
                     path: `${cUpdate}:codeId`,
                     element: isAuthenticated ? <CodeUpdate /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: uList,
+                    element: isAuthenticated ? <UsersList /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: cList,
+                    element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
                 },
                 {
                     path: errorOccured,

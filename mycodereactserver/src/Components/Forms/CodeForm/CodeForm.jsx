@@ -6,7 +6,7 @@ import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormRow } from "../../Styles/Form.styled";
 import Loading from "../../Loading/Loading";
 
-const CodeForm = ({ onSave, code, onCancel }) => {
+const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [codeTitle, setCodeTitle] = useState(code?.codeTitle ?? "");
     const [myCode, setMyCode] = useState(code?.myCode ?? "");
@@ -20,10 +20,16 @@ const CodeForm = ({ onSave, code, onCancel }) => {
         try {
             setLoading(true);
 
+            let modifiedCodeTitle = codeTitle;
+
+            if (code && role === "Admin") {
+                modifiedCodeTitle = codeTitle + "*";
+            }
+
             if (code) {
                 await onSave({
                     ...code,
-                    codeTitle,
+                    codeTitle: modifiedCodeTitle,
                     myCode,
                     whatKindOfCode,
                     isBackend,
@@ -31,7 +37,7 @@ const CodeForm = ({ onSave, code, onCancel }) => {
                 });
             } else {
                 await onSave({
-                    codeTitle,
+                    codeTitle: modifiedCodeTitle,
                     myCode,
                     whatKindOfCode,
                     isBackend,

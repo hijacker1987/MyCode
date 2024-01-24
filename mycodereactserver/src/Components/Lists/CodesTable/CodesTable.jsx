@@ -7,7 +7,7 @@ import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 
 const CodesTable = ({ codes, headers }) => {
     if (!codes || codes.length === 0) {
-        return <p>No user data available.</p>;
+        return <p>No code data available.</p>;
     }
 
     return (
@@ -32,7 +32,7 @@ const CodesTable = ({ codes, headers }) => {
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
                                     <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     <StyledTd>
-                                        <Link to={`${cUpdate}${code.id}`} >
+                                        <Link to={`${cUpdate}${code.id}`}>
                                             <ButtonContainer type="button">Edit</ButtonContainer>
                                         </Link>
                                     </StyledTd>
