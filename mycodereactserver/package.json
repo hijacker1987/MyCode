@@ -2,6 +2,7 @@
   "name": "mycodefrontendserver",
   "private": true,
   "version": "1.0.0",
+  "homepage": "/my-code",
   "type": "module",
   "scripts": {
     "start": "vite --open",

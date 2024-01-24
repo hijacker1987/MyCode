@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApi } from "../Services/Api";
-import { userRegistration } from "../Services/Backend.Endpoints";
-import UserForm from "../Components/Forms/UserForm";
+import { postApiV2 } from "../Services/Api";
+import { codeRegistration } from "../Services/Backend.Endpoints";
+import CodeForm from "../Components/Forms/CodeForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
+import Cookies from "js-cookie";
 
-const UserRegister = () => {
+const CodeRegister = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [errorMessage, setRegError] = useState("");
 
-    const handleCreateUser = (user) => {
+    const handleCreateCode = (code) => {
         setLoading(true);
-        postApi(user, userRegistration)
+
+        const token = getToken();
+
+        postApiV2(code, token, codeRegistration)
             .then((data) => {
                 setLoading(false);
                 if (data) {
-                    navigate("/");
+                    navigate(-1);
                 } else {
                     setRegError("An error occurred during registration. Please try again.");
                 }
@@ -28,6 +32,10 @@ const UserRegister = () => {
             });
     };
 
+    const getToken = () => {
+        return Cookies.get("jwtToken");
+    }
+
     const handleCancel = () => {
         navigate("/");
     };
@@ -37,17 +45,17 @@ const UserRegister = () => {
     }
 
     return <div>
-                {errorMessage == "" ? (
-                    <UserForm
-                        onSave={handleCreateUser}
-                        onCancel={handleCancel}
-                    />
-                ) : (
-                    <ErrorPage
-                        errorMessage={errorMessage}
-                    />
-                )}
-            </div>
+        {errorMessage == "" ? (
+            <CodeForm
+                onSave={handleCreateCode}
+                onCancel={handleCancel}
+            />
+        ) : (
+            <ErrorPage
+                errorMessage={errorMessage}
+            />
+        )}
+    </div>
 };
 
-export default UserRegister;
+export default CodeRegister;

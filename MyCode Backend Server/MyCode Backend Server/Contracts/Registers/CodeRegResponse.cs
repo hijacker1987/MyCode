@@ -2,7 +2,7 @@
 {
     public record CodeRegResponse
         (
-            Guid Id,
+            string Id,
             string CodeTitle,
             string MyCode,
             string WhatKindOfCode,

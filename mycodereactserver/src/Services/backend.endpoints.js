@@ -5,7 +5,7 @@ const u = "users/"
 //USERS
     //GET
     export const recentChuckNorris = `https://api.chucknorris.io/jokes/random`;
-    export const userById = `${u}user-by:`; //{id}                Authorized to admin too
+    export const getUser = `${u}getUser`;                      //Authorized to admin too
 
     //POST
     export const userLogin = `${u}login`;
@@ -28,15 +28,16 @@ const u = "users/"
     export const codeRegistration = `${c}register`;             //Authorized to admin too
 
     //PUT
-    export const codeUpdate = `${c}cu-`; //{id}                   Authorized to admin too
+    export const codeUpdate = `${c}cu-`; //{id}
 
     //DELETE
-    export const deleteCode = `${u}cd-`; //{id}
+    export const deleteCode = `${c}cd-`; //{id}
 
 //ADMIN
     //GET
     export const getAllUsers = `${a}getUsers`;
     export const getAllCodes = `${a}getCodes`;
+    export const userById = `${a}user-by-`; //{id}
 
     //PUT
     export const userSuperUpdate = `${a}au-`;  //{id}

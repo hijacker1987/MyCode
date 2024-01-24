@@ -26,6 +26,20 @@ export const postApi = async (user, endpoint) => {
     return data;
 };
 
+export const postApiV2 = async (user, token, endpoint) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(user),
+    });
+
+    const data = await response.json();
+    return data;
+};
+
 export const patchApi = async (user, token, endpoint) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "PATCH",

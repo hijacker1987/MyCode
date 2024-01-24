@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 
@@ -32,6 +35,30 @@ namespace MyCode_Backend_Server.Controllers
             {
                 _logger.LogError($"Error: {e.Message}", e);
                 return NotFound();
+            }
+        }
+
+        [HttpGet("user-by-{id}"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<UserRegResponse>> GetUserById([FromRoute] Guid id)
+        {
+            try
+            {
+                var idString = id.ToString();
+                var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.Equals(id));
+
+                if (user == null)
+                {
+                    return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
+                }
+
+                var response = new UserRegResponse(idString, user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
             }
         }
 

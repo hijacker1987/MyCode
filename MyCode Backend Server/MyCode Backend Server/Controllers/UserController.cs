@@ -8,6 +8,7 @@ using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -28,22 +29,30 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
-        [HttpGet("user-by:{id}"), Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<UserRegResponse>> GetUserById([FromRoute] Guid id)
+        [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
+        public ActionResult<UserRegResponse> GetUser()
         {
             try
             {
-                var idString = id.ToString();
-                var user = await _userManager.FindByIdAsync(idString);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (user == null)
+                if (userIdClaim == null)
                 {
-                    return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var response = new UserRegResponse(idString, user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
+                var userId = userIdClaim.Value;
 
-                return Ok(response);
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
+
+                return Ok(user);
             }
             catch (Exception e)
             {
