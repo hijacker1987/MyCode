@@ -28,6 +28,30 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
+        [HttpGet("user-by:{id}"), Authorize(Roles = "Admin, User")]
+        public async Task<ActionResult<UserRegResponse>> GetUserById([FromRoute] Guid id)
+        {
+            try
+            {
+                var idString = id.ToString();
+                var user = await _userManager.FindByIdAsync(idString);
+
+                if (user == null)
+                {
+                    return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
+                }
+
+                var response = new UserRegResponse(idString, user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
+            }
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult<UserRegResponse>> RegisterUserAsync(UserRegRequest request)
         {
@@ -106,30 +130,6 @@ namespace MyCode_Backend_Server.Controllers
             var accessToken = _tokenService.CreateToken(managedUser, roles);
 
             return new AuthResponse(result.Email!, result.UserName!, accessToken);
-        }
-
-        [HttpGet("user-by:{id}"), Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<UserRegResponse>> GetUserById([FromRoute] Guid id)
-        {
-            try
-            {
-                var idString = id.ToString();
-                var user = await _userManager.FindByIdAsync(idString);
-
-                if (user == null)
-                {
-                    return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
-                }
-
-                var response = new UserRegResponse(idString, user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
-
-                return Ok(response);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Error: {e.Message}", e);
-                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
-            }
         }
 
         [HttpPut("u-{id}"), Authorize(Roles = "User")]

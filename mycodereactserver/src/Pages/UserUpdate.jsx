@@ -37,7 +37,6 @@ const UserUpdate = () => {
         fetchData();
     }, [userId]);
 
-
     const handleOnSave = (user) => {
         setLoading(true);
         const token = getToken();
