@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { uPwChange } from "../../Services/Frontend.Endpoints";
-import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
-import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
-import { InputForm, InputWrapper } from "../Styles/Input.styled";
-import { TextContainer } from "../Styles/TextContainer.styled";
-import { Form, FormRow } from "../Styles/Form.styled";
-import Loading from "../Loading/Loading";
+import { uPwChange } from "../../../Services/Frontend.Endpoints";
+import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
+import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
+import { InputForm, InputWrapper } from "../../Styles/Input.styled";
+import { TextContainer } from "../../Styles/TextContainer.styled";
+import { Form, FormRow } from "../../Styles/Form.styled";
+import Loading from "../../Loading/Loading";
 
 const UserForm = ({ onSave, user, role, onCancel }) => {
     const [loading, setLoading] = useState(false);
@@ -115,6 +115,7 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
                                     id="password"
                                     placeholder="Set a Password"
                                     autoComplete="off"
+                                    type="password"
                                 />
                             </InputWrapper>
                         </>

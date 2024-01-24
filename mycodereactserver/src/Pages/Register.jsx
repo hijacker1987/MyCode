@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
 import { userRegistration } from "../Services/Backend.Endpoints";
-import UserForm from "../Components/UserForm";
+import UserForm from "../Components/Forms/UserForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
 

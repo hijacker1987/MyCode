@@ -10,7 +10,7 @@ namespace MyCode_Backend_Server_Tests.Contracts.Responses
         public void CodeRegResponse_PropertiesMatch_ExpectedValues()
         {
             // Arrange
-            var expectedId = new Guid("12345678-1234-5678-1234-567812345678");
+            var expectedId = "12345678-1234-5678-1234-567812345678";
             var expectedCodeTitle = "Test Title";
             var expectedMyCode = "console.log('Hello, World!');";
             var expectedWhatKindOfCode = "Test";
@@ -41,7 +41,7 @@ namespace MyCode_Backend_Server_Tests.Contracts.Responses
         {
             // Arrange
             var response = new CodeRegResponse(
-                Guid.NewGuid(),
+                "Sample Id",
                 "Sample Title",
                 "Sample Code",
                 "Sample Kind",
@@ -50,7 +50,7 @@ namespace MyCode_Backend_Server_Tests.Contracts.Responses
             );
 
             // Act & Assert
-            Assert.Equal(response.Id, response.Id);
+            Assert.Equal("Sample Id", response.Id);
             Assert.Equal("Sample Title", response.CodeTitle);
             Assert.Equal("Sample Code", response.MyCode);
             Assert.Equal("Sample Kind", response.WhatKindOfCode);
