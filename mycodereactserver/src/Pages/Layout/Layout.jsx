@@ -3,7 +3,9 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
+import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
 import { uReg, uLogin, uPwChange, uUpdateOwn, uList, cList } from "../../Services/Frontend.Endpoints";
+import { recentChuckNorris } from "../../Services/Backend.Endpoints";
 import Cookies from "js-cookie";
 import "../../index.css";
 
@@ -12,6 +14,7 @@ const Layout = () => {
     const [jwtToken, setJwtToken] = useState(Cookies.get("jwtToken"));
     const [userRoles, setUserRoles] = useState([]);
     const [updateUrl, setUpdateUrl] = useState([]);
+    const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +36,24 @@ const Layout = () => {
         }
     }, [location]);
 
+    useEffect(() => {
+        const fetchJoke = async () => {
+            try {
+                const chuckNorrisData = await fetch(recentChuckNorris);
+                const chuckNorrisFact = await chuckNorrisData.json();
+                setChuckNorrisFact(chuckNorrisFact.value);
+            } catch (error) {
+                console.error('Error occurred while fetching Chuck Norris:', error);
+            }
+        };
+
+        fetchJoke();
+
+        const intervalId = setInterval(fetchJoke, 20000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     const handleLogout = () => {
         Cookies.remove("jwtToken");
         navigate("/");
@@ -42,6 +63,9 @@ const Layout = () => {
     return (
         <div className="Layout">
             <nav>
+                <CenteredContainer>
+                    {chuckNorrisFact}
+                </CenteredContainer>
                 {!jwtToken ? (
                     <ButtonRowContainer>
                         {location.pathname !== uLogin && location.pathname !== uReg && (

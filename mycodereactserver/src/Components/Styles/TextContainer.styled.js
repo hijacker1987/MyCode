@@ -34,7 +34,6 @@ export const TextContainer = styled.div`
   }
 `;
 
-
 export const ErrorTextContainerRed = styled.div`
   position: relative;
   top: 30%;
@@ -127,4 +126,40 @@ export const ColumnTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+export const CenteredContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: 20px;
+  background-color: #000;
+  color: white;
+  justify-content: center, center;
+  border: none;
+  padding: 22px;
+  gap: 12px;
+  border-radius: 8px;
+  text-align: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    left: -2px;
+    margin-top: -2px;
+    margin-right: -2px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+    z-index: -10;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
 `;

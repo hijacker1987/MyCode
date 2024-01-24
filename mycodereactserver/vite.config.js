@@ -51,7 +51,7 @@ export default defineConfig({
             '^/mycodeapp': {
                 target: `${process.env.VITE_BACKEND_URL}`,
                 secure: false
-            }
+            },
         },
         port: Number(process.env.VITE_FRONTEND_PORT),
         https: {

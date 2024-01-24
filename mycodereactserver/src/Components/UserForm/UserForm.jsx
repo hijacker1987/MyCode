@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { uPwChange } from "../../Services/Frontend.Endpoints";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";

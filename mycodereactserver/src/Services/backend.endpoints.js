@@ -4,6 +4,7 @@ const u = "users/"
 
 //USERS
     //GET
+    export const recentChuckNorris = `https://api.chucknorris.io/jokes/random`;
     export const userById = `${u}user-by:`; //{id}                Authorized to admin too
 
     //POST
