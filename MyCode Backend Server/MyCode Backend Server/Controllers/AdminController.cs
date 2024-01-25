@@ -155,7 +155,36 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("ad-{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("adu-{id}"), Authorize(Roles = "Admin")]
+        public ActionResult DeleteUser([FromRoute] Guid id)
+        {
+            try
+            {
+                Console.WriteLine($"Deleting user with id: {id}");
+
+                var user = _dataContext.Users!.FirstOrDefault(u => u.Id == id);
+
+                if (user == null)
+                {
+                    Console.WriteLine($"User with id {id} not found.");
+                    return NotFound();
+                }
+
+                _dataContext.Users!.Remove(user);
+                _dataContext.SaveChanges();
+
+                Console.WriteLine($"User with id {id} successfully deleted.");
+                return Ok($"User with id {id} successfully deleted.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error during user deletion: {e.Message}");
+                Console.WriteLine(e.StackTrace);
+                return StatusCode(500, $"Internal Server Error: {e.Message}");
+            }
+        }
+
+        [HttpDelete("adc-{id}"), Authorize(Roles = "Admin")]
         public ActionResult DeleteCode([FromRoute] Guid id)
         {
             try

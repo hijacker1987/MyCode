@@ -36,13 +36,13 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             try
             {
                 var claims = new List<Claim>
-            {
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-                new(ClaimTypes.NameIdentifier, value: user.Id.ToString()),
-                new(ClaimTypes.Name, user.UserName!),
-                new(ClaimTypes.Email, user.Email!)
-            };
+                {
+                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+                    new(ClaimTypes.NameIdentifier, value: user.Id.ToString()),
+                    new(ClaimTypes.Name, user.UserName!),
+                    new(ClaimTypes.Email, user.Email!)
+                };
 
                 foreach (var role in roles)
                 {
