@@ -22,7 +22,6 @@ import ErrorPage from "./Pages/Service/ErrorPage";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userRole, setUserRole] = useState([]);
 
     useEffect(() => {
         setIsAuthenticated(prevState => !prevState);

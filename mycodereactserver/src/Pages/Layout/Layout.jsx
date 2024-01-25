@@ -4,8 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cUpdateOwn, uList, cList } from "../../Services/Frontend.Endpoints";
-import { recentChuckNorris } from "../../Services/Backend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, uList, cList } from "../../Services/Frontend.Endpoints";
+import { recentChuckNorris, deleteAccount } from "../../Services/Backend.Endpoints";
+import DeleteActions from "../../Components/Delete/DeleteActions";
 import Cookies from "js-cookie";
 import "../../index.css";
 
@@ -35,6 +36,26 @@ const Layout = () => {
             console.error("Error decoding JWT token:", error);
         }
     }, [location]);
+
+    const handleDelete = (userId) => {
+        if (userRoles.includes("User")) {
+            DeleteActions.deleteRecord(
+                `${deleteAccount}${userId}`,
+                () => {
+                    console.log("User deleted successfully");
+
+                    setJwtToken(null);
+                    setUserRoles([]);
+                    setUpdateUrl([]);
+                    handleLogout();
+                    navigate("/", { replace: true });
+                },
+                () => {
+                    console.error("Error deleting user");
+                }
+            );
+        }
+    };
 
     useEffect(() => {
         const fetchJoke = async () => {
@@ -107,7 +128,10 @@ const Layout = () => {
                                     </Link>
                                     <Link to={uUpdateOwn} className="link">
                                         <ButtonContainer type="button">My Account</ButtonContainer>
-                                    </Link>
+                                        </Link>
+                                    <ButtonContainer type="button" onClick={() => handleDelete(updateUrl)}>
+                                        Delete Account
+                                    </ButtonContainer>
                                 </>
                             )}
                         </ButtonRowContainer>

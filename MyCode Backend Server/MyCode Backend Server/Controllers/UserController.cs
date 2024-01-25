@@ -208,37 +208,33 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("delete"), Authorize(Roles = "User")]
-        public async Task<ActionResult> DeleteAccountAsync(string email)
+        [HttpDelete("delete-{id}"), Authorize(Roles = "User")]
+        public async Task<ActionResult> DeleteAccountAsync([FromRoute] Guid id)
         {
-            if (string.IsNullOrEmpty(email))
+            if (id == Guid.Empty)
             {
                 return NotFound("Not Found!");
             }
 
-            if (_configuration["AEmail"]!.Equals(email, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return Unauthorized();
-            }
-
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
-                var dbUser = _dataContext.Users!.FirstOrDefault(e => e.Id.Equals(user!.Id));
-
-                _dataContext.Users.Remove(dbUser!);
-                await _dataContext.SaveChangesAsync();
+                var user = await _userManager.FindByIdAsync(id.ToString());
 
                 if (user == null)
                 {
-                    return BadRequest("Something went wrong!");
+                    return BadRequest("User not found!");
+                }
+
+                if (_configuration["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return Unauthorized();
                 }
 
                 var result = await _userManager.DeleteAsync(user);
 
                 if (result.Succeeded)
                 {
-                    return Ok($"Account with email {email} successfully deleted.");
+                    return Ok($"Account with ID {id} successfully deleted.");
                 }
                 else
                 {
@@ -248,7 +244,7 @@ namespace MyCode_Backend_Server.Controllers
             catch (DbUpdateConcurrencyException ex)
             {
                 _logger.LogError($"Concurrency error during account deletion: {ex.Message}", ex);
-                return Ok($"Account with email {email} successfully deleted.");
+                return Ok($"Account with ID {id} successfully deleted.");
             }
             catch (Exception e)
             {

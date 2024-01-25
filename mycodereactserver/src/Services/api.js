@@ -67,3 +67,16 @@ export const putApi = async (user, token, endpoint) => {
     const data = await response.json();
     return data;
 };
+
+export const deleteApi = async (token, endpoint) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    return response.status;
+};
+

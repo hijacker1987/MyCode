@@ -21,7 +21,8 @@ const CodeUpdate = () => {
             try {
                 setLoading(true);
                 const token = getToken();
-                const data = await getApi(token, getCodesByUserId + codeId);
+                const apiUrl = `${getCodesByUserId}${codeId}`;
+                const data = await getApi(token, apiUrl);
                 setLoading(false);
                 setCodeData(data);
                 const decodedToken = jwtDecode(token);
@@ -48,7 +49,7 @@ const CodeUpdate = () => {
                 setLoading(false);
                 if (data) {
                     setCodeData(data);
-                    navigate("/");
+                    navigate(-1);
                 } else {
                     setUpdateError("Update was unsuccessful.");
                 }

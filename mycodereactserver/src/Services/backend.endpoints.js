@@ -16,7 +16,7 @@ const u = "users/"
     export const changePassword = `${u}changePassword`;         //Authorized to admin too
 
     //DELETE
-    export const deleteAccount = `${u}delete`;
+    export const deleteAccount = `${u}delete-`; //{id}
 
 //CODES
     //GET
@@ -44,4 +44,5 @@ const u = "users/"
     export const codeSuperUpdate = `${a}acu-`; //{id}
 
     //DELETE
-    export const deleteSuperCode = `${a}ad-`; //{id}
+    export const deleteSuperUser = `${a}adu-`; //{id}
+    export const deleteSuperCode = `${a}adc-`; //{id}

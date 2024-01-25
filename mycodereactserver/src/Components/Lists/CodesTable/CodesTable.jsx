@@ -1,14 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
+import DeleteActions from "../../Delete/DeleteActions";
 import { Link } from "react-router-dom";
 import { cUpdate } from "../../../Services/frontend.endpoints";
+import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import { TableContainer } from "../../Styles/TableContainer.styled";
-import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
+import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 
-const CodesTable = ({ codes, headers }) => {
-    if (!codes || codes.length === 0) {
+const CodesTable = ({ codes, headers, role }) => {
+    const [updatedCodes, setUpdatedCodes] = useState(codes);
+
+    if (!updatedCodes || updatedCodes.length === 0) {
         return <p>No code data available.</p>;
     }
+
+    const handleDelete = (codeId) => {
+        const deleteUrl = role === "Admin" ? deleteSuperCode : deleteCode;
+
+        DeleteActions.deleteRecord(
+            `${deleteUrl}${codeId}`,
+            () => {
+                console.log("Code deleted successfully");
+                setUpdatedCodes((prevCodes) => prevCodes.filter((code) => code.id !== codeId));
+            },
+            () => {
+                console.error("Error deleting code");
+            }
+        );
+    };
 
     return (
         <TableContainer>
@@ -21,8 +40,8 @@ const CodesTable = ({ codes, headers }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {codes &&
-                        codes.map((code, index) => (
+                    {updatedCodes &&
+                        updatedCodes.map((code, index) => (
                             <React.Fragment key={code.id}>
                                 <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
                                     <StyledTd>{index + 1}</StyledTd>
@@ -35,6 +54,7 @@ const CodesTable = ({ codes, headers }) => {
                                         <Link to={`${cUpdate}${code.id}`}>
                                             <ButtonContainer type="button">Edit</ButtonContainer>
                                         </Link>
+                                        <ButtonContainer type="button" onClick={() => handleDelete(code.id)}>Delete</ButtonContainer>
                                     </StyledTd>
                                 </StyledTr>
                                 <RowSpacer />
