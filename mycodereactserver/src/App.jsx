@@ -5,7 +5,7 @@ import "./App.css";
 
 import { uLogin, errorOccured,
          uReg, uUpdateOwn, uUpdate, uPwChange,
-         cReg, cUpdateOwn, cUpdate, cOwn,
+         cReg, cUpdateOwn, cUpdate, cOwn, cOthers,
          uList, cList
        } from "../src/Services/Frontend.Endpoints";
 
@@ -58,7 +58,11 @@ function App() {
                 },
                 {
                     path: cOwn,
-                    element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={uLogin} />
+                },
+                {
+                    path: cOthers,
+                    element: isAuthenticated ? <CodesList type="byVis" /> : <Navigate to={uLogin} />
                 },
                 {
                     path: cUpdateOwn,
@@ -78,7 +82,7 @@ function App() {
                 },
                 {
                     path: cList,
-                    element: isAuthenticated ? <CodesList /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={uLogin} />
                 },
                 {
                     path: errorOccured,

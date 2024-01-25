@@ -70,7 +70,7 @@ namespace MyCode_Backend_Server.Controllers
                 }
 
                 var codes = _dataContext.CodesDb!
-                                        .Where(c => c.IsVisible)
+                                        .Where(c => c.IsVisible && c.UserId != userIdGuid)
                                         .ToList();
 
                 return Ok(codes);

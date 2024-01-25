@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, uList, cList } from "../../Services/Frontend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris, deleteAccount } from "../../Services/Backend.Endpoints";
 import DeleteActions from "../../Components/Delete/DeleteActions";
 import Cookies from "js-cookie";
@@ -126,9 +126,12 @@ const Layout = () => {
                                     <Link to={cOwn} className="link">
                                         <ButtonContainer type="button">My Codes</ButtonContainer>
                                     </Link>
+                                    <Link to={cOthers} className="link">
+                                        <ButtonContainer type="button">Visible Codes</ButtonContainer>
+                                    </Link>
                                     <Link to={uUpdateOwn} className="link">
                                         <ButtonContainer type="button">My Account</ButtonContainer>
-                                        </Link>
+                                    </Link>
                                     <ButtonContainer type="button" onClick={() => handleDelete(updateUrl)}>
                                         Delete Account
                                     </ButtonContainer>

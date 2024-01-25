@@ -6,7 +6,7 @@ import Loading from "../../Components/Loading/Loading";
 import ErrorPage from "../Service/ErrorPage";
 import Cookies from "js-cookie";
 
-const GenericList = ({ endpoint, headers, role, type }) => {
+const GenericList = ({ endpoint, headers, role, type, auth }) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
     const [data, setData] = useState(null);
@@ -45,7 +45,7 @@ const GenericList = ({ endpoint, headers, role, type }) => {
     return (
         <div>
             {errorMessage === "" ? (
-                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} /> :
+                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} type={auth} /> :
                                    <UsersTable users={data} headers={headers} role={role} />
             ) : (
                 <ErrorPage errorMessage={errorMessage} />

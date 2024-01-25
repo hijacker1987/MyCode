@@ -7,8 +7,9 @@ import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 
-const CodesTable = ({ codes, headers, role }) => {
+const CodesTable = ({ codes, headers, role, type }) => {
     const [updatedCodes, setUpdatedCodes] = useState(codes);
+    const isAllowed = type === "byAuth";
 
     if (!updatedCodes || updatedCodes.length === 0) {
         return <p>No code data available.</p>;
@@ -50,12 +51,14 @@ const CodesTable = ({ codes, headers, role }) => {
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
                                     <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
-                                    <StyledTd>
-                                        <Link to={`${cUpdate}${code.id}`}>
-                                            <ButtonContainer type="button">Edit</ButtonContainer>
-                                        </Link>
-                                        <ButtonContainer type="button" onClick={() => handleDelete(code.id)}>Delete</ButtonContainer>
-                                    </StyledTd>
+                                    {isAllowed && (
+                                        <StyledTd>
+                                            <Link to={`${cUpdate}${code.id}`}>
+                                                <ButtonContainer type="button">Edit</ButtonContainer>
+                                            </Link>
+                                            <ButtonContainer type="button" onClick={() => handleDelete(code.id)}>Delete</ButtonContainer>
+                                        </StyledTd>
+                                    )}
                                 </StyledTr>
                                 <RowSpacer />
                             </React.Fragment>
