@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApi, patchApi } from "../Services/Api";
-import { userById, changePassword } from "../Services/Backend.Endpoints";
+import { userById, getUser, changePassword } from "../Services/Backend.Endpoints";
 import { jwtDecode } from "jwt-decode";
 import PassChange from "../Components/PassChange/PassChange";
 import Loading from "../Components/Loading/Loading";
@@ -22,8 +22,11 @@ const PasswordChange = () => {
             if (typeof token === "string" && token.length > 0) {
                 const decodedToken = jwtDecode(token);
                 const userIdFromToken = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" || []];
+                const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
 
-                getApi(token, userById + userIdFromToken)
+                const apiEndpoint = role === "Admin" ? `${userById}${userIdFromToken}` : getUser;
+
+                getApi(token, apiEndpoint)
                     .then((getUserData) => {
                         setLoading(false);
                         setUserData(getUserData);
