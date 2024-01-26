@@ -20,13 +20,8 @@ const PasswordChange = () => {
             const token = Cookies.get("jwtToken");
 
             if (typeof token === "string" && token.length > 0) {
-                const decodedToken = jwtDecode(token);
-                const userIdFromToken = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" || []];
-                const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
 
-                const apiEndpoint = role === "Admin" ? `${userById}${userIdFromToken}` : getUser;
-
-                getApi(token, apiEndpoint)
+                getApi(token, getUser)
                     .then((getUserData) => {
                         setLoading(false);
                         setUserData(getUserData);
