@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { getToken, getUserRoles, getUserIdFromToken } from "../../Services/AuthService";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
@@ -12,7 +12,7 @@ import "../../index.css";
 
 const Layout = () => {
     const location = useLocation();
-    const [jwtToken, setJwtToken] = useState(Cookies.get("jwtToken"));
+    const [jwtToken, setJwtToken] = useState(getToken);
     const [userRoles, setUserRoles] = useState([]);
     const [updateUrl, setUpdateUrl] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
@@ -20,15 +20,13 @@ const Layout = () => {
 
     useEffect(() => {
         try {
-            const token = Cookies.get("jwtToken");
+            const token = getToken();
 
             if (typeof token === "string" && token.length > 0) {
-                setJwtToken(token);
-
-                const decodedToken = jwtDecode(token);
-                const roles = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
-                const userIdFromToken = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" || []];
+                const roles = getUserRoles();
+                const userIdFromToken = getUserIdFromToken();
                 
+                setJwtToken(token);
                 setUserRoles(roles);
                 setUpdateUrl(userIdFromToken);
             }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
+import { getToken } from "../Services/AuthService";
 import { userLogin } from "../Services/Backend.Endpoints";
 import { jwtDecode } from "jwt-decode";
 import Login from "../Components/Login/Login";
@@ -25,6 +26,7 @@ const UserLogin = () => {
                     Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
 
                     navigate("/");
+                    window.location.reload();
                 } else {
                     setLoginError("An error occurred during login. Please try again.");
                 }
@@ -36,7 +38,7 @@ const UserLogin = () => {
     };
 
     const checkTokenExpiration = () => {
-        const token = Cookies.get("jwtToken");
+        const token = getToken();
         if (token) {
             const decodedToken = jwtDecode(token);
             const expirationTime = decodedToken.exp * 1000;

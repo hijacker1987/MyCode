@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApiV2 } from "../Services/Api";
+import { getToken } from "../Services/AuthService";
 import { codeRegistration } from "../Services/Backend.Endpoints";
 import CodeForm from "../Components/Forms/CodeForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
-import Cookies from "js-cookie";
 
 const CodeRegister = () => {
     const navigate = useNavigate();
@@ -14,7 +14,6 @@ const CodeRegister = () => {
 
     const handleCreateCode = (code) => {
         setLoading(true);
-
         const token = getToken();
 
         postApiV2(code, token, codeRegistration)
@@ -31,10 +30,6 @@ const CodeRegister = () => {
                 console.error("Error occurred during registration:", error);
             });
     };
-
-    const getToken = () => {
-        return Cookies.get("jwtToken");
-    }
 
     const handleCancel = () => {
         navigate("/");

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../Services/Api";
+import { getToken, getUserRoles } from "../Services/AuthService";
 import { getCodesByUserId, codeUpdate, codeSuperUpdate } from "../Services/Backend.Endpoints";
-import { jwtDecode } from "jwt-decode";
 import CodeForm from "../Components/Forms/CodeForm/CodeForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
-import Cookies from "js-cookie";
 
 const CodeUpdate = () => {
     const navigate = useNavigate();
@@ -21,12 +20,12 @@ const CodeUpdate = () => {
             try {
                 setLoading(true);
                 const token = getToken();
+                const role = getUserRoles();
                 const apiUrl = `${getCodesByUserId}${codeId}`;
                 const data = await getApi(token, apiUrl);
+
                 setLoading(false);
                 setCodeData(data);
-                const decodedToken = jwtDecode(token);
-                const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
                 setUserRole(role);
             } catch (error) {
                 setLoading(false);
@@ -59,10 +58,6 @@ const CodeUpdate = () => {
                 console.error("Error occurred during update: ", error);
             });
     };
-
-    const getToken = () => {
-        return Cookies.get("jwtToken");
-    }
 
     const handleCancel = () => {
         navigate(-1);

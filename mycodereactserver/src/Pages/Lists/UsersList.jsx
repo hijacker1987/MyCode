@@ -1,13 +1,10 @@
-import { jwtDecode } from "jwt-decode";
+import { getUserRoles } from "../../Services/AuthService";
 import { getAllUsers } from "../../Services/Backend.Endpoints";
 import GenericList from "./GenericList";
-import Cookies from "js-cookie";
 
 const UsersList = () => {
     const headers = ["Counter", "Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number", "Modify"];
-    const token = Cookies.get("jwtToken");
-    const decodedToken = jwtDecode(token);
-    const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
+    const role = getUserRoles();
 
     return <GenericList
         endpoint={getAllUsers}

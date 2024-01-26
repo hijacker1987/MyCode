@@ -1,10 +1,10 @@
-import Cookies from "js-cookie";
+import { getToken } from "../../Services/AuthService";
 import { deleteApi } from "../../Services/Api";
 
 const DeleteActions = {
     deleteRecord: async (endpoint, onSuccess, onError) => {
         try {
-            const token = Cookies.get("jwtToken");
+            const token = getToken();
             await deleteApi(token, endpoint);
             onSuccess(); // Trigger success callback
         } catch (error) {
