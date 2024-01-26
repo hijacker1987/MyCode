@@ -79,4 +79,3 @@ export const deleteApi = async (token, endpoint) => {
 
     return response.status;
 };
-

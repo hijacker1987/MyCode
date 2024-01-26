@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApi, patchApi } from "../Services/Api";
-import { userById, getUser, changePassword } from "../Services/Backend.Endpoints";
-import { jwtDecode } from "jwt-decode";
+import { getToken } from "../Services/AuthService";
+import { getUser, changePassword } from "../Services/Backend.Endpoints";
 import PassChange from "../Components/PassChange/PassChange";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
-import Cookies from "js-cookie";
 
 const PasswordChange = () => {
     const navigate = useNavigate();
@@ -17,10 +16,9 @@ const PasswordChange = () => {
     useEffect(() => {
         setLoading(true);
         try {
-            const token = Cookies.get("jwtToken");
+            const token = getToken();
 
             if (typeof token === "string" && token.length > 0) {
-
                 getApi(token, getUser)
                     .then((getUserData) => {
                         setLoading(false);
@@ -59,10 +57,6 @@ const PasswordChange = () => {
     const handleCancel = () => {
         navigate("/");
     };
-
-    const getToken = () => {
-        return Cookies.get("jwtToken");
-    }
 
     if (loading) {
         return <Loading />;

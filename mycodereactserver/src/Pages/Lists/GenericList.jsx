@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { getApi } from "../../Services/Api";
+import { getToken } from "../../Services/AuthService";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
 import ErrorPage from "../Service/ErrorPage";
-import Cookies from "js-cookie";
 
 const GenericList = ({ endpoint, headers, role, type, auth }) => {
     const [loading, setLoading] = useState(false);
@@ -33,10 +33,6 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
 
         fetchData();
     }, [endpoint]);
-
-    const getToken = () => {
-        return Cookies.get("jwtToken");
-    };
 
     if (loading) {
         return <Loading />;

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../Services/Api";
+import { getToken, getUserRoles } from "../Services/AuthService";
 import { getUser, userById, userUpdate, userSuperUpdate } from "../Services/Backend.Endpoints";
-import { jwtDecode } from "jwt-decode";
 import UserForm from "../Components/Forms/UserForm/UserForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
-import Cookies from "js-cookie";
 
 const UserUpdate = () => {
     const navigate = useNavigate();
@@ -22,8 +21,7 @@ const UserUpdate = () => {
             try {
                 setLoading(true);
                 const token = getToken();
-                const decodedToken = jwtDecode(token);
-                const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
+                const role = getUserRoles();
                 setUserRole(role);
 
                 const userEndpoint = role === "Admin" ? `${userById}${userId}` : getUser;
@@ -70,10 +68,6 @@ const UserUpdate = () => {
                 }
             });
     };
-
-    const getToken = () => {
-        return Cookies.get("jwtToken");
-    }
 
     const handleCancel = () => {
         navigate(-1);
