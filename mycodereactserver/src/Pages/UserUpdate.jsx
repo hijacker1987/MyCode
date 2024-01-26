@@ -50,7 +50,7 @@ const UserUpdate = () => {
         setLoading(true);
         const token = getToken();
         const endpoint = userRole.includes("Admin") ? userSuperUpdate : userUpdate;
-        const apiUrl = userRole.includes("Admin") ? `${endpoint}${user}` : `${endpoint}${userDataId}`;
+        const apiUrl = userRole.includes("Admin") ? `${endpoint}${user.id}` : `${endpoint}${userDataId}`;
 
         putApi(user, token, apiUrl)
             .then((data) => {
@@ -65,6 +65,9 @@ const UserUpdate = () => {
             .catch((error) => {
                 setLoading(false);
                 console.error("Error occurred during update: ", error);
+                if (error.response) {
+                    console.error("Error Response Data:", error.response.data);
+                }
             });
     };
 
