@@ -88,6 +88,7 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                                 setRecordPerPage={setRecordPerPage}
                                 paginationSlice={paginationSlice}
                                 setPaginationSlice={setPaginationSlice}
+                                totalPages={Math.ceil(updatedCodes.length / recordPerPage)}
                             />
                         </td>
                     </tr>

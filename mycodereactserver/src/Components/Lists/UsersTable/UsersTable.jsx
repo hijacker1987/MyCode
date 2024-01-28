@@ -86,6 +86,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 setRecordPerPage={setRecordPerPage}
                                 paginationSlice={paginationSlice}
                                 setPaginationSlice={setPaginationSlice}
+                                totalPages={Math.ceil(updatedUsers.length / recordPerPage)}
                             />
                         </td>
                     </tr>
