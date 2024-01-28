@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/DeleteActions";
 import { Link } from "react-router-dom";
-import { cUpdate } from "../../../Services/frontend.endpoints";
+import { cList, cUpdate } from "../../../Services/frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 
-const CodesTable = ({ codes, headers, role, type }) => {
+const CodesTable = ({ codes, headers, role, page, type }) => {
     const [updatedCodes, setUpdatedCodes] = useState(codes);
+    const [recordPerPage, setRecordPerPage] = useState(5);
+    const [paginationSlice, setPaginationSlice] = useState({ first: 0, second: recordPerPage - 1 });
     const isAllowed = type === "byAuth";
+
+    useEffect(() => {
+        const initialPage = page ? Math.max(1, Number(page)) : 1;
+
+        setPaginationSlice({ first: initialPage * recordPerPage - recordPerPage, second: initialPage * recordPerPage });
+    }, [page, recordPerPage]);
+
+    useEffect(() => {
+        setUpdatedCodes(codes);
+    }, [codes]);
 
     if (!updatedCodes || updatedCodes.length === 0) {
         return <p>No code data available.</p>;
@@ -42,7 +55,7 @@ const CodesTable = ({ codes, headers, role, type }) => {
                 </thead>
                 <tbody>
                     {updatedCodes &&
-                        updatedCodes.map((code, index) => (
+                        updatedCodes.slice(paginationSlice.first, paginationSlice.second).map((code, index) => (
                             <React.Fragment key={code.id}>
                                 <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
                                     <StyledTd>{index + 1}</StyledTd>
@@ -64,6 +77,22 @@ const CodesTable = ({ codes, headers, role, type }) => {
                             </React.Fragment>
                         ))}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colSpan={headers.length}>
+                            <ConstructPagination
+                                element={codes}
+                                url={cList}
+                                page={Number(page)}
+                                recordPerPage={recordPerPage}
+                                setRecordPerPage={setRecordPerPage}
+                                paginationSlice={paginationSlice}
+                                setPaginationSlice={setPaginationSlice}
+                                totalPages={Math.ceil(updatedCodes.length / recordPerPage)}
+                            />
+                        </td>
+                    </tr>
+                </tfoot>
             </StyledTable>
         </TableContainer>
     );

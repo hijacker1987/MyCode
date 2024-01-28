@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 import { getApi } from "../../Services/Api";
 import { getToken } from "../../Services/AuthService";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
@@ -10,6 +11,7 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
     const [data, setData] = useState(null);
+    const { page } = useParams();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,8 +43,8 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
     return (
         <div>
             {errorMessage === "" ? (
-                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} type={auth} /> :
-                                   <UsersTable users={data} headers={headers} role={role} />
+                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} page={page} type={auth} /> :
+                                   <UsersTable users={data} headers={headers} role={role} page={page} />
             ) : (
                 <ErrorPage errorMessage={errorMessage} />
             )}

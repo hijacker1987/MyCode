@@ -13,12 +13,12 @@ export const uPwChange = `${u}pwchange`;
 
 //CODES
 export const cReg = `${c}register`;
-export const cOwn = `${c}my-codes`;
-export const cOthers = `${c}other's-codes`;
+export const cOwn = `${c}my-codes/`;
+export const cOthers = `${c}other's-codes/`;
 export const cUpdateOwn = `${c}updateCodeData/`; //codeId
 export const cUpdate = `${c}updateCodeData/`;    //codeId
 
 //ADMIN
-export const uList = `${a}users`;
-export const cList = `${a}codes`;
+export const uList = `${a}users/`;
+export const cList = `${a}codes/`;
 export const uUpdate = `${a}updateUserData/`;   //userId
