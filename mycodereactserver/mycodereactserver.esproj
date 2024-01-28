@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\Components\Forms\CodeForm\" />
+    <Folder Include="src\Components\Forms\PaginationForm\" />
     <Folder Include="src\Components\Lists\CodesTable\" />
     <Folder Include="src\Components\Lists\UsersTable\" />
   </ItemGroup>

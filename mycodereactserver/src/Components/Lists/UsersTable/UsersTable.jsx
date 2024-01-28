@@ -1,22 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/DeleteActions";
 import { Link } from "react-router-dom";
 import { formatElapsedTime } from "../../../Services/elapsedTime";
-import { uUpdate } from "../../../Services/frontend.endpoints";
+import { uList, uUpdate } from "../../../Services/frontend.endpoints";
 import { deleteSuperUser } from "../../../Services/Backend.Endpoints";
 import { TableContainer } from "../../Styles/TableContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 
-const UsersTable = ({ users, headers, role }) => {
+const UsersTable = ({ users, headers, role, page }) => {
     const [updatedUsers, setUpdatedUsers] = useState(users);
+    const [recordPerPage, setRecordPerPage] = useState(5);
+    const [paginationSlice, setPaginationSlice] = useState({ first: 0, second: recordPerPage - 1 });
+
+    useEffect(() => {
+        const initialPage = page ? Math.max(1, Number(page)) : 1;
+
+        setPaginationSlice({ first: initialPage * recordPerPage - recordPerPage, second: initialPage * recordPerPage });
+    }, [page, recordPerPage]);
+
+    useEffect(() => {
+        setUpdatedUsers(users);
+    }, [users]);
 
     if (!updatedUsers || updatedUsers.length === 0) {
         return <p>No user data available.</p>;
     }
 
     const handleDelete = (userId) => {
-
         if (role === "Admin") {
             DeleteActions.deleteRecord(
                 `${deleteSuperUser}${userId}`,
@@ -43,7 +55,7 @@ const UsersTable = ({ users, headers, role }) => {
                 </thead>
                 <tbody>
                     {updatedUsers &&
-                        updatedUsers.map((user, index) => (
+                        updatedUsers.slice(paginationSlice.first, paginationSlice.second).map((user, index) => (
                         <React.Fragment key={user.id}>
                             <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
                                 <StyledTd>{index + 1}</StyledTd>
@@ -63,6 +75,21 @@ const UsersTable = ({ users, headers, role }) => {
                         </React.Fragment>
                     ))}
                 </tbody>
+            <tfoot>
+                <tr>
+                    <td colSpan={headers.length}>
+                        <ConstructPagination
+                            element={users}
+                            url={uList}
+                            page={Number(page)}
+                            recordPerPage={recordPerPage}
+                            setRecordPerPage={setRecordPerPage}
+                            paginationSlice={paginationSlice}
+                            setPaginationSlice={setPaginationSlice}
+                        />
+                    </td>
+                </tr>
+            </tfoot>
             </StyledTable>
         </TableContainer>
     );

@@ -106,7 +106,7 @@ const Layout = () => {
                             </Link>
                             {userRoles.includes("Admin") ? (
                                 <>
-                                    <Link to={uList} className="link">
+                                    <Link to={`${uList}/1`} className="link">
                                         <ButtonContainer type="button">List Users</ButtonContainer>
                                     </Link>
                                     <Link to={cList} className="link">

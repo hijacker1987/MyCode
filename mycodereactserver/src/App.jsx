@@ -77,7 +77,7 @@ function App() {
                     element: isAuthenticated ? <CodeUpdate /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: uList,
+                    path: `${uList}/:page`,
                     element: isAuthenticated ? <UsersList /> : <Navigate to={uLogin} />
                 },
                 {
