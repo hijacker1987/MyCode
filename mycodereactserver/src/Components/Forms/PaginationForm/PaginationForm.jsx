@@ -14,17 +14,17 @@ const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPa
 
     const handlePreviousButton = () => {
         const prevPage = Math.max(1, Number(page) - 1);
-        navigate(`${url}/${prevPage}`);
+        navigate(`${url}${prevPage}`);
     };
 
     const handleNextButton = () => {
         const nextPage = Math.min(totalPages, Number(page) + 1);
-        navigate(`${url}/${nextPage}`);
+        navigate(`${url}${nextPage}`);
     };
 
     const handleRecordPerPageButton = (number) => {
         setRecordPerPage(Number(number));
-        navigate(`${url}/${Math.max(1, Math.ceil(paginationSlice.second / Number(number)))}`);
+        navigate(`${url}${Math.max(1, Math.ceil(paginationSlice.second / Number(number)))}`);
         setPaginationSlice((prevSlice) => {
             return {
                 ...prevSlice,

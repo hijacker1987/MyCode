@@ -43,7 +43,7 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
     return (
         <div>
             {errorMessage === "" ? (
-                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} type={auth} /> :
+                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} page={page} type={auth} /> :
                                    <UsersTable users={data} headers={headers} role={role} page={page} />
             ) : (
                 <ErrorPage errorMessage={errorMessage} />

@@ -106,10 +106,10 @@ const Layout = () => {
                             </Link>
                             {userRoles.includes("Admin") ? (
                                 <>
-                                    <Link to={`${uList}/1`} className="link">
+                                    <Link to={`${uList}1`} className="link">
                                         <ButtonContainer type="button">List Users</ButtonContainer>
                                     </Link>
-                                    <Link to={cList} className="link">
+                                    <Link to={`${cList}1`} className="link">
                                         <ButtonContainer type="button">List Codes</ButtonContainer>
                                     </Link>
                                     <Link to={uPwChange} className="link">
@@ -120,11 +120,11 @@ const Layout = () => {
                                 <>
                                     <Link to={cReg} className="link">
                                         <ButtonContainer type="button">Add Code</ButtonContainer>
-                                    </Link>
-                                    <Link to={cOwn} className="link">
+                                        </Link>
+                                        <Link to={`${cOwn}1`} className="link">
                                         <ButtonContainer type="button">My Codes</ButtonContainer>
                                     </Link>
-                                    <Link to={cOthers} className="link">
+                                        <Link to={`${cOthers}1`} className="link">
                                         <ButtonContainer type="button">Visible Codes</ButtonContainer>
                                     </Link>
                                     <Link to={uUpdateOwn} className="link">

@@ -75,21 +75,21 @@ const UsersTable = ({ users, headers, role, page }) => {
                         </React.Fragment>
                     ))}
                 </tbody>
-            <tfoot>
-                <tr>
-                    <td colSpan={headers.length}>
-                        <ConstructPagination
-                            element={users}
-                            url={uList}
-                            page={Number(page)}
-                            recordPerPage={recordPerPage}
-                            setRecordPerPage={setRecordPerPage}
-                            paginationSlice={paginationSlice}
-                            setPaginationSlice={setPaginationSlice}
-                        />
-                    </td>
-                </tr>
-            </tfoot>
+                <tfoot>
+                    <tr>
+                        <td colSpan={headers.length}>
+                            <ConstructPagination
+                                element={users}
+                                url={uList}
+                                page={Number(page)}
+                                recordPerPage={recordPerPage}
+                                setRecordPerPage={setRecordPerPage}
+                                paginationSlice={paginationSlice}
+                                setPaginationSlice={setPaginationSlice}
+                            />
+                        </td>
+                    </tr>
+                </tfoot>
             </StyledTable>
         </TableContainer>
     );

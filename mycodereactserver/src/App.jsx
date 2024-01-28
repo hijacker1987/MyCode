@@ -57,11 +57,11 @@ function App() {
                     element: isAuthenticated ? <CodeRegister /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: cOwn,
+                    path: `${cOwn}:page`,
                     element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: cOthers,
+                    path: `${cOthers}:page`,
                     element: isAuthenticated ? <CodesList type="byVis" /> : <Navigate to={uLogin} />
                 },
                 {
@@ -77,11 +77,11 @@ function App() {
                     element: isAuthenticated ? <CodeUpdate /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: `${uList}/:page`,
+                    path: `${uList}:page`,
                     element: isAuthenticated ? <UsersList /> : <Navigate to={uLogin} />
                 },
                 {
-                    path: cList,
+                    path: `${cList}:page`,
                     element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={uLogin} />
                 },
                 {
