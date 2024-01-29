@@ -17,6 +17,8 @@ const Layout = () => {
     const location = useLocation();
     const [jwtToken, setJwtToken] = useState(getToken);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [userRoles, setUserRoles] = useState([]);
     const [updateUrl, setUpdateUrl] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
@@ -40,9 +42,14 @@ const Layout = () => {
     }, [location]);
 
     const handleDelete = (userId) => {
+        setUserToDeleteId(userId);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = () => {
         if (userRoles.includes("User")) {
             DeleteActions.deleteRecord(
-                `${deleteAccount}${userId}`,
+                `${deleteAccount}${userToDeleteId}`,
                 () => {
                     console.log("User deleted successfully");
 
@@ -50,13 +57,14 @@ const Layout = () => {
                     setUserRoles([]);
                     setUpdateUrl([]);
                     handleLogout();
-                    navigate("/", { replace: true });
+                    navigate("/");
                 },
                 () => {
                     console.error("Error deleting user");
                 }
             );
         }
+        setShowDeleteModal(false);
     };
 
     useEffect(() => {
@@ -167,6 +175,32 @@ const Layout = () => {
                                     </ButtonContainer>
                                     <ButtonContainer variant="primary" onClick={confirmLogout}>
                                         Logout
+                                    </ButtonContainer>
+                                </ButtonRowContainer>
+                            </Modal.Footer>
+                        </StyledModal>
+                    </ModalContainer>
+                </BlurredOverlay>
+            )}
+            {showDeleteModal && (
+                <BlurredOverlay>
+                    <ModalContainer>
+                        <StyledModal>
+                            <TextContainer>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Delete Confirmation</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    Are you sure you want to delete your Account?
+                                </Modal.Body>
+                            </TextContainer>
+                            <Modal.Footer>
+                                <ButtonRowContainer>
+                                    <ButtonContainer variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                                        Cancel
+                                    </ButtonContainer>
+                                    <ButtonContainer variant="primary" onClick={confirmDelete}>
+                                        Delete
                                     </ButtonContainer>
                                 </ButtonRowContainer>
                             </Modal.Footer>
