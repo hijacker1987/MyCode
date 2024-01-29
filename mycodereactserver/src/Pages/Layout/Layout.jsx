@@ -3,16 +3,20 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getToken, getUserRoles, getUserIdFromToken } from "../../Services/AuthService";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
+import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
+import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris, deleteAccount } from "../../Services/Backend.Endpoints";
 import DeleteActions from "../../Components/Delete/DeleteActions";
+import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
 import "../../index.css";
 
 const Layout = () => {
     const location = useLocation();
     const [jwtToken, setJwtToken] = useState(getToken);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [userRoles, setUserRoles] = useState([]);
     const [updateUrl, setUpdateUrl] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
@@ -74,9 +78,14 @@ const Layout = () => {
     }, []);
 
     const handleLogout = () => {
+        setShowLogoutModal(true);
+    };
+
+    const confirmLogout = () => {
         Cookies.remove("jwtToken");
+        setShowLogoutModal(false);
         navigate("/");
-        setJwtToken(null);
+        window.location.reload();
     };
 
     return (
@@ -139,6 +148,32 @@ const Layout = () => {
                         )}
             </nav>
             <Outlet />
+            {showLogoutModal && (
+                <BlurredOverlay>
+                    <ModalContainer>
+                        <StyledModal>
+                            <TextContainer>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Logout Confirmation</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    Are you sure you want to logout?
+                                </Modal.Body>
+                            </TextContainer>
+                            <Modal.Footer>
+                                <ButtonRowContainer>
+                                    <ButtonContainer variant="secondary" onClick={() => setShowLogoutModal(false)}>
+                                        Cancel
+                                    </ButtonContainer>
+                                    <ButtonContainer variant="primary" onClick={confirmLogout}>
+                                        Logout
+                                    </ButtonContainer>
+                                </ButtonRowContainer>
+                            </Modal.Footer>
+                        </StyledModal>
+                    </ModalContainer>
+                </BlurredOverlay>
+            )}
         </div>
     );
 };

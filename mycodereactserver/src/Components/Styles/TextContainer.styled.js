@@ -3,10 +3,10 @@ import styled from "styled-components";
 export const TextContainer = styled.div`
   margin-top: 23px;
   margin-bottom: 14px;
-  margin-left: 80px;
+  margin-left: 14px;
   position: relative;
-  width: 98px;
-  height: 16px;
+  width: auto;
+  height: auto;
   background-color: #000;
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@ export const TextContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   border: none;
-  padding: 13px;
+  padding: 5%;
   gap: 12px;
   border-radius: 8px;
 
@@ -24,8 +24,8 @@ export const TextContainer = styled.div`
     inset: 0;
     left: -2px;
     margin-top: -3px;
-    width: 128px;
-    height: 47px;
+    width: 102%;
+    height: 103%;
     border-radius: 10px;
     background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
     z-index: -10;
@@ -33,6 +33,7 @@ export const TextContainer = styled.div`
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 `;
+
 
 export const ErrorTextContainerRed = styled.div`
   position: relative;
