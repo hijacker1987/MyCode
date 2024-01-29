@@ -24,8 +24,8 @@ export const TextContainer = styled.div`
     inset: 0;
     left: -2px;
     margin-top: -3px;
-    width: 102%;
-    height: 103%;
+    width: 103%;
+    height: 111%;
     border-radius: 10px;
     background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
     z-index: -10;

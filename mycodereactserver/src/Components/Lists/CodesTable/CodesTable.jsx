@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
 import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/DeleteActions";
+import Modal from 'react-bootstrap/Modal';
 import { Link } from "react-router-dom";
 import { cList, cUpdate } from "../../../Services/frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
+import { TextContainer } from "../../Styles/TextContainer.styled";
+import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
+import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 
 const CodesTable = ({ codes, headers, role, page, type }) => {
     const [updatedCodes, setUpdatedCodes] = useState(codes);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedCodeId, setSelectedCodeId] = useState(null);
     const [recordPerPage, setRecordPerPage] = useState(5);
     const [paginationSlice, setPaginationSlice] = useState({ first: 0, second: recordPerPage - 1 });
     const isAllowed = type === "byAuth";
@@ -29,13 +35,20 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
     }
 
     const handleDelete = (codeId) => {
+        setShowDeleteModal(true);
+        setSelectedCodeId(codeId);
+    };
+
+    const confirmDelete = () => {
         const deleteUrl = role === "Admin" ? deleteSuperCode : deleteCode;
 
         DeleteActions.deleteRecord(
-            `${deleteUrl}${codeId}`,
+            `${deleteUrl}${selectedCodeId}`,
             () => {
                 console.log("Code deleted successfully");
-                setUpdatedCodes((prevCodes) => prevCodes.filter((code) => code.id !== codeId));
+                setUpdatedCodes((prevCodes) => prevCodes.filter((code) => code.id !== selectedCodeId));
+                setShowDeleteModal(false);
+                setSelectedCodeId(null);
             },
             () => {
                 console.error("Error deleting code");
@@ -69,7 +82,9 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                                             <Link to={`${cUpdate}${code.id}`}>
                                                 <ButtonContainer type="button">Edit</ButtonContainer>
                                             </Link>
-                                            <ButtonContainer type="button" onClick={() => handleDelete(code.id)}>Delete</ButtonContainer>
+                                            <ButtonContainer type="button" onClick={() => handleDelete(code.id)}>
+                                                Delete
+                                            </ButtonContainer>
                                         </StyledTd>
                                     )}
                                 </StyledTr>
@@ -94,6 +109,32 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                     </tr>
                 </tfoot>
             </StyledTable>
+            {showDeleteModal && (
+                <BlurredOverlay>
+                    <ModalContainer>
+                        <StyledModal>
+                            <TextContainer>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Delete Confirmation</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    Are you sure you want to delete this code?
+                                </Modal.Body>
+                            </TextContainer>
+                            <Modal.Footer>
+                                <ButtonRowContainer>
+                                    <ButtonContainer variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                                        Cancel
+                                    </ButtonContainer>
+                                    <ButtonContainer variant="primary" onClick={confirmDelete}>
+                                        Delete
+                                    </ButtonContainer>
+                                </ButtonRowContainer>
+                            </Modal.Footer>
+                        </StyledModal>
+                    </ModalContainer>
+                </BlurredOverlay>
+            )}
         </TableContainer>
     );
 };
