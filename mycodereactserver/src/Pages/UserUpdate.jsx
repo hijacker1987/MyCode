@@ -55,7 +55,7 @@ const UserUpdate = () => {
                 setLoading(false);
                 if (data) {
                     setUser(data);
-                    navigate("/");
+                    navigate(-1);
                 } else {
                     setUpdateError("Update was unsuccessful.");
                 }
