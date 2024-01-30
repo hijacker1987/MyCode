@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getToken, getUserRoles, getUserIdFromToken } from "../../Services/AuthService";
+import { toast } from "react-toastify";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
@@ -11,6 +12,7 @@ import { recentChuckNorris, deleteAccount } from "../../Services/Backend.Endpoin
 import DeleteActions from "../../Components/Delete/DeleteActions";
 import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
+import "react-toastify/dist/ReactToastify.css";
 import "../../index.css";
 
 const Layout = () => {
@@ -51,7 +53,16 @@ const Layout = () => {
             DeleteActions.deleteRecord(
                 `${deleteAccount}${userToDeleteId}`,
                 () => {
-                    console.log("User deleted successfully");
+                    toast.success("Successfully removed!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                    });
 
                     setJwtToken(null);
                     setUserRoles([]);
@@ -59,7 +70,16 @@ const Layout = () => {
                     confirmLogout();
                 },
                 () => {
-                    console.error("Error deleting user");
+                    toast.error("Unable to delete the acc!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
                 }
             );
         }
