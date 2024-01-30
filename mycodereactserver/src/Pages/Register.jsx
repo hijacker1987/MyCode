@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
 import { userRegistration } from "../Services/Backend.Endpoints";
+import { toast } from "react-toastify";
 import UserForm from "../Components/Forms/UserForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserRegister = () => {
     const navigate = useNavigate();
@@ -14,9 +16,32 @@ const UserRegister = () => {
     const handleCreateUser = (user) => {
         setLoading(true);
         postApi(user, userRegistration)
-            .then((data) => {
+            .then((res) => {
                 setLoading(false);
                 navigate("/");
+                if (res.status != 400) {
+                    toast.success("Successful Registration!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                    });
+                } else {
+                    toast.error("Unable to Register!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
+                }
             })
             .catch((error) => {
                 setLoading(false);
@@ -34,16 +59,11 @@ const UserRegister = () => {
 
     return <div>
                 {errorMessage == "" ? (
-                    <UserForm
-                        onSave={handleCreateUser}
-                        onCancel={handleCancel}
-                    />
-                ) : (
-                    <ErrorPage
-                        errorMessage={errorMessage}
-                    />
-                )}
-            </div>
+                                      <UserForm onSave={handleCreateUser} onCancel={handleCancel} />
+                                  ) : (
+                                      <ErrorPage errorMessage={errorMessage} />
+                                  )}
+           </div>
 };
 
 export default UserRegister;
