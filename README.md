@@ -48,8 +48,13 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
    - Linux: ~/. microsoft/usersecrets/<userSecretsId>/secrets.json
    - Mac: ~/. microsoft/usersecrets/<userSecretsId>/secrets.json
 
+  - Database can be initialized, the basic setup contains dummy data (30 users, and 100 codes being generated)
+
 ```json
 {
+  //Database Initialization
+  "InitDb": true,
+
   // Database Connection
   "ConnectionString": "YourDatabaseConnectionString",
   
