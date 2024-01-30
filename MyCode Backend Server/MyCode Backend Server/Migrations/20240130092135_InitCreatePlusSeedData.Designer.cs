@@ -12,8 +12,8 @@ using MyCode_Backend_Server.Data;
 namespace MyCode_Backend_Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240113075425_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240130092135_InitCreatePlusSeedData")]
+    partial class InitCreatePlusSeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,7 +163,8 @@ namespace MyCode_Backend_Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodeTitle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsBackend")
                         .HasColumnType("bit");
@@ -313,17 +314,12 @@ namespace MyCode_Backend_Server.Migrations
             modelBuilder.Entity("MyCode_Backend_Server.Models.Code", b =>
                 {
                     b.HasOne("MyCode_Backend_Server.Models.User", "User")
-                        .WithMany("Code")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MyCode_Backend_Server.Models.User", b =>
-                {
-                    b.Navigation("Code");
                 });
 #pragma warning restore 612, 618
         }
