@@ -48,14 +48,14 @@ namespace MyCode_Backend_Server
                 });
             });
 
-            var connection = _configuration["ConnectionString"];
-            var issuer = _configuration["IssueAudience"];
-            var issueSign = _configuration["IssueSign"];
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
+            var connection = _configuration["ConnectionString"];
             services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+            var issuer = _configuration["IssueAudience"];
+            var issueSign = _configuration["IssueSign"];
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
