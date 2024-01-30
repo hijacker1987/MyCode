@@ -11,8 +11,6 @@ namespace MyCode_Backend_Server.Data
         {
             context.Database.EnsureCreated();
 
-            Console.WriteLine(_configuration["InitDb"]);
-
             if (_configuration["InitDb"] == "False" || context.Users.Any())
             {
                 return;

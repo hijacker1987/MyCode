@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { postApiV2 } from "../Services/Api";
 import { getToken } from "../Services/AuthService";
 import { codeRegistration } from "../Services/Backend.Endpoints";
+import { toast } from "react-toastify";
 import CodeForm from "../Components/Forms/CodeForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
+import "react-toastify/dist/ReactToastify.css";
 
 const CodeRegister = () => {
     const navigate = useNavigate();
@@ -21,13 +23,32 @@ const CodeRegister = () => {
                 setLoading(false);
                 if (data) {
                     navigate(-1);
+                    toast.success("Successful code registration!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                    });
                 } else {
-                    setRegError("An error occurred during registration. Please try again.");
+                    toast.error("Unable to register the code!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
                 }
             })
             .catch((error) => {
                 setLoading(false);
-                console.error("Error occurred during registration:", error);
+                setRegError(`Error occurred during registration: ${error}`);
             });
     };
 
@@ -46,9 +67,7 @@ const CodeRegister = () => {
                 onCancel={handleCancel}
             />
         ) : (
-            <ErrorPage
-                errorMessage={errorMessage}
-            />
+            <ErrorPage errorMessage={errorMessage} />
         )}
     </div>
 };

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import reportWebVitals from "./reportWebVitals";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 import { uLogin, errorOccured,
@@ -95,6 +97,7 @@ function App() {
     return (
         <React.StrictMode>
             <RouterProvider router={router} />
+            <ToastContainer />
         </React.StrictMode>
     );
 }

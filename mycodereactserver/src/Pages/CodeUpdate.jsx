@@ -3,9 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../Services/Api";
 import { getToken, getUserRoles } from "../Services/AuthService";
 import { getCodesByUserId, codeUpdate, codeSuperUpdate } from "../Services/Backend.Endpoints";
+import { toast } from "react-toastify";
 import CodeForm from "../Components/Forms/CodeForm/CodeForm";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
+import "react-toastify/dist/ReactToastify.css";
 
 const CodeUpdate = () => {
     const navigate = useNavigate();
@@ -25,12 +27,24 @@ const CodeUpdate = () => {
                 const data = await getApi(token, apiUrl);
 
                 setLoading(false);
-                setCodeData(data);
-                setUserRole(role);
+                if (data) {
+                    setCodeData(data);
+                    setUserRole(role);
+                } else {
+                    toast.error("Unable to fetch the codes!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
+                }
             } catch (error) {
                 setLoading(false);
-                console.error('Error occurred while fetching user data:', error);
-                setUpdateError('An error occurred while fetching user data. Please try again.');
+                setUpdateError(`Error occurred while fetching code data: ${error}`);
             }
         };
 
@@ -49,13 +63,32 @@ const CodeUpdate = () => {
                 if (data) {
                     setCodeData(data);
                     navigate(-1);
+                    toast.success("Successful code update!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                    });
                 } else {
-                    setUpdateError("Update was unsuccessful.");
+                    toast.error("Unable to update the codes!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
                 }
             })
             .catch((error) => {
                 setLoading(false);
-                console.error("Error occurred during update: ", error);
+                setUpdateError(`Error occurred while updating code data: ${error}`);
             });
     };
 
@@ -76,9 +109,7 @@ const CodeUpdate = () => {
                 onCancel={handleCancel}
             />
         ) : (
-            <ErrorPage
-                errorMessage={errorMessage}
-            />
+            <ErrorPage errorMessage={errorMessage} />
         )}
     </div>
 };

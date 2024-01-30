@@ -138,7 +138,7 @@ export const CenteredContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   width: auto;
-  height: 20px;
+  height: auto;
   background-color: #000;
   color: white;
   justify-content: center, center;

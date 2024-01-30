@@ -1,6 +1,8 @@
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
+let tokenExpiredNotified = false;
+
 export const getToken = () => {
     return Cookies.get("jwtToken");
 };
