@@ -48,15 +48,14 @@ namespace MyCode_Backend_Server
                 });
             });
 
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ITokenService, TokenService>();
-
             var connection = _configuration["ConnectionString"];
-
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
-
             var issuer = _configuration["IssueAudience"];
             var issueSign = _configuration["IssueSign"];
+
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
@@ -90,7 +89,7 @@ namespace MyCode_Backend_Server
                     .AddEntityFrameworkStores<DataContext>();
         }
 
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, DataContext dataContext)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, DataContext dataContext, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -103,16 +102,13 @@ namespace MyCode_Backend_Server
 
             app.UseRouting();
 
+            var connection = _configuration["FEAddress"];
 
-                var connection = _configuration["FEAddress"];
-
-            app.UseCors(builder =>
-                {
-                    builder.WithOrigins(connection!)
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials();
-                });
+            app.UseCors(builder => { builder.WithOrigins(connection!)
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod()
+                                            .AllowCredentials();
+                                    });
 
             app.UseAuthentication();
 
@@ -121,6 +117,24 @@ namespace MyCode_Backend_Server
             if (env.IsEnvironment("Test"))
             {
                 await dataContext.Database.EnsureCreatedAsync();
+            }
+
+            if (dbInitializer != null)
+            {
+                using var scope = app.ApplicationServices.CreateScope();
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var context = services.GetRequiredService<DataContext>();
+                    var userManager = services.GetRequiredService<UserManager<User>>();
+                    await dbInitializer.Initialize(context, userManager);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Startup>>();
+                    logger.LogError(ex, "Error when initialize the Database!");
+                }
             }
 
             app.UseEndpoints(endpoints =>

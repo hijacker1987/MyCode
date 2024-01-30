@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyCode_Backend_Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitCreatePlusSeedData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -163,7 +163,7 @@ namespace MyCode_Backend_Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CodeTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeTitle = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     MyCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WhatKindOfCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsBackend = table.Column<bool>(type: "bit", nullable: false),
