@@ -28,7 +28,7 @@ const UserLogin = () => {
                     Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
 
                     navigate("/");
-                    toast.success(`Successful Login!`, {
+                    toast.success("Successful Login!", {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -37,10 +37,8 @@ const UserLogin = () => {
                         draggable: true,
                         progress: undefined,
                         theme: "dark",
-                        transition: Bounce,
                     });
                 } else {
-                    setLoading(false);
                     toast.error("Unable to Login!", {
                         position: "top-right",
                         autoClose: 5000,
