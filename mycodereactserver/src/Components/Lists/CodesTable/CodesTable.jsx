@@ -123,10 +123,10 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
                                         Cancel
                                     </ButtonContainer>
-                                    <ButtonContainer variant="primary" onClick={confirmDelete}>
+                                    <ButtonContainer onClick={confirmDelete}>
                                         Delete
                                     </ButtonContainer>
                                 </ButtonRowContainer>

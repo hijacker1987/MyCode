@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
 import { getToken } from "../Services/AuthService";
 import { userLogin } from "../Services/Backend.Endpoints";
+import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import Login from "../Components/Login/Login";
 import Loading from "../Components/Loading/Loading";
 import ErrorPage from "./Service/ErrorPage";
 import Cookies from "js-cookie";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserLogin = () => {
     const navigate = useNavigate();
@@ -26,14 +28,34 @@ const UserLogin = () => {
                     Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
 
                     navigate("/");
-                    window.location.reload();
+                    toast.success(`Successful Login!`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        transition: Bounce,
+                    });
                 } else {
-                    setLoginError("An error occurred during login. Please try again.");
+                    setLoading(false);
+                    toast.error("Unable to Login!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
                 }
             })
             .catch((error) => {
                 setLoading(false);
-                console.error("Error occurred during login: ", error);
+                setLoginError(`Error occurred during login: ${error}`);
             });
     };
 
@@ -73,17 +95,11 @@ const UserLogin = () => {
     }
 
     return <div>
-                {errorMessage == "" ? (
-                    <Login
-                        onLogin={handleOnLogin}
-                        onCancel={handleCancel}
-                    />
-                ) : (
-                    <ErrorPage
-                        errorMessage={errorMessage}
-                    />
-                 )}   
-            </div>
+                {errorMessage == "" ? ( <Login onLogin={handleOnLogin} onCancel={handleCancel} />
+                                  ) : (
+                                        <ErrorPage errorMessage={errorMessage} />
+                                  )}
+           </div>
 };
 
 export default UserLogin;

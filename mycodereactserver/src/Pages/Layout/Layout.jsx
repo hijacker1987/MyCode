@@ -37,7 +37,7 @@ const Layout = () => {
                 setUpdateUrl(userIdFromToken);
             }
         } catch (error) {
-            console.error("Error decoding JWT token:", error);
+            console.error(error);
         }
     }, [location]);
 
@@ -56,8 +56,7 @@ const Layout = () => {
                     setJwtToken(null);
                     setUserRoles([]);
                     setUpdateUrl([]);
-                    handleLogout();
-                    navigate("/");
+                    confirmLogout();
                 },
                 () => {
                     console.error("Error deleting user");
@@ -170,10 +169,10 @@ const Layout = () => {
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer variant="secondary" onClick={() => setShowLogoutModal(false)}>
+                                    <ButtonContainer onClick={() => setShowLogoutModal(false)}>
                                         Cancel
                                     </ButtonContainer>
-                                    <ButtonContainer variant="primary" onClick={confirmLogout}>
+                                    <ButtonContainer onClick={confirmLogout}>
                                         Logout
                                     </ButtonContainer>
                                 </ButtonRowContainer>
@@ -196,10 +195,10 @@ const Layout = () => {
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
                                         Cancel
                                     </ButtonContainer>
-                                    <ButtonContainer variant="primary" onClick={confirmDelete}>
+                                    <ButtonContainer onClick={confirmDelete}>
                                         Delete
                                     </ButtonContainer>
                                 </ButtonRowContainer>

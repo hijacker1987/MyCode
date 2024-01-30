@@ -16,15 +16,11 @@ const UserRegister = () => {
         postApi(user, userRegistration)
             .then((data) => {
                 setLoading(false);
-                if (data) {
-                    navigate("/");
-                } else {
-                    setRegError("An error occurred during registration. Please try again.");
-                }
+                navigate("/");
             })
             .catch((error) => {
                 setLoading(false);
-                console.error("Error occurred during registration:", error);
+                setRegError(`Error occurred during registration: ${error}`);
             });
     };
 

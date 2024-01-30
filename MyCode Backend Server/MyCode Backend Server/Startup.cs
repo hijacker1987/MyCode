@@ -48,7 +48,6 @@ namespace MyCode_Backend_Server
                 });
             });
 
-
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
