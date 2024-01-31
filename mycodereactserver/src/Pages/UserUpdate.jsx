@@ -3,11 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../Services/Api";
 import { getToken, getUserRoles } from "../Services/AuthService";
 import { getUser, userById, userUpdate, userSuperUpdate } from "../Services/Backend.Endpoints";
-import { toast } from "react-toastify";
 import UserForm from "../Components/Forms/UserForm/UserForm";
 import Loading from "../Components/Loading/Loading";
+import Notify from "./Services/ToastNotifications";
 import ErrorPage from "./Services/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
 
 const UserUpdate = () => {
     const navigate = useNavigate();
@@ -56,27 +55,9 @@ const UserUpdate = () => {
                 if (data) {
                     setUser(data);
                     navigate(-1);
-                    toast.success(`Successful Update!`, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", "Successful Update!");
                 } else {
-                    toast.error("Unable to Update!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", "Unable to Update!");
                 }
             })
             .catch((error) => {

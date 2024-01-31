@@ -3,11 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../Services/Api";
 import { getToken, getUserRoles } from "../Services/AuthService";
 import { getCodesByUserId, codeUpdate, codeSuperUpdate } from "../Services/Backend.Endpoints";
-import { toast } from "react-toastify";
 import CodeForm from "../Components/Forms/CodeForm/CodeForm";
 import Loading from "../Components/Loading/Loading";
+import Notify from "./Services/ToastNotifications";
 import ErrorPage from "./Services/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
 
 const CodeUpdate = () => {
     const navigate = useNavigate();
@@ -31,16 +30,7 @@ const CodeUpdate = () => {
                     setCodeData(data);
                     setUserRole(role);
                 } else {
-                    toast.error("Unable to fetch the codes!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", "Unable to fetch the codes!");
                 }
             } catch (error) {
                 setLoading(false);
@@ -63,27 +53,9 @@ const CodeUpdate = () => {
                 if (data) {
                     setCodeData(data);
                     navigate(-1);
-                    toast.success("Successful code update!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", "Successful code update!");
                 } else {
-                    toast.error("Unable to update the codes!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", "Unable to update the codes!");
                 }
             })
             .catch((error) => {

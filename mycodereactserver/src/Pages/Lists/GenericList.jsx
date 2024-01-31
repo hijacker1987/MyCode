@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import { getApi } from "../../Services/Api";
 import { getToken } from "../../Services/AuthService";
-import { toast } from "react-toastify";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
+import Notify from "../Services/ToastNotifications";
 import ErrorPage from "../Services/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
 
 const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
     const [loading, setLoading] = useState(false);
@@ -26,27 +25,9 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
 
                 if (responseData) {
                     setData(responseData);
-                    toast.success(`List of ${kind} created successfully!`, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", `List of ${kind} created successfully!`);
                 } else {
-                    toast.error(`Unable to create the List of ${kind}`, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", `Unable to create the List of ${kind}`);                  
                 }
             } catch (error) {
                 setLoading(false);

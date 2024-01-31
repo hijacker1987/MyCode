@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
 import { userRegistration } from "../Services/Backend.Endpoints";
-import { toast } from "react-toastify";
 import UserForm from "../Components/Forms/UserForm";
 import Loading from "../Components/Loading/Loading";
+import Notify from "./Services/ToastNotifications";
 import ErrorPage from "./Services/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
 
 const UserRegister = () => {
     const navigate = useNavigate();
@@ -20,27 +19,9 @@ const UserRegister = () => {
                 setLoading(false);
                 navigate("/");
                 if (res.status != 400) {
-                    toast.success("Successful Registration!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", "Successful Registration!");
                 } else {
-                    toast.error("Unable to Register!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", "Unable to Register!");
                 }
             })
             .catch((error) => {

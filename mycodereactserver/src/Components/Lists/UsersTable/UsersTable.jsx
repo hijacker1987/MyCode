@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/DeleteActions";
 import Modal from 'react-bootstrap/Modal';
+import Notify from "./../../../Pages/Services/ToastNotifications";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import { formatElapsedTime } from "../../../Services/elapsedTime";
 import { uList, uUpdate } from "../../../Services/frontend.endpoints";
 import { deleteSuperUser } from "../../../Services/Backend.Endpoints";
@@ -13,7 +13,6 @@ import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
-import "react-toastify/dist/ReactToastify.css";
 
 const UsersTable = ({ users, headers, role, page }) => {
     const [updatedUsers, setUpdatedUsers] = useState(users);
@@ -48,30 +47,12 @@ const UsersTable = ({ users, headers, role, page }) => {
             DeleteActions.deleteRecord(
                 `${deleteSuperUser}${userToDeleteId}`,
                 () => {
-                    toast.success("Successful Delete the user!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", "Successfully deleted the user!");
                     setUpdatedUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDeleteId));
                     setShowDeleteModal(false);
                 },
                 () => {
-                    toast.error("Unable to delete the user!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", "Unable to delete the user!");
                 }
             );
         }

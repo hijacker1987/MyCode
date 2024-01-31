@@ -1,3 +1,4 @@
 import ErrorPage from "./ErrorPage";
+import Notify from "./ToastNotifications";
 
-export default ErrorPage;
+export { ErrorPage, Notify };

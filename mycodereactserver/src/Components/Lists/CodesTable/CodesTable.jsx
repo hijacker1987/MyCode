@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/DeleteActions";
 import Modal from 'react-bootstrap/Modal';
+import Notify from "./../../../Pages/Services/ToastNotifications";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import { cList, cUpdate } from "../../../Services/frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import { TextContainer } from "../../Styles/TextContainer.styled";
@@ -12,7 +12,6 @@ import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import "react-toastify/dist/ReactToastify.css";
 
 const CodesTable = ({ codes, headers, role, page, type }) => {
     const [updatedCodes, setUpdatedCodes] = useState(codes);
@@ -47,31 +46,13 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
         DeleteActions.deleteRecord(
             `${deleteUrl}${selectedCodeId}`,
             () => {
-                toast.success("Successfully delete the code!", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                });
+                Notify("Success", "Successfully deleted the code!");
                 setUpdatedCodes((prevCodes) => prevCodes.filter((code) => code.id !== selectedCodeId));
                 setShowDeleteModal(false);
                 setSelectedCodeId(null);
             },
             () => {
-                toast.error("Unable to delete the code!", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark"
-                });
+                Notify("Error", "Unable to delete the code!")
             }
         );
     };
