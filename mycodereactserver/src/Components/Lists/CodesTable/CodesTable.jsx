@@ -92,6 +92,9 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                             <React.Fragment key={code.id}>
                                 <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
                                     <StyledTd>{index + 1}</StyledTd>
+                                    {!isAllowed && (
+                                        <StyledTd>{code.userName}</StyledTd>
+                                    )}
                                     <StyledTd>{code.codeTitle}</StyledTd>
                                     <StyledTd>{code.myCode}</StyledTd>
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
