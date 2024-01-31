@@ -5,6 +5,6 @@ namespace MyCode_Backend_Server.Data
 {
     public interface IDbInitializer
     {
-        Task Initialize(DataContext context, UserManager<User> userManager);
+        Task Initialize(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager);
     }
 }

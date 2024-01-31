@@ -88,7 +88,7 @@ namespace MyCode_Backend_Server
                     .AddEntityFrameworkStores<DataContext>();
         }
 
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, DataContext dataContext, IDbInitializer dbInitializer)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -115,7 +115,7 @@ namespace MyCode_Backend_Server
 
             if (env.IsEnvironment("Test"))
             {
-                await dataContext.Database.EnsureCreatedAsync();
+                dataContext.Database.EnsureCreated();
             }
 
             if (dbInitializer != null)
@@ -127,12 +127,14 @@ namespace MyCode_Backend_Server
                 {
                     var context = services.GetRequiredService<DataContext>();
                     var userManager = services.GetRequiredService<UserManager<User>>();
-                    await dbInitializer.Initialize(context, userManager);
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+
+                    dbInitializer.Initialize(context, userManager, roleManager).Wait();
                 }
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Startup>>();
-                    logger.LogError(ex, "Error when initialize the Database!");
+                    logger.LogError(ex, "Error when initializing the Database!");
                 }
             }
 
@@ -140,57 +142,6 @@ namespace MyCode_Backend_Server
             {
                 endpoints.MapControllers();
             });
-
-            lifetime.ApplicationStarted.Register(async () =>
-            {
-                await AddRolesAndAdmin(app);
-            });
-        }
-
-        public async Task AddRolesAndAdmin(IApplicationBuilder app)
-        {
-            using var scope = app.ApplicationServices.CreateScope();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
-            var roleList = new List<string> { "Admin", "User" };
-
-            foreach (var role in roleList)
-            {
-                await CreateRole(roleManager, role);
-            }
-
-            await CreateAdminIfNotExists(userManager);
-        }
-
-        public async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)
-        {
-            if (!await roleManager.RoleExistsAsync(role))
-            {
-                await roleManager.CreateAsync(new IdentityRole<Guid>(Guid.NewGuid().ToString()) { Name = role });
-            }
-        }
-
-        public async Task CreateAdminIfNotExists(UserManager<User> userManager)
-        {
-            var pass = _configuration["APass"];
-            var mail = _configuration["AEmail"];
-            var phone = _configuration["ACall"];
-            var uName = _configuration["UName"];
-            var dName = _configuration["AName"];
-
-            var adminInDb = await userManager.FindByEmailAsync(mail!);
-
-            if (adminInDb == null)
-            {
-                var admin = new User { UserName = uName, Email = mail, DisplayName = dName, PhoneNumber = phone };
-                var adminCreated = await userManager.CreateAsync(admin, pass!);
-
-                if (adminCreated.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(admin, "Admin");
-                }
-            }
         }
     }
 }

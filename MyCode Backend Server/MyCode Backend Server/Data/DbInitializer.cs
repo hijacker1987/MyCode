@@ -7,11 +7,37 @@ namespace MyCode_Backend_Server.Data
     {
         private readonly IConfiguration _configuration = configuration;
 
-        public async Task Initialize(DataContext context, UserManager<User> userManager)
+        public async Task Initialize(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
         {
             context.Database.EnsureCreated();
 
-            if (_configuration["InitDb"] == "False" || context.Users.Any())
+            var roleList = new List<string> { "Admin", "User" };
+
+            foreach (var role in roleList)
+            {
+                await CreateRole(roleManager, role);
+            }
+
+            var pass = _configuration["APass"];
+            var mail = _configuration["AEmail"];
+            var phone = _configuration["ACall"];
+            var uName = _configuration["UName"];
+            var dName = _configuration["AName"];
+
+            var adminInDb = await userManager.FindByEmailAsync(mail!);
+
+            if (adminInDb == null)
+            {
+                var admin = new User { UserName = uName, Email = mail, DisplayName = dName, PhoneNumber = phone };
+                var adminCreated = await userManager.CreateAsync(admin, pass!);
+
+                if (adminCreated.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                }
+            }
+
+            if (_configuration["InitDb"] == "False" || context.Users.Any(u => u.Email == "user1@example.com"))
             {
                 return;
             }
@@ -33,7 +59,12 @@ namespace MyCode_Backend_Server.Data
 
             foreach (var user in users)
             {
-                await userManager.CreateAsync(user, "Password");
+                var userResult = await userManager.CreateAsync(user, "Password");
+
+                if (userResult.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "User");
+                }
             }
             context.SaveChanges();
 
@@ -57,6 +88,14 @@ namespace MyCode_Backend_Server.Data
                 }
             }
             context.SaveChanges();
+        }
+
+        public async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+            }
         }
     }
 }
