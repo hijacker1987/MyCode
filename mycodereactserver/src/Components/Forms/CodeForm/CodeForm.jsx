@@ -4,6 +4,7 @@ import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormRow } from "../../Styles/Form.styled";
+import ErrorPage from "./../../../Pages/Services/ErrorPage";
 import Loading from "../../Loading/Loading";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
@@ -13,6 +14,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [whatKindOfCode, setWhatKindOfCode] = useState(code?.whatKindOfCode ?? "");
     const [isBackend, setIsBackend] = useState(code?.isBackend ?? false);
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
+    const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -45,7 +47,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                 });
             }
         } catch (error) {
-            console.error("Error occurred during form submission: ", error);
+            setError(`Error occurred during form submission: ${error}`);
         } finally {
             setLoading(false);
         }
@@ -57,76 +59,80 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
 
     return (
         <div>
-            <Form onSubmit={onSubmit}>
-                <FormRow className="control">
-                    <TextContainer>Code Title:</TextContainer>
-                    <InputWrapper>
-                        <InputForm
-                            value={codeTitle}
-                            onChange={(e) => setCodeTitle(e.target.value)}
-                            name="title"
-                            id="title"
-                            placeholder="Your Code's Title"
-                            autoComplete="off"
-                        />
-                    </InputWrapper>
+            {errorMessage === "" ? (
+                <Form onSubmit={onSubmit}>
+                    <FormRow className="control">
+                        <TextContainer>Code Title:</TextContainer>
+                        <InputWrapper>
+                            <InputForm
+                                value={codeTitle}
+                                onChange={(e) => setCodeTitle(e.target.value)}
+                                name="title"
+                                id="title"
+                                placeholder="Your Code's Title"
+                                autoComplete="off"
+                            />
+                        </InputWrapper>
 
-                    <TextContainer>The Code Itself:</TextContainer>
-                    <InputWrapper>
-                        <InputForm
-                            value={myCode}
-                            onChange={(e) => setMyCode(e.target.value)}
-                            name="mycode"
-                            id="mycode"
-                            placeholder="Your creation comes here..."
-                            autoComplete="off"
-                        />
-                    </InputWrapper>
+                        <TextContainer>The Code Itself:</TextContainer>
+                        <InputWrapper>
+                            <InputForm
+                                value={myCode}
+                                onChange={(e) => setMyCode(e.target.value)}
+                                name="mycode"
+                                id="mycode"
+                                placeholder="Your creation comes here..."
+                                autoComplete="off"
+                            />
+                        </InputWrapper>
 
-                    <TextContainer>What kind of code:</TextContainer>
-                    <InputWrapper>
-                        <InputForm
-                            value={whatKindOfCode}
-                            onChange={(e) => setWhatKindOfCode(e.target.value)}
-                            name="codetype"
-                            id="codetype"
-                            placeholder="What type"
-                            autoComplete="off"
-                        />
-                    </InputWrapper>
+                        <TextContainer>What kind of code:</TextContainer>
+                        <InputWrapper>
+                            <InputForm
+                                value={whatKindOfCode}
+                                onChange={(e) => setWhatKindOfCode(e.target.value)}
+                                name="codetype"
+                                id="codetype"
+                                placeholder="What type"
+                                autoComplete="off"
+                            />
+                        </InputWrapper>
 
-                    <TextContainer>Backend Code?</TextContainer>
-                    <InputWrapper>
-                        <input
-                            type="checkbox"
-                            checked={isBackend}
-                            onChange={(e) => setIsBackend(e.target.checked)}
-                            name="backend"
-                            id="backend"
-                        />
-                    </InputWrapper>
+                        <TextContainer>Backend Code?</TextContainer>
+                        <InputWrapper>
+                            <input
+                                type="checkbox"
+                                checked={isBackend}
+                                onChange={(e) => setIsBackend(e.target.checked)}
+                                name="backend"
+                                id="backend"
+                            />
+                        </InputWrapper>
 
-                    <TextContainer>Can others see it?</TextContainer>
-                    <InputWrapper>
-                        <input
-                            type="checkbox"
-                            checked={isVisible}
-                            onChange={(e) => setIsVisible(e.target.checked)}
-                            name="visible"
-                            id="visible"
-                        />
-                    </InputWrapper>
-                </FormRow>
+                        <TextContainer>Can others see it?</TextContainer>
+                        <InputWrapper>
+                            <input
+                                type="checkbox"
+                                checked={isVisible}
+                                onChange={(e) => setIsVisible(e.target.checked)}
+                                name="visible"
+                                id="visible"
+                            />
+                        </InputWrapper>
+                    </FormRow>
 
-                <ButtonRowContainer>
-                    <ButtonContainer type="submit">
-                        {code ? "Update Code" : "Add Code"}
-                    </ButtonContainer>
-                    <ButtonContainer type="button" onClick={onCancel}>
-                        Cancel
-                    </ButtonContainer>
-                </ButtonRowContainer>
-            </Form>
+                    <ButtonRowContainer>
+                        <ButtonContainer type="submit">
+                            {code ? "Update Code" : "Add Code"}
+                        </ButtonContainer>
+                        <ButtonContainer type="button" onClick={onCancel}>
+                            Cancel
+                        </ButtonContainer>
+                    </ButtonRowContainer>
+                </Form>
+            ) : (
+                <ErrorPage errorMessage={errorMessage} />
+            )}
             {loading && <Loading />}
         </div>
     );

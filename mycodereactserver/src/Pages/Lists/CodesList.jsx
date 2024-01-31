@@ -4,16 +4,19 @@ import { getCodesByUser, getAllCodes, getCodesByVisibility } from "../../Service
 import GenericList from "./GenericList";
 
 const CodesList = ({ type }) => {
-    let headers = ["Counter", "Code Title", "The Code itself", "What kind of code", "Back or Front", "Is it visible to others?"];
+    let headers = ["Counter", ...(type === "byVis" ? ["Username"] : []), "Code Title", "The Code itself", "What kind of code",
+                    "Back or Front", "Is it visible to others?", ...(type === "byAuth" ? ["Modify"] : [])];
     const role = getUserRoles();
     let endpoint = "";
+    let kind = "";
 
     if (type === "byAuth") {
         endpoint = role === "Admin" ? getAllCodes : getCodesByUser;
-        headers.push("Modify");
+        kind = role === "Admin" ? "Codes" : "your Codes";
     }
     if (type === "byVis") {
         endpoint = getCodesByVisibility;
+        kind = "visible Codes";
     }
 
     return <GenericList
@@ -22,6 +25,7 @@ const CodesList = ({ type }) => {
         role={role}
         type="codes"
         auth={type}
+        kind={kind}
     />;
 };
 

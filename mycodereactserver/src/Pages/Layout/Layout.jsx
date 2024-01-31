@@ -1,29 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { getToken, getUserRoles, getUserIdFromToken } from "../../Services/AuthService";
-import { toast } from "react-toastify";
+import { getToken, getUserRoles } from "../../Services/AuthService";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList } from "../../Services/Frontend.Endpoints";
-import { recentChuckNorris, deleteAccount } from "../../Services/Backend.Endpoints";
-import DeleteActions from "../../Components/Delete/DeleteActions";
+import { recentChuckNorris } from "../../Services/Backend.Endpoints";
 import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
-import "react-toastify/dist/ReactToastify.css";
+import ErrorPage from "../Services/ErrorPage";
 import "../../index.css";
 
 const Layout = () => {
     const location = useLocation();
     const [jwtToken, setJwtToken] = useState(getToken);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [userRoles, setUserRoles] = useState([]);
-    const [updateUrl, setUpdateUrl] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
+    const [errorMessage, setError] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,59 +28,14 @@ const Layout = () => {
 
             if (typeof token === "string" && token.length > 0) {
                 const roles = getUserRoles();
-                const userIdFromToken = getUserIdFromToken();
                 
                 setJwtToken(token);
                 setUserRoles(roles);
-                setUpdateUrl(userIdFromToken);
             }
         } catch (error) {
-            console.error(error);
+            setError(`Token error: ${error}`);
         }
     }, [location]);
-
-    const handleDelete = (userId) => {
-        setUserToDeleteId(userId);
-        setShowDeleteModal(true);
-    };
-
-    const confirmDelete = () => {
-        if (userRoles.includes("User")) {
-            DeleteActions.deleteRecord(
-                `${deleteAccount}${userToDeleteId}`,
-                () => {
-                    toast.success("Successfully removed!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
-
-                    setJwtToken(null);
-                    setUserRoles([]);
-                    setUpdateUrl([]);
-                    confirmLogout();
-                },
-                () => {
-                    toast.error("Unable to delete the acc!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
-                }
-            );
-        }
-        setShowDeleteModal(false);
-    };
 
     useEffect(() => {
         const fetchJoke = async () => {
@@ -93,7 +44,7 @@ const Layout = () => {
                 const chuckNorrisFact = await chuckNorrisData.json();
                 setChuckNorrisFact(chuckNorrisFact.value);
             } catch (error) {
-                console.error('Error occurred while fetching Chuck Norris:', error);
+                setError(`Error occurred while fetching Chuck Norris: ${error}`);
             }
         };
 
@@ -117,6 +68,7 @@ const Layout = () => {
 
     return (
         <div className="Layout">
+            {errorMessage === "" ? (
             <nav>
                 <CenteredContainer>
                     {chuckNorrisFact}
@@ -166,14 +118,14 @@ const Layout = () => {
                                     <Link to={uUpdateOwn} className="link">
                                         <ButtonContainer type="button">My Account</ButtonContainer>
                                     </Link>
-                                    <ButtonContainer type="button" onClick={() => handleDelete(updateUrl)}>
-                                        Delete Account
-                                    </ButtonContainer>
                                 </>
                             )}
                         </ButtonRowContainer>
                         )}
             </nav>
+            ) : (
+                <ErrorPage errorMessage={errorMessage} />
+            )}
             <Outlet />
             {showLogoutModal && (
                 <BlurredOverlay>
@@ -194,32 +146,6 @@ const Layout = () => {
                                     </ButtonContainer>
                                     <ButtonContainer onClick={confirmLogout}>
                                         Logout
-                                    </ButtonContainer>
-                                </ButtonRowContainer>
-                            </Modal.Footer>
-                        </StyledModal>
-                    </ModalContainer>
-                </BlurredOverlay>
-            )}
-            {showDeleteModal && (
-                <BlurredOverlay>
-                    <ModalContainer>
-                        <StyledModal>
-                            <TextContainer>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Delete Confirmation</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    Are you sure you want to delete your Account?
-                                </Modal.Body>
-                            </TextContainer>
-                            <Modal.Footer>
-                                <ButtonRowContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
-                                        Cancel
-                                    </ButtonContainer>
-                                    <ButtonContainer onClick={confirmDelete}>
-                                        Delete
                                     </ButtonContainer>
                                 </ButtonRowContainer>
                             </Modal.Footer>

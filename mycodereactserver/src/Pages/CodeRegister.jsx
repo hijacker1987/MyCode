@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { postApiV2 } from "../Services/Api";
 import { getToken } from "../Services/AuthService";
 import { codeRegistration } from "../Services/Backend.Endpoints";
-import { toast } from "react-toastify";
 import CodeForm from "../Components/Forms/CodeForm";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
+import Notify from "./Services/ToastNotifications";
+import ErrorPage from "./Services/ErrorPage";
 
 const CodeRegister = () => {
     const navigate = useNavigate();
@@ -23,27 +22,9 @@ const CodeRegister = () => {
                 setLoading(false);
                 if (data) {
                     navigate(-1);
-                    toast.success("Successful code registration!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", "Successful code registration!");
                 } else {
-                    toast.error("Unable to register the code!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", "Unable to register the code!");
                 }
             })
             .catch((error) => {
@@ -53,7 +34,7 @@ const CodeRegister = () => {
     };
 
     const handleCancel = () => {
-        navigate("/");
+        navigate(-1);
     };
 
     if (loading) {

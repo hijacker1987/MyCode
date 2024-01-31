@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import { getApi } from "../../Services/Api";
 import { getToken } from "../../Services/AuthService";
-import { toast } from "react-toastify";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
-import ErrorPage from "../Service/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
+import Notify from "../Services/ToastNotifications";
+import ErrorPage from "../Services/ErrorPage";
 
-const GenericList = ({ endpoint, headers, role, type, auth }) => {
+const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
     const [data, setData] = useState(null);
@@ -26,27 +25,9 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
 
                 if (responseData) {
                     setData(responseData);
-                    toast.success("Lists created successfully!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                    });
+                    Notify("Success", `List of ${kind} created successfully!`);
                 } else {
-                    toast.error("Unable to create the lists!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
+                    Notify("Error", `Unable to create the List of ${kind}`);                  
                 }
             } catch (error) {
                 setLoading(false);

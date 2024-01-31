@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { getApi, patchApi } from "../Services/Api";
 import { getToken } from "../Services/AuthService";
 import { getUser, changePassword } from "../Services/Backend.Endpoints";
-import { toast } from "react-toastify";
 import PassChange from "../Components/PassChange/PassChange";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
-import "react-toastify/dist/ReactToastify.css";
+import Notify from "./Services/ToastNotifications";
+import ErrorPage from "./Services/ErrorPage";
 
 const PasswordChange = () => {
     const navigate = useNavigate();
@@ -46,27 +45,9 @@ const PasswordChange = () => {
             setLoading(false);
             if (response && response.message) {
                 navigate("/");
-                toast.success("Password changed!", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                });
+                Notify("Success", "Password changed!");
             } else {
-                toast.error("Unable to change!", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark"
-                });
+                Notify("Error", "Unable to change!");
             }
         } catch (error) {
             setLoading(false);

@@ -71,6 +71,16 @@ namespace MyCode_Backend_Server.Controllers
 
                 var codes = _dataContext.CodesDb!
                                         .Where(c => c.IsVisible && c.UserId != userIdGuid)
+                                        .Select(c => new CodeWithAdditionalData
+                                        {
+                                            Id = c.Id,
+                                            CodeTitle = c.CodeTitle,
+                                            MyCode = c.MyCode,
+                                            WhatKindOfCode = c.WhatKindOfCode,
+                                            IsBackend = c.IsBackend,
+                                            IsVisible = c.IsVisible,
+                                            UserName = _dataContext.Users.FirstOrDefault(u => u.Id == c.UserId)!.UserName
+                                        })
                                         .ToList();
 
                 return Ok(codes);
