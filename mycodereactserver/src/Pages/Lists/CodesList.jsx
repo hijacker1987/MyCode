@@ -8,12 +8,15 @@ const CodesList = ({ type }) => {
                     "Back or Front", "Is it visible to others?", ...(type === "byAuth" ? ["Modify"] : [])];
     const role = getUserRoles();
     let endpoint = "";
+    let kind = "";
 
     if (type === "byAuth") {
         endpoint = role === "Admin" ? getAllCodes : getCodesByUser;
+        kind = role === "Admin" ? "Codes" : "your Codes";
     }
     if (type === "byVis") {
         endpoint = getCodesByVisibility;
+        kind = "visible Codes";
     }
 
     return <GenericList
@@ -22,6 +25,7 @@ const CodesList = ({ type }) => {
         role={role}
         type="codes"
         auth={type}
+        kind={kind}
     />;
 };
 

@@ -12,6 +12,7 @@ import { recentChuckNorris, deleteAccount } from "../../Services/Backend.Endpoin
 import DeleteActions from "../../Components/Delete/DeleteActions";
 import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
+import ErrorPage from "../Services/ErrorPage";
 import "react-toastify/dist/ReactToastify.css";
 import "../../index.css";
 
@@ -24,6 +25,7 @@ const Layout = () => {
     const [userRoles, setUserRoles] = useState([]);
     const [updateUrl, setUpdateUrl] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
+    const [errorMessage, setError] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,7 +41,7 @@ const Layout = () => {
                 setUpdateUrl(userIdFromToken);
             }
         } catch (error) {
-            console.error(error);
+            setError(`Token error: ${error}`);
         }
     }, [location]);
 
@@ -93,7 +95,7 @@ const Layout = () => {
                 const chuckNorrisFact = await chuckNorrisData.json();
                 setChuckNorrisFact(chuckNorrisFact.value);
             } catch (error) {
-                console.error('Error occurred while fetching Chuck Norris:', error);
+                setError(`Error occurred while fetching Chuck Norris: ${error}`);
             }
         };
 
@@ -117,6 +119,7 @@ const Layout = () => {
 
     return (
         <div className="Layout">
+            {errorMessage === "" ? (
             <nav>
                 <CenteredContainer>
                     {chuckNorrisFact}
@@ -174,6 +177,9 @@ const Layout = () => {
                         </ButtonRowContainer>
                         )}
             </nav>
+            ) : (
+                <ErrorPage errorMessage={errorMessage} />
+            )}
             <Outlet />
             {showLogoutModal && (
                 <BlurredOverlay>

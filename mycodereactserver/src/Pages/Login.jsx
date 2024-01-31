@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import Login from "../Components/Login/Login";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
+import ErrorPage from "./Services/ErrorPage";
 import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 

@@ -6,7 +6,7 @@ import { getUser, changePassword } from "../Services/Backend.Endpoints";
 import { toast } from "react-toastify";
 import PassChange from "../Components/PassChange/PassChange";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
+import ErrorPage from "./Services/ErrorPage";
 import "react-toastify/dist/ReactToastify.css";
 
 const PasswordChange = () => {

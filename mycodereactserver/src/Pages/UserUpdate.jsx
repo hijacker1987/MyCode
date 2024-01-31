@@ -6,7 +6,7 @@ import { getUser, userById, userUpdate, userSuperUpdate } from "../Services/Back
 import { toast } from "react-toastify";
 import UserForm from "../Components/Forms/UserForm/UserForm";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
+import ErrorPage from "./Services/ErrorPage";
 import "react-toastify/dist/ReactToastify.css";
 
 const UserUpdate = () => {

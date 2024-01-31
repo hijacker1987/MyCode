@@ -6,7 +6,7 @@ import { getCodesByUserId, codeUpdate, codeSuperUpdate } from "../Services/Backe
 import { toast } from "react-toastify";
 import CodeForm from "../Components/Forms/CodeForm/CodeForm";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
+import ErrorPage from "./Services/ErrorPage";
 import "react-toastify/dist/ReactToastify.css";
 
 const CodeUpdate = () => {

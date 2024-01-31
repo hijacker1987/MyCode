@@ -6,10 +6,10 @@ import { toast } from "react-toastify";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
-import ErrorPage from "../Service/ErrorPage";
+import ErrorPage from "../Services/ErrorPage";
 import "react-toastify/dist/ReactToastify.css";
 
-const GenericList = ({ endpoint, headers, role, type, auth }) => {
+const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
     const [data, setData] = useState(null);
@@ -26,7 +26,7 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
 
                 if (responseData) {
                     setData(responseData);
-                    toast.success("Lists created successfully!", {
+                    toast.success(`List of ${kind} created successfully!`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -37,7 +37,7 @@ const GenericList = ({ endpoint, headers, role, type, auth }) => {
                         theme: "dark",
                     });
                 } else {
-                    toast.error("Unable to create the lists!", {
+                    toast.error(`Unable to create the List of ${kind}`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,

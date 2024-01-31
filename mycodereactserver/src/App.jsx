@@ -20,7 +20,7 @@ import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
 import UsersList from "./Pages/Lists/UsersList";
 import CodesList from "./Pages/Lists/CodesList";
-import ErrorPage from "./Pages/Service/ErrorPage";
+import ErrorPage from "./Pages/Services/ErrorPage";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -95,10 +95,10 @@ function App() {
     ]);
 
     return (
-        <React.StrictMode>
+        <>
             <RouterProvider router={router} />
             <ToastContainer />
-        </React.StrictMode>
+        </>
     );
 }
 

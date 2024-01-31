@@ -11,6 +11,7 @@ const UsersList = () => {
         headers={headers}
         role={role}
         type="users"
+        kind="Users"
     />;
 };
 

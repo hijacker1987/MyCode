@@ -5,7 +5,7 @@ import { userRegistration } from "../Services/Backend.Endpoints";
 import { toast } from "react-toastify";
 import UserForm from "../Components/Forms/UserForm";
 import Loading from "../Components/Loading/Loading";
-import ErrorPage from "./Service/ErrorPage";
+import ErrorPage from "./Services/ErrorPage";
 import "react-toastify/dist/ReactToastify.css";
 
 const UserRegister = () => {
