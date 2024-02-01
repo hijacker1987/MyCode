@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApi } from "../Services/Api";
-import { getToken } from "../Services/AuthService";
+import { postApiV2 } from "../Services/Api";
+import { homePage } from "../Services/Frontend.Endpoints";
 import { userLogin } from "../Services/Backend.Endpoints";
 import { jwtDecode } from "jwt-decode";
 import Login from "../Components/Login/Login";
 import Loading from "../Components/Loading/Loading";
-import Notify from "./Services/ToastNotifications";
+import Notify from "../Pages/Services/ToastNotifications";
 import ErrorPage from "./Services/ErrorPage";
 import Cookies from "js-cookie";
 
@@ -15,59 +15,32 @@ const UserLogin = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setLoginError] = useState("");
 
-    const handleOnLogin = (user) => {
+    const handleOnLogin = async (user) => {
         setLoading(true);
-        postApi(user, userLogin)
-            .then((data) => {
-                setLoading(false);
-                if (data.token) {
-                    const decodedToken = jwtDecode(data.token);
-                    const expirationTime = decodedToken.exp * 1000;
+        try {
+            const data = await postApiV2(user, userLogin);
 
-                    Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
+            if (data.token) {
+                const decodedToken = jwtDecode(data.token);
+                const expirationTime = decodedToken.exp * 1000;
 
-                    navigate("/");
-                    Notify("Success", "Successful Login!");
-                } else {
-                    Notify("Error", "Unable to Login!");
-                }
-            })
-            .catch((error) => {
-                setLoading(false);
-                setLoginError(`Error occurred during login: ${error}`);
-            });
-    };
+                Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
 
-    const checkTokenExpiration = () => {
-        const token = getToken();
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            const expirationTime = decodedToken.exp * 1000;
-
-            if (expirationTime < Date.now()) {
-                handleLogout();
+                Notify("Success", "Successful Login!");
+                navigate(homePage);
+            } else {
+                Notify("Error", "Unable to Login!");
             }
+        } catch (error) {
+            setLoginError(`Error occurred during login: ${error}`);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleLogout = () => {
-        Cookies.remove("jwtToken");
-        navigate("/");
-    };
-
     const handleCancel = () => {
-        navigate("/");
+        navigate(-1);
     };
-
-    useEffect(() => {
-        const tokenCheckInterval = setInterval(() => {
-            checkTokenExpiration();
-        }, 60000);
-
-        return () => {
-            clearInterval(tokenCheckInterval);
-        };
-    }, []);
 
     if (loading) {
         return <Loading />;

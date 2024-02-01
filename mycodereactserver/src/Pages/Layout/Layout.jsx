@@ -6,7 +6,7 @@ import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled"
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList } from "../../Services/Frontend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris } from "../../Services/Backend.Endpoints";
 import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
@@ -62,7 +62,7 @@ const Layout = () => {
     const confirmLogout = () => {
         Cookies.remove("jwtToken");
         setShowLogoutModal(false);
-        navigate("/");
+        navigate(homePage);
         window.location.reload();
     };
 
@@ -87,41 +87,41 @@ const Layout = () => {
                         )}
                     </ButtonRowContainer>
                 ) : (
-                        <ButtonRowContainer>
+                    <ButtonRowContainer>
                             <ButtonContainer type="button" onClick={handleLogout}>Logout</ButtonContainer>
-                            <Link to="/" className="link">
-                                <ButtonContainer type="button">MyCode Home</ButtonContainer>
-                            </Link>
-                            {userRoles.includes("Admin") ? (
-                                <>
-                                    <Link to={`${uList}1`} className="link">
-                                        <ButtonContainer type="button">List Users</ButtonContainer>
+                                <Link to={`${homePage}`} className="link">
+                            <ButtonContainer type="button">MyCode Home</ButtonContainer>
+                        </Link>
+                        {userRoles.includes("Admin") ? (
+                            <>
+                                <Link to={`${uList}1`} className="link">
+                                    <ButtonContainer type="button">List Users</ButtonContainer>
+                                </Link>
+                                <Link to={`${cList}1`} className="link">
+                                    <ButtonContainer type="button">List Codes</ButtonContainer>
+                                </Link>
+                                <Link to={uPwChange} className="link">
+                                    <ButtonContainer type="button">Password Change</ButtonContainer>
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link to={cReg} className="link">
+                                    <ButtonContainer type="button">Add Code</ButtonContainer>
                                     </Link>
-                                    <Link to={`${cList}1`} className="link">
-                                        <ButtonContainer type="button">List Codes</ButtonContainer>
-                                    </Link>
-                                    <Link to={uPwChange} className="link">
-                                        <ButtonContainer type="button">Password Change</ButtonContainer>
-                                    </Link>
-                                </>
-                            ) : (
-                                <>
-                                    <Link to={cReg} className="link">
-                                        <ButtonContainer type="button">Add Code</ButtonContainer>
-                                        </Link>
-                                        <Link to={`${cOwn}1`} className="link">
-                                        <ButtonContainer type="button">My Codes</ButtonContainer>
-                                    </Link>
-                                        <Link to={`${cOthers}1`} className="link">
-                                        <ButtonContainer type="button">Visible Codes</ButtonContainer>
-                                    </Link>
-                                    <Link to={uUpdateOwn} className="link">
-                                        <ButtonContainer type="button">My Account</ButtonContainer>
-                                    </Link>
-                                </>
-                            )}
-                        </ButtonRowContainer>
+                                    <Link to={`${cOwn}1`} className="link">
+                                    <ButtonContainer type="button">My Codes</ButtonContainer>
+                                </Link>
+                                    <Link to={`${cOthers}1`} className="link">
+                                    <ButtonContainer type="button">Visible Codes</ButtonContainer>
+                                </Link>
+                                <Link to={uUpdateOwn} className="link">
+                                    <ButtonContainer type="button">My Account</ButtonContainer>
+                                </Link>
+                            </>
                         )}
+                    </ButtonRowContainer>
+                    )}
             </nav>
             ) : (
                 <ErrorPage errorMessage={errorMessage} />

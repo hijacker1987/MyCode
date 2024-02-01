@@ -8,7 +8,7 @@ import "./App.css";
 import { uLogin, errorOccured,
          uReg, uUpdateOwn, uUpdate, uPwChange,
          cReg, cUpdateOwn, cUpdate, cOwn, cOthers,
-         uList, cList
+         uList, cList, homePage
        } from "../src/Services/Frontend.Endpoints";
 
 import Layout from "./Pages/Layout/Layout";
@@ -20,7 +20,9 @@ import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
 import UsersList from "./Pages/Lists/UsersList";
 import CodesList from "./Pages/Lists/CodesList";
+import ErrorBoundary from "./Services/ErrorBoundary";
 import ErrorPage from "./Pages/Services/ErrorPage";
+import Homepage from "./Components/Homepage";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,8 +37,8 @@ function App() {
             element: <Layout />,
             children: [
                 {
-                    path: "/",
-                    element: <div className="welcome-text">Welcome Code Fanatic!</div>,
+                    path: homePage,
+                    element: <Homepage />,
                 },
                 {
                     path: uReg,
@@ -95,10 +97,10 @@ function App() {
     ]);
 
     return (
-        <>
+        <ErrorBoundary>
             <RouterProvider router={router} />
             <ToastContainer />
-        </>
+        </ErrorBoundary>
     );
 }
 

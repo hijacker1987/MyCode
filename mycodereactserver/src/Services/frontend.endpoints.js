@@ -3,7 +3,8 @@ const c = "/codes/";
 const u = "/account/";
 
 //SERVICE
-export const errorOccured = "/somethingWentWrong"
+export const homePage = "/myCodeHome";
+export const errorOccured = "/somethingWentWrong";
 
 //USERS
 export const uReg = `${u}register`;

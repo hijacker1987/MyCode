@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApi, patchApi } from "../Services/Api";
 import { getToken } from "../Services/AuthService";
+import { homePage } from "../Services/Frontend.Endpoints";
 import { getUser, changePassword } from "../Services/Backend.Endpoints";
 import PassChange from "../Components/PassChange/PassChange";
 import Loading from "../Components/Loading/Loading";
@@ -44,7 +45,7 @@ const PasswordChange = () => {
 
             setLoading(false);
             if (response && response.message) {
-                navigate("/");
+                navigate(homePage);
                 Notify("Success", "Password changed!");
             } else {
                 Notify("Error", "Unable to change!");

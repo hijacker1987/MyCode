@@ -164,3 +164,40 @@ export const CenteredContainer = styled.div`
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 `;
+
+export const MidContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  background-color: #000;
+  color: white;
+  flex-direction: column;
+  justify-content: center;
+  border: none;
+  padding: 22px;
+  gap: 12px;
+  border-radius: 8px;
+  text-align: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    left: -2px;
+    margin-top: -2px;
+    margin-right: -2px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    background: linear-gradient(-45deg, #ffd700 0%, #000 69%);
+    z-index: -10;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+`;

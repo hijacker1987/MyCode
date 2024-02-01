@@ -4,7 +4,7 @@ import DeleteActions from "../../Delete/DeleteActions";
 import Modal from 'react-bootstrap/Modal';
 import Notify from "./../../../Pages/Services/ToastNotifications";
 import { Link } from "react-router-dom";
-import { cList, cUpdate } from "../../../Services/frontend.endpoints";
+import { cList, cOthers, cUpdate } from "../../../Services/frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
@@ -101,7 +101,7 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                         <td colSpan={headers.length}>
                             <ConstructPagination
                                 element={codes}
-                                url={cList}
+                                url={type === "byAuth" ? cList : cOthers}
                                 page={Number(page)}
                                 recordPerPage={recordPerPage}
                                 setRecordPerPage={setRecordPerPage}
