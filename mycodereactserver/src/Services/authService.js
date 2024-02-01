@@ -49,5 +49,6 @@ export const checkTokenExpiration = () => {
 export const handleLogout = () => {
     const navigate = useNavigate();
     Cookies.remove("jwtToken");
+    window.location.reload();
     navigate(uLogin);
 };

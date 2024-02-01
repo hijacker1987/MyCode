@@ -50,43 +50,43 @@ function App() {
                 },
                 {
                     path: uPwChange,
-                    element: isAuthenticated ? <PwChange /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <PwChange /> : <Navigate to={homePage} />
                 },
                 {
                     path: uUpdateOwn,
-                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={homePage} />
                 },
                 {
                     path: cReg,
-                    element: isAuthenticated ? <CodeRegister /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodeRegister /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${cOwn}:page`,
-                    element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${cOthers}:page`,
-                    element: isAuthenticated ? <CodesList type="byVis" /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodesList type="byVis" /> : <Navigate to={homePage} />
                 },
                 {
                     path: cUpdateOwn,
-                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${uUpdate}:userId`,
-                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <UserUpdate /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${cUpdate}:codeId`,
-                    element: isAuthenticated ? <CodeUpdate /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodeUpdate /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${uList}:page`,
-                    element: isAuthenticated ? <UsersList /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <UsersList /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${cList}:page`,
-                    element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={uLogin} />
+                    element: isAuthenticated ? <CodesList type="byAuth" /> : <Navigate to={homePage} />
                 },
                 {
                     path: errorOccured,

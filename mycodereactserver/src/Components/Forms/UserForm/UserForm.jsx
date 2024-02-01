@@ -106,7 +106,7 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
     const confirmLogout = () => {
         Cookies.remove("jwtToken");
         navigate(homePage);
-        window.location.reload;
+        window.location.reload();
     };
 
     if (loading) {
