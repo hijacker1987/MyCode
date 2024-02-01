@@ -25,7 +25,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
             let modifiedCodeTitle = codeTitle;
 
             if (code && role === "Admin") {
-                modifiedCodeTitle = codeTitle + "*";
+                modifiedCodeTitle = "* " + codeTitle + " *";
             }
 
             if (code) {

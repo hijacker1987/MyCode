@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApiV2 } from "../Services/Api";
+import { postApi } from "../Services/Api";
 import { getToken } from "../Services/AuthService";
 import { codeRegistration } from "../Services/Backend.Endpoints";
 import CodeForm from "../Components/Forms/CodeForm";
@@ -17,7 +17,7 @@ const CodeRegister = () => {
         setLoading(true);
         const token = getToken();
 
-        postApiV2(code, token, codeRegistration)
+        postApi(code, token, codeRegistration)
             .then((data) => {
                 setLoading(false);
                 if (data) {

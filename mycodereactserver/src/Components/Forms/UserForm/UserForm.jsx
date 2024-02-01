@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getToken, getUserRoles, getUserIdFromToken } from "../../../Services/AuthService";
-import { uPwChange } from "../../../Services/Frontend.Endpoints";
+import { homePage, uPwChange } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
@@ -105,7 +105,7 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
 
     const confirmLogout = () => {
         Cookies.remove("jwtToken");
-        navigate("/");
+        navigate(homePage);
         window.location.reload();
     };
 

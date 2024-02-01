@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApi } from "../Services/Api";
+import { postApiV2 } from "../Services/Api";
+import { homePage } from "../Services/Frontend.Endpoints";
 import { userRegistration } from "../Services/Backend.Endpoints";
 import UserForm from "../Components/Forms/UserForm";
 import Loading from "../Components/Loading/Loading";
@@ -14,10 +15,10 @@ const UserRegister = () => {
 
     const handleCreateUser = (user) => {
         setLoading(true);
-        postApi(user, userRegistration)
+        postApiV2(user, userRegistration)
             .then((res) => {
                 setLoading(false);
-                navigate("/");
+                navigate(homePage);
                 if (res.status != 400) {
                     Notify("Success", "Successful Registration!");
                 } else {
@@ -31,7 +32,7 @@ const UserRegister = () => {
     };
 
     const handleCancel = () => {
-        navigate("/");
+        navigate(-1);
     };
 
     if (loading) {

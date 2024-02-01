@@ -6,10 +6,10 @@ const DeleteActions = {
         try {
             const token = getToken();
             await deleteApi(token, endpoint);
-            onSuccess(); // Trigger success callback
+            onSuccess();
         } catch (error) {
             console.error("Error occurred during delete: ", error);
-            onError(); // Trigger error callback
+            onError();
         }
     },
 };
