@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { homePage } from "../Services/Frontend.Endpoints";
+import { uLogin } from "../Services/Frontend.Endpoints";
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 import { getToken } from "../Services/AuthService";
 import { getApi } from "../Services/Api";
-import { CenteredContainer, MidContainer } from "./Styles/TextContainer.styled";
+import { MidContainer } from "./Styles/TextContainer.styled";
 import { useNavigate } from "react-router-dom";
+import Notify from "../Pages/Services/ToastNotifications";
+import ErrorPage from "../Pages/Services/ErrorPage";
 
 const Homepage = () => {
     const [visibleCodes, setVisibleCodes] = useState([]);
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
     const [jwtToken, setJwtToken] = useState(getToken());
+    const [errorMessage, setError] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,7 +23,7 @@ const Homepage = () => {
                     setVisibleCodes(responseData);
                 }
             } catch (error) {
-                console.error("Error fetching visible codes:", error);
+                setError(`Error fetching visible codes: ${error}`);
             }
         };
 
@@ -40,7 +43,8 @@ const Homepage = () => {
 
     useEffect(() => {
         if (!jwtToken) {
-            navigate(homePage);
+            navigate(uLogin);
+            Notify("Error", "Session has expired. Please log in again.");
         }
     }, [jwtToken, navigate]);
 
@@ -57,19 +61,25 @@ const Homepage = () => {
 
     return (
         <div>
-            {!jwtToken ? (
-                <MidContainer className="welcome-text">
-                    Welcome Code Fanatic!
-                    <p>Please login or register</p>
-                </MidContainer>  
+            {errorMessage === "" ? (
+                <div>
+                {!jwtToken ? (
+                    <MidContainer className="welcome-text">
+                        Welcome Code Fanatic!
+                        <p>Please login or register</p>
+                    </MidContainer>  
+                ) : (
+                    randomCodeIndex !== null && visibleCodes.length > 0 && (
+                        <MidContainer className="random-code">
+                            Random Code of <p>{visibleCodes[randomCodeIndex].userName}</p>
+                            <div>Title: {visibleCodes[randomCodeIndex].codeTitle}</div>
+                            <div>Code: {visibleCodes[randomCodeIndex].myCode}</div>
+                        </MidContainer>
+                    )
+                    )}
+                </div>
             ) : (
-                randomCodeIndex !== null && visibleCodes.length > 0 && (
-                    <MidContainer className="random-code">
-                        Random Code of <p>{visibleCodes[randomCodeIndex].userName}</p>
-                        <div>Title: {visibleCodes[randomCodeIndex].codeTitle}</div>
-                        <div>Code: {visibleCodes[randomCodeIndex].myCode}</div>
-                    </MidContainer>
-                )
+            <ErrorPage errorMessage={errorMessage} />
             )}
         </div>
     );

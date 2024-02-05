@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const ButtonRowContainer = styled.div`
-  margin-top: 50px;
+  margin-top: 75px;
   margin-left: 10px;
   margin-bottom: 10px;
   display: flex;

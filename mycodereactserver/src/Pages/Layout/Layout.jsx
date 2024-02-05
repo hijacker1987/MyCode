@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getToken, getUserRoles } from "../../Services/AuthService";
-import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
+import { ButtonRowContainer, ButtonRowButtonContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
@@ -12,6 +12,7 @@ import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
 import ErrorPage from "../Services/ErrorPage";
 import "../../index.css";
+import Notify from "../Services/ToastNotifications";
 
 const Layout = () => {
     const location = useLocation();
@@ -28,7 +29,7 @@ const Layout = () => {
 
             if (typeof token === "string" && token.length > 0) {
                 const roles = getUserRoles();
-                
+
                 setJwtToken(token);
                 setUserRoles(roles);
             }
@@ -62,8 +63,10 @@ const Layout = () => {
     const confirmLogout = () => {
         Cookies.remove("jwtToken");
         setShowLogoutModal(false);
-        navigate(homePage);
+        setJwtToken(null);
         window.location.reload();
+        navigate(homePage);
+        Notify("Success", "You logged out successfully!");
     };
 
     return (
@@ -76,23 +79,25 @@ const Layout = () => {
                 {!jwtToken ? (
                     <ButtonRowContainer>
                         {location.pathname !== uLogin && location.pathname !== uReg && (
-                            <ButtonRowContainer>
+                            <ButtonRowButtonContainer>
                                 <Link to={uLogin} className="link">
                                     <ButtonContainer type="button">Login</ButtonContainer>
                                 </Link>
                                 <Link to={uReg} className="link">
                                     <ButtonContainer type="button">Registration</ButtonContainer>
                                 </Link>
-                            </ButtonRowContainer>
+                            </ButtonRowButtonContainer>
                         )}
                     </ButtonRowContainer>
                 ) : (
                     <ButtonRowContainer>
+                        <ButtonRowButtonContainer>
+
                             <ButtonContainer type="button" onClick={handleLogout}>Logout</ButtonContainer>
                                 <Link to={`${homePage}`} className="link">
                             <ButtonContainer type="button">MyCode Home</ButtonContainer>
-                        </Link>
-                        {userRoles.includes("Admin") ? (
+                            </Link>
+                            {userRoles.includes("Admin") ? (
                             <>
                                 <Link to={`${uList}1`} className="link">
                                     <ButtonContainer type="button">List Users</ButtonContainer>
@@ -103,6 +108,7 @@ const Layout = () => {
                                 <Link to={uPwChange} className="link">
                                     <ButtonContainer type="button">Password Change</ButtonContainer>
                                 </Link>
+                            
                             </>
                         ) : (
                             <>
@@ -119,7 +125,8 @@ const Layout = () => {
                                     <ButtonContainer type="button">My Account</ButtonContainer>
                                 </Link>
                             </>
-                        )}
+                            )}
+                        </ButtonRowButtonContainer>
                     </ButtonRowContainer>
                     )}
             </nav>

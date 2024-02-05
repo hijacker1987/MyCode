@@ -6,11 +6,10 @@ import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
 import Notify from "../Services/ToastNotifications";
-import ErrorPage from "../Services/ErrorPage";
 
 const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setError] = useState("");
+    const [errorNotify, setErrorNotify] = useState(false);
     const [data, setData] = useState(null);
     const { page } = useParams();
 
@@ -25,18 +24,26 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
 
                 if (responseData) {
                     setData(responseData);
-                    Notify("Success", `List of ${kind} created successfully!`);
-                } else {
-                    Notify("Error", `Unable to create the List of ${kind}`);                  
+                    setErrorNotify(false);
                 }
             } catch (error) {
                 setLoading(false);
-                setError(`Error occurred during API call on tables: ${error}`);
+                console.log(error);
+                setErrorNotify(true);
             }
         };
 
         fetchData();
-    }, [endpoint]);
+
+        setTimeout(() => {
+            if (errorNotify) {
+                Notify("Error", `Unable to create the List of ${kind}`);
+            } else {
+                Notify("Success", `List of ${kind} created successfully!`);
+            }
+        }, 0);
+    }, [endpoint, errorNotify]);
+
 
     if (loading) {
         return <Loading />;
@@ -44,12 +51,8 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
 
     return (
         <div>
-            {errorMessage === "" ? (
-                type === "codes" ? <CodesTable codes={data} headers={headers} role={role} page={page} type={auth} /> :
-                                   <UsersTable users={data} headers={headers} role={role} page={page} />
-            ) : (
-                <ErrorPage errorMessage={errorMessage} />
-            )}
+            {type === "codes" ? <CodesTable codes={data} headers={headers} role={role} page={page} type={auth} />
+                              : <UsersTable users={data} headers={headers} role={role} page={page} />}
         </div>
     );
 };
