@@ -79,7 +79,7 @@ namespace MyCode_Backend_Server.Controllers
                                             WhatKindOfCode = c.WhatKindOfCode,
                                             IsBackend = c.IsBackend,
                                             IsVisible = c.IsVisible,
-                                            UserName = _dataContext.Users.FirstOrDefault(u => u.Id == c.UserId)!.UserName
+                                            DisplayName = _dataContext.Users.FirstOrDefault(u => u.Id == c.UserId)!.DisplayName
                                         })
                                         .ToList();
 

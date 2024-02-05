@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { uLogin } from "../Services/Frontend.Endpoints";
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 import { getToken } from "../Services/AuthService";
 import { getApi } from "../Services/Api";
 import { MidContainer } from "./Styles/TextContainer.styled";
-import { useNavigate } from "react-router-dom";
-import Notify from "../Pages/Services/ToastNotifications";
 import ErrorPage from "../Pages/Services/ErrorPage";
 
 const Homepage = () => {
@@ -13,7 +10,6 @@ const Homepage = () => {
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
     const [jwtToken, setJwtToken] = useState(getToken());
     const [errorMessage, setError] = useState("");
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchVisibleCodes = async () => {
@@ -42,13 +38,6 @@ const Homepage = () => {
     }, [jwtToken, visibleCodes]);
 
     useEffect(() => {
-        if (!jwtToken) {
-            navigate(uLogin);
-            Notify("Error", "Session has expired. Please log in again.");
-        }
-    }, [jwtToken, navigate]);
-
-    useEffect(() => {
         const initialRandomCode = setTimeout(() => {
             if (visibleCodes.length > 0) {
                 const newIndex = Math.floor(Math.random() * visibleCodes.length);
@@ -71,7 +60,7 @@ const Homepage = () => {
                 ) : (
                     randomCodeIndex !== null && visibleCodes.length > 0 && (
                         <MidContainer className="random-code">
-                            Random Code of <p>{visibleCodes[randomCodeIndex].userName}</p>
+                            Random Code of <p>{visibleCodes[randomCodeIndex].displayName}</p>
                             <div>Title: {visibleCodes[randomCodeIndex].codeTitle}</div>
                             <div>Code: {visibleCodes[randomCodeIndex].myCode}</div>
                         </MidContainer>

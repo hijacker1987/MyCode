@@ -18,6 +18,7 @@ const Layout = () => {
     const location = useLocation();
     const [jwtToken, setJwtToken] = useState(getToken);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [logoutSuccess, setLogoutSuccess] = useState(null);
     const [userRoles, setUserRoles] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
     const [errorMessage, setError] = useState("");
@@ -60,14 +61,27 @@ const Layout = () => {
         setShowLogoutModal(true);
     };
 
-    const confirmLogout = () => {
-        Cookies.remove("jwtToken");
+    const confirmLogout = (loggedOut) => {
         setShowLogoutModal(false);
+        if (loggedOut) {
+            setLogoutSuccess(true);
+        } else {
+            setLogoutSuccess(false)
+        }
+        Cookies.remove("jwtToken");
         setJwtToken(null);
-        window.location.reload();
-        navigate(homePage);
-        Notify("Success", "You logged out successfully!");
     };
+
+    useEffect(() => {
+        if (jwtToken === null && !logoutSuccess) {
+            navigate(uLogin);
+            Notify("Error", "Session has expired. Please log in again.");
+        }
+        else if (jwtToken === null && logoutSuccess) {
+            navigate(homePage);
+            Notify("Success", "You logged out successfully!");
+        }
+    }, [jwtToken, navigate]);
 
     return (
         <div className="Layout">
@@ -151,7 +165,7 @@ const Layout = () => {
                                     <ButtonContainer onClick={() => setShowLogoutModal(false)}>
                                         Cancel
                                     </ButtonContainer>
-                                    <ButtonContainer onClick={confirmLogout}>
+                                    <ButtonContainer onClick={() => confirmLogout(true)}>
                                         Logout
                                     </ButtonContainer>
                                 </ButtonRowContainer>

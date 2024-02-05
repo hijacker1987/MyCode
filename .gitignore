@@ -65,3 +65,13 @@ dkms.conf
 /MyCode Backend Server/MyCode Backend Server Tests/obj
 /mycodereactserver/.env
 /mycodereactserver/.env
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.Designer.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240131145327_SeedData.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240131145327_SeedData.Designer.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.Designer.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.Designer.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/DataContextModelSnapshot.cs

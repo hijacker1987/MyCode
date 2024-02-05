@@ -51,7 +51,7 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
 
     return (
         <div>
-            {type === "codes" ? <CodesTable codes={data} headers={headers} role={role} page={page} type={auth} />
+            {type === "codes" ? <CodesTable codes={data} headers={headers} role={role} page={page} auth={auth} kind={kind} />
                               : <UsersTable users={data} headers={headers} role={role} page={page} />}
         </div>
     );
