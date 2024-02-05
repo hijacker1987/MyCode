@@ -20,6 +20,9 @@ const UsersTable = ({ users, headers, role, page }) => {
     const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [recordPerPage, setRecordPerPage] = useState(5);
     const [paginationSlice, setPaginationSlice] = useState({ first: 0, second: recordPerPage - 1 });
+    const [displayNameFilter, setDisplayNameFilter] = useState("");
+    const [emailFilter, setEmailFilter] = useState("");
+    const [usernameFilter, setUsernameFilter] = useState("");
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
@@ -63,6 +66,32 @@ const UsersTable = ({ users, headers, role, page }) => {
             <StyledTable className="table table-striped table-hover">
                 <thead>
                     <tr>
+                        <StyledTh>
+                            <input
+                                type="text"
+                                placeholder="Search by Display Name"
+                                value={displayNameFilter}
+                                onChange={(e) => setDisplayNameFilter(e.target.value)}
+                            />
+                        </StyledTh>
+                        <StyledTh>
+                            <input
+                                type="text"
+                                placeholder="Search by Email"
+                                value={emailFilter}
+                                onChange={(e) => setEmailFilter(e.target.value)}
+                            />
+                        </StyledTh>
+                        <StyledTh>
+                            <input
+                                type="text"
+                                placeholder="Search by Username"
+                                value={usernameFilter}
+                                onChange={(e) => setUsernameFilter(e.target.value)}
+                            />
+                        </StyledTh>
+                    </tr>
+                    <tr>
                         {headers.map(header => (
                             <StyledTh key={header}>{header}</StyledTh>
                         ))}
@@ -70,24 +99,33 @@ const UsersTable = ({ users, headers, role, page }) => {
                 </thead>
                 <tbody>
                     {updatedUsers &&
-                        updatedUsers.slice(paginationSlice.first, paginationSlice.second).map((user, index) => (
-                        <React.Fragment key={user.id}>
-                            <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
-                                <StyledTd>{index + 1}</StyledTd>
-                                <StyledTd>{user.displayName}</StyledTd>
-                                <StyledTd>{formatElapsedTime(user.lastTimeLogin)}</StyledTd>
-                                <StyledTd>{user.userName}</StyledTd>
-                                <StyledTd>{user.email}</StyledTd>
-                                <StyledTd>{user.phoneNumber}</StyledTd>
-                                <StyledTd>
-                                    <Link to={`${uUpdate}${user.id}`} >
-                                        <ButtonContainer type="button">Edit</ButtonContainer>
-                                    </Link>
-                                    <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>Delete</ButtonContainer>
-                                </StyledTd>
-                            </StyledTr>
-                            <RowSpacer />
-                        </React.Fragment>
+                        updatedUsers
+                            .filter((user) => {
+                                return (
+                                    user.displayName && user.displayName.toLowerCase().includes(displayNameFilter.toLowerCase()) &&
+                                    user.email && user.email.toLowerCase().includes(emailFilter.toLowerCase()) &&
+                                    user.userName && user.userName.toLowerCase().includes(usernameFilter.toLowerCase())
+                                );
+                            })
+                            .slice(paginationSlice.first, paginationSlice.second)
+                            .map((user, index) => (
+                            <React.Fragment key={user.id}>
+                                <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
+                                    <StyledTd>{index + 1}</StyledTd>
+                                    <StyledTd>{user.displayName}</StyledTd>
+                                    <StyledTd>{formatElapsedTime(user.lastTimeLogin)}</StyledTd>
+                                    <StyledTd>{user.userName}</StyledTd>
+                                    <StyledTd>{user.email}</StyledTd>
+                                    <StyledTd>{user.phoneNumber}</StyledTd>
+                                    <StyledTd>
+                                        <Link to={`${uUpdate}${user.id}`} >
+                                            <ButtonContainer type="button">Edit</ButtonContainer>
+                                        </Link>
+                                        <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>Delete</ButtonContainer>
+                                    </StyledTd>
+                                </StyledTr>
+                                <RowSpacer />
+                            </React.Fragment>
                     ))}
                 </tbody>
                 <tfoot>

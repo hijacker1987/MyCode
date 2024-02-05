@@ -13,19 +13,24 @@ import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 
-const CodesTable = ({ codes, headers, role, page, type }) => {
+const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [updatedCodes, setUpdatedCodes] = useState(codes);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCodeId, setSelectedCodeId] = useState(null);
     const [recordPerPage, setRecordPerPage] = useState(5);
     const [paginationSlice, setPaginationSlice] = useState({ first: 0, second: recordPerPage - 1 });
-    const isAllowed = type === "byAuth";
+    const [displayNameFilter, setDisplayNameFilter] = useState("");
+    const [codeTitleFilter, setCodeTitleFilter] = useState("");
+    const [codeTypeFilter, setCodeTypeFilter] = useState("");
+    const [visibilityFilter, setVisibilityFilter] = useState("all"); //"all", "visible", or "hidden"
+    const [sortOrder, setSortOrder] = useState("A-Z");
+    const isAllowed = auth === "byAuth";
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
 
         setPaginationSlice({ first: initialPage * recordPerPage - recordPerPage, second: initialPage * recordPerPage });
-    }, [page, recordPerPage]);
+    }, [page, recordPerPage, displayNameFilter, codeTypeFilter, visibilityFilter]);
 
     useEffect(() => {
         setUpdatedCodes(codes);
@@ -34,6 +39,19 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
     if (!updatedCodes || updatedCodes.length === 0) {
         return <p>No code data available.</p>;
     }
+
+    const handleSort = () => {
+        const sortedCodes = [...updatedCodes].sort((a, b) => {
+            if (sortOrder === "A-Z") {
+                setSortOrder("Z-A");
+                return !isAllowed ? a.codeTitle.localeCompare(b.codeTitle) : a.displayName.localeCompare(b.displayName);
+            } else {
+                setSortOrder("A-Z");
+                return !isAllowed ? b.codeTitle.localeCompare(a.codeTitle) : b.displayName.localeCompare(a.displayName);
+            }
+        });
+        setUpdatedCodes(sortedCodes);
+    };
 
     const handleDelete = (codeId) => {
         setShowDeleteModal(true);
@@ -62,6 +80,35 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
             <StyledTable className="table table-striped table-hover">
                 <thead>
                     <tr>
+                        <StyledTh>
+                            <input
+                                type="text"
+                                placeholder={!isAllowed ? "Search by Code Title" : "Search by Display Name"}
+                                value={!isAllowed ? codeTitleFilter : displayNameFilter}
+                                onChange={(e) => (!isAllowed ? setCodeTitleFilter(e.target.value) : setDisplayNameFilter(e.target.value))}
+                            />
+                        </StyledTh>
+                        <StyledTh>
+                            <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)}>
+                                <option value="">All Code Types</option>
+                                <option value="C#">C#</option>
+                                <option value="C++">C++</option>
+                            </select>
+                        </StyledTh>
+                        {!isAllowed && (
+                            <StyledTh>
+                                <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)}>
+                                    <option value="all">All</option>
+                                    <option value="visible">Visible</option>
+                                    <option value="hidden">Hidden</option>
+                                </select>
+                            </StyledTh>
+                        )}
+                        <StyledTh onClick={handleSort}>
+                            {sortOrder}
+                        </StyledTh>                      
+                    </tr>
+                    <tr>
                         {headers.map((header) => (
                             <StyledTh key={header}>{header}</StyledTh>
                         ))}
@@ -69,19 +116,32 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                 </thead>
                 <tbody>
                     {updatedCodes &&
-                        updatedCodes.slice(paginationSlice.first, paginationSlice.second).map((code, index) => (
+                        updatedCodes
+                            .filter((code) => {
+                                if (!isAllowed) {
+                                    return code.codeTitle && code.codeTitle.toLowerCase().includes(codeTitleFilter.toLowerCase().slice(0, 3));
+                                } else {
+                                    return code.displayName && code.displayName.toLowerCase().includes(displayNameFilter.toLowerCase().slice(0, 3));
+                                }
+                            })
+                            .filter((code) => (codeTypeFilter ? code.whatKindOfCode === codeTypeFilter : true))
+                            .filter((code) => (visibilityFilter === "all" ? true : code.isVisible === (visibilityFilter === "visible")))
+                            .slice(paginationSlice.first, paginationSlice.second)
+                            .map((code, index) => (
                             <React.Fragment key={code.id}>
                                 <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
                                     <StyledTd>{index + 1}</StyledTd>
-                                    {!isAllowed && (
-                                        <StyledTd>{code.userName}</StyledTd>
-                                    )}
+                                        {isAllowed && (
+                                            <StyledTd>{code.displayName}</StyledTd>
+                                        )}
                                     <StyledTd>{code.codeTitle}</StyledTd>
                                     <StyledTd>{code.myCode}</StyledTd>
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
-                                    <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
-                                    {isAllowed && (
+                                    {kind !== "visible Codes" && (
+                                        <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
+                                    )}
+                                    {!isAllowed && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
                                                 <ButtonContainer type="button">Edit</ButtonContainer>
@@ -101,7 +161,7 @@ const CodesTable = ({ codes, headers, role, page, type }) => {
                         <td colSpan={headers.length}>
                             <ConstructPagination
                                 element={codes}
-                                url={type === "byAuth" ? cList : cOthers}
+                                url={auth === "byAuth" ? cList : cOthers}
                                 page={Number(page)}
                                 recordPerPage={recordPerPage}
                                 setRecordPerPage={setRecordPerPage}
