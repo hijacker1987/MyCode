@@ -1,8 +1,7 @@
 import { backendUrl } from "../Services/Config";
-import { checkTokenExpiration } from "../Services/AuthService";
+import { handleLogout } from "../Services/AuthService";
 
 export const getApi = async (token, endpoint) => {
-    checkTokenExpiration(); 
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "GET",
         headers: {
@@ -11,12 +10,16 @@ export const getApi = async (token, endpoint) => {
         },
     });
 
+    if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+    }
+
     const data = await response.json();
     return data;
 };
 
 export const postApi = async (user, token, endpoint) => {
-    checkTokenExpiration(); 
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "POST",
         headers: {
@@ -25,6 +28,11 @@ export const postApi = async (user, token, endpoint) => {
         },
         body: JSON.stringify(user),
     });
+
+    if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+    }
 
     const data = await response.json();
     return data;
@@ -45,7 +53,6 @@ export const postApiV2 = async (user, endpoint) => {
 
 
 export const patchApi = async (user, token, endpoint) => {
-    checkTokenExpiration(); 
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "PATCH",
         headers: {
@@ -55,12 +62,16 @@ export const patchApi = async (user, token, endpoint) => {
         body: JSON.stringify(user)
     });
 
+    if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+    }
+
     const data = await response.json();
     return data;
 };
 
 export const putApi = async (user, token, endpoint) => {
-    checkTokenExpiration(); 
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "PUT",
         headers: {
@@ -70,12 +81,16 @@ export const putApi = async (user, token, endpoint) => {
         body: JSON.stringify(user)
     });
 
+    if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+    }
+
     const data = await response.json();
     return data;
 };
 
 export const deleteApi = async (token, endpoint) => {
-    checkTokenExpiration(); 
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "DELETE",
         headers: {
@@ -84,5 +99,14 @@ export const deleteApi = async (token, endpoint) => {
         },
     });
 
+    if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+    }
+
     return response.status;
+};
+
+const handleUnauthorized = () => {
+    handleLogout("Error", "Session has expired. Please log in again.");
 };

@@ -16,10 +16,6 @@ const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPa
         setAvailablePages(pages);
     }, [page, recordPerPage, element, totalPages]);
 
-    const handleFirstButton = () => {
-        navigate(`${url}1`);
-    };
-
     const handleLastButton = () => {
         navigate(`${url}${totalPages}`);
     };

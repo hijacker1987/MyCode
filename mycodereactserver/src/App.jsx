@@ -20,7 +20,6 @@ import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
 import UsersList from "./Pages/Lists/UsersList";
 import CodesList from "./Pages/Lists/CodesList";
-import ErrorBoundary from "./Services/ErrorBoundary";
 import ErrorPage from "./Pages/Services/ErrorPage";
 import Homepage from "./Components/Homepage";
 
@@ -97,10 +96,10 @@ function App() {
     ]);
 
     return (
-        <ErrorBoundary>
+        <>
             <RouterProvider router={router} />
             <ToastContainer />
-        </ErrorBoundary>
+        </>
     );
 }
 
