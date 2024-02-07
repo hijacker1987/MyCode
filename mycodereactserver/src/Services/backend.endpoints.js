@@ -46,3 +46,7 @@ const u = "users/"
     //DELETE
     export const deleteSuperUser = `${a}adu-`; //{id}
     export const deleteSuperCode = `${a}adc-`; //{id}
+
+//SERVICE
+    export const updateToken = `token/refresh`;
+    export const deleteRT = `token/revoke`;

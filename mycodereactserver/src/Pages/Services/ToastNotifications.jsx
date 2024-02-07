@@ -14,6 +14,9 @@ const Notify = ( notifyKind, notifyMessage ) => {
                 theme: "dark",
         });
     } else {
+        if (notifyMessage === undefined) {
+            return null;
+        }
         return toast.error(`${notifyMessage}`, {
                 position: "top-right",
                 autoClose: 5000,

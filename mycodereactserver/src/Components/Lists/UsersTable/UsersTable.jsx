@@ -38,6 +38,19 @@ const UsersTable = ({ users, headers, role, page }) => {
         return <p>No user data available.</p>;
     }
 
+    const handleSort = () => {
+        const sortedUsers = [...updatedUsers].sort((a, b) => {
+            if (sortOrder === "A-Z") {
+                setSortOrder("Z-A");
+                return a.displayName.localeCompare(b.displayName);
+            } else {
+                setSortOrder("A-Z");
+                return b.displayName.localeCompare(a.displayName);
+            }
+        });
+        setUpdatedCodes(sortedUsers);
+    };
+
     const handleDelete = (userId) => {
         if (role === "Admin") {
             setUserToDeleteId(userId);
@@ -72,6 +85,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 placeholder="Search by Display Name"
                                 value={displayNameFilter}
                                 onChange={(e) => setDisplayNameFilter(e.target.value)}
+                                style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
                         <StyledTh>
@@ -80,6 +94,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 placeholder="Search by Email"
                                 value={emailFilter}
                                 onChange={(e) => setEmailFilter(e.target.value)}
+                                style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
                         <StyledTh>
@@ -88,7 +103,11 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 placeholder="Search by Username"
                                 value={usernameFilter}
                                 onChange={(e) => setUsernameFilter(e.target.value)}
+                                style={{ cursor: "pointer" }}
                             />
+                        </StyledTh>
+                        <StyledTh onClick={handleSort} style={{ cursor: "pointer" }}>
+                            {sortOrder}
                         </StyledTh>
                     </tr>
                     <tr>

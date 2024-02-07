@@ -86,10 +86,11 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 placeholder={!isAllowed ? "Search by Code Title" : "Search by Display Name"}
                                 value={!isAllowed ? codeTitleFilter : displayNameFilter}
                                 onChange={(e) => (!isAllowed ? setCodeTitleFilter(e.target.value) : setDisplayNameFilter(e.target.value))}
+                                style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
                         <StyledTh>
-                            <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)}>
+                            <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)} style={{ cursor: "pointer" }}>
                                 <option value="">All Code Types</option>
                                 <option value="C#">C#</option>
                                 <option value="C++">C++</option>
@@ -97,14 +98,14 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                         </StyledTh>
                         {!isAllowed && (
                             <StyledTh>
-                                <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)}>
+                            <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }} style={{ cursor: "pointer" }}>
                                     <option value="all">All</option>
                                     <option value="visible">Visible</option>
                                     <option value="hidden">Hidden</option>
                                 </select>
                             </StyledTh>
                         )}
-                        <StyledTh onClick={handleSort}>
+                        <StyledTh onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
                         </StyledTh>                      
                     </tr>
