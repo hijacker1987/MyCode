@@ -133,12 +133,17 @@ namespace MyCode_Backend_Server.Controllers
 
             managedUser.LastTimeLogin = DateTime.UtcNow.AddHours(1);
 
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            managedUser.RefreshToken = refreshToken;
+            managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
 
             var accessToken = _tokenService.CreateToken(managedUser, roles);
 
-            return new AuthResponse(result.Email!, result.UserName!, accessToken);
+            return new AuthResponse(result.Email!, result.UserName!, accessToken, refreshToken);
         }
 
         [HttpPut("u-{id}"), Authorize(Roles = "User")]

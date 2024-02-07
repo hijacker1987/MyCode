@@ -6,6 +6,8 @@ namespace MyCode_Backend_Server.Models
     {
         public string? DisplayName { get; set; }
         public DateTime LastTimeLogin { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiry { get; set; }
 
         public User()
         {
