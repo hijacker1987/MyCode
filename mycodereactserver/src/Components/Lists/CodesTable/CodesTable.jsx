@@ -138,10 +138,8 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                     <StyledTd>{code.myCode}</StyledTd>
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
-                                    {kind !== "visible Codes" && (
-                                        <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
-                                    )}
-                                    {!isAllowed && (
+                                    <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
+                                        {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
                                                 <ButtonContainer type="button">Edit</ButtonContainer>

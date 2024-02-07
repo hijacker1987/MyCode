@@ -27,6 +27,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 _configuration["IssueAudience"],
                 _configuration["IssueAudience"],
                 claims,
+                notBefore: DateTime.UtcNow,
                 expires: expiration,
                 signingCredentials: credentials
                 );
@@ -69,6 +70,5 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
             return new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSignKey)), SecurityAlgorithms.HmacSha256);
         }
-
     }
 }
