@@ -8,11 +8,11 @@ import { CenteredContainer } from "../../Components/Styles/TextContainer.styled"
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris } from "../../Services/Backend.Endpoints";
+import Notify from "../Services/ToastNotifications";
 import Modal from 'react-bootstrap/Modal';
 import Cookies from "js-cookie";
 import ErrorPage from "../Services/ErrorPage";
 import "../../index.css";
-import Notify from "../Services/ToastNotifications";
 
 const Layout = () => {
     const location = useLocation();
@@ -69,6 +69,7 @@ const Layout = () => {
             setLogoutSuccess(false)
         }
         Cookies.remove("jwtToken");
+        Cookies.remove("refreshToken");
         setJwtToken(null);
     };
 

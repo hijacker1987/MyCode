@@ -75,3 +75,6 @@ dkms.conf
 /MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.cs
 /MyCode Backend Server/MyCode Backend Server/Migrations/20240130092135_InitCreatePlusSeedData.Designer.cs
 /MyCode Backend Server/MyCode Backend Server/Migrations/DataContextModelSnapshot.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240207215853_SeedDataRT.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240207221513_SeedDataRT.cs
+/MyCode Backend Server/MyCode Backend Server/Migrations/20240207221513_SeedDataRT.Designer.cs

@@ -88,7 +88,7 @@ namespace MyCode_Backend_Server
                     .AddEntityFrameworkStores<DataContext>();
         }
 
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -103,11 +103,13 @@ namespace MyCode_Backend_Server
 
             var connection = _configuration["FEAddress"];
 
-            app.UseCors(builder => { builder.WithOrigins(connection!)
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins(connection!)
                                             .AllowAnyHeader()
                                             .AllowAnyMethod()
                                             .AllowCredentials();
-                                    });
+            });
 
             app.UseAuthentication();
 

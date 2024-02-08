@@ -10,9 +10,12 @@ const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPa
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
+
         setPaginationSlice({ first: initialPage * recordPerPage - recordPerPage, second: initialPage * recordPerPage });
+
         const totalPages = element ? Math.ceil(element.length / recordPerPage) : 0;
         const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+
         setAvailablePages(pages);
     }, [page, recordPerPage, element, totalPages]);
 
@@ -32,7 +35,9 @@ const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPa
 
     const handleRecordPerPageButton = (number) => {
         setRecordPerPage(Number(number));
+
         navigate(`${url}${Math.max(1, Math.ceil(paginationSlice.second / Number(number)))}`);
+
         setPaginationSlice((prevSlice) => {
             return {
                 ...prevSlice,

@@ -20,11 +20,13 @@ const UserLogin = () => {
         try {
             const data = await postApiV2(user, userLogin);
 
-            if (data.token) {
+            if (data) {
                 const decodedToken = jwtDecode(data.token);
                 const expirationTime = decodedToken.exp * 1000;
-
+                const expTime = Date.parse(data.rtExpired);
+                
                 Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
+                Cookies.set("refreshToken", data.refreshToken, { expires: new Date(expTime) });
 
                 Notify("Success", "Successful Login!");
                 navigate(homePage);
