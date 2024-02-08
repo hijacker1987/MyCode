@@ -131,7 +131,7 @@ namespace MyCode_Backend_Server.Controllers
 
             await _userManager.AddToRolesAsync(managedUser, roles);
 
-            managedUser.LastTimeLogin = DateTime.UtcNow.AddHours(1);
+            managedUser.LastTimeLogin = DateTime.UtcNow;
 
             var refreshToken = _tokenService.GenerateRefreshToken();
 
@@ -143,7 +143,7 @@ namespace MyCode_Backend_Server.Controllers
 
             var accessToken = _tokenService.CreateToken(managedUser, roles);
 
-            return new AuthResponse(result.Email!, result.UserName!, accessToken, refreshToken);
+            return new AuthResponse(accessToken, refreshToken, managedUser.RefreshTokenExpiry);
         }
 
         [HttpPut("u-{id}"), Authorize(Roles = "User")]

@@ -33,15 +33,23 @@ namespace MyCode_Backend_Server.Controllers
 
             var user = await _userManager.FindByNameAsync(principal.Identity.Name);
 
-            if (user == null || user.RefreshToken != toRefresh.RefreshToken || user.RefreshTokenExpiry < DateTime.UtcNow)
+            if (user == null || user.RefreshToken != toRefresh.RefreshToken || user.RefreshTokenExpiry < DateTime.UtcNow) { 
+                if (user!.RefreshTokenExpiry < DateTime.UtcNow)
+                {
+                    user.RefreshToken = null;
+
+                    await _userManager.UpdateAsync(user);
+                }
+
                 return Unauthorized();
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = _tokenService.CreateToken(user, roles);
 
             _logger.LogInformation("Refresh endpoint successfully called!");
 
-            return Ok(new AuthResponse(user.Email!, user.UserName!, token, toRefresh.RefreshToken));
+            return Ok(new AuthResponse(token, toRefresh.RefreshToken, user.RefreshTokenExpiry));
         }
 
         [HttpDelete("revoke"), Authorize]

@@ -44,10 +44,10 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
         const sortedCodes = [...updatedCodes].sort((a, b) => {
             if (sortOrder === "A-Z") {
                 setSortOrder("Z-A");
-                return !isAllowed ? a.codeTitle.localeCompare(b.codeTitle) : a.displayName.localeCompare(b.displayName);
+                return !isAllowed ? b.codeTitle.localeCompare(a.codeTitle) : b.displayName.localeCompare(a.displayName);
             } else {
                 setSortOrder("A-Z");
-                return !isAllowed ? b.codeTitle.localeCompare(a.codeTitle) : b.displayName.localeCompare(a.displayName);
+                return !isAllowed ? a.codeTitle.localeCompare(b.codeTitle) : a.displayName.localeCompare(b.displayName);
             }
         });
         setUpdatedCodes(sortedCodes);
@@ -80,7 +80,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
             <StyledTable className="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <StyledTh>
+                        <StyledTh className="search-1">
                             <input
                                 type="text"
                                 placeholder={!isAllowed ? "Search by Code Title" : "Search by Display Name"}
@@ -89,7 +89,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
-                        <StyledTh>
+                        <StyledTh className="search-2">
                             <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)} style={{ cursor: "pointer" }}>
                                 <option value="">All Code Types</option>
                                 <option value="C#">C#</option>
@@ -97,7 +97,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                             </select>
                         </StyledTh>
                         {!isAllowed && (
-                            <StyledTh>
+                            <StyledTh className="search-3">
                             <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }} style={{ cursor: "pointer" }}>
                                     <option value="all">All</option>
                                     <option value="visible">Visible</option>
@@ -105,7 +105,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 </select>
                             </StyledTh>
                         )}
-                        <StyledTh onClick={handleSort} style={{ cursor: "pointer" }}>
+                        <StyledTh className="search-4" onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
                         </StyledTh>                      
                     </tr>

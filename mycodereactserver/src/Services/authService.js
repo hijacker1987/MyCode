@@ -33,5 +33,6 @@ export const getUserIdFromToken = () => {
 export const handleLogout = (msg) => {
     window.location.reload();
     Cookies.remove("jwtToken");
+    Cookies.remove("refreshToken");
     Notify(msg);
 };

@@ -23,6 +23,7 @@ const UsersTable = ({ users, headers, role, page }) => {
     const [displayNameFilter, setDisplayNameFilter] = useState("");
     const [emailFilter, setEmailFilter] = useState("");
     const [usernameFilter, setUsernameFilter] = useState("");
+    const [sortOrder, setSortOrder] = useState("A-Z");
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
@@ -42,13 +43,13 @@ const UsersTable = ({ users, headers, role, page }) => {
         const sortedUsers = [...updatedUsers].sort((a, b) => {
             if (sortOrder === "A-Z") {
                 setSortOrder("Z-A");
-                return a.displayName.localeCompare(b.displayName);
+                return b.displayName.localeCompare(a.displayName);
             } else {
                 setSortOrder("A-Z");
-                return b.displayName.localeCompare(a.displayName);
+                return a.displayName.localeCompare(b.displayName);
             }
         });
-        setUpdatedCodes(sortedUsers);
+        setUpdatedUsers(sortedUsers);
     };
 
     const handleDelete = (userId) => {
@@ -79,7 +80,7 @@ const UsersTable = ({ users, headers, role, page }) => {
             <StyledTable className="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <StyledTh>
+                        <StyledTh className="search-1">
                             <input
                                 type="text"
                                 placeholder="Search by Display Name"
@@ -88,7 +89,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
-                        <StyledTh>
+                        <StyledTh className="search-2">
                             <input
                                 type="text"
                                 placeholder="Search by Email"
@@ -97,7 +98,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
-                        <StyledTh>
+                        <StyledTh className="search-3">
                             <input
                                 type="text"
                                 placeholder="Search by Username"
@@ -106,7 +107,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
-                        <StyledTh onClick={handleSort} style={{ cursor: "pointer" }}>
+                        <StyledTh className="search-4" onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
                         </StyledTh>
                     </tr>

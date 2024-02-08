@@ -27,7 +27,11 @@ function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        setIsAuthenticated(prevState => !prevState);
+        setIsAuthenticated(true);
+
+        return () => {
+            setIsAuthenticated(false);
+        };
     }, []);
 
     const router = createBrowserRouter([
