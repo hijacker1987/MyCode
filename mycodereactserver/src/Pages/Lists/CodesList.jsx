@@ -5,7 +5,7 @@ import GenericList from "./GenericList";
 
 const CodesList = ({ type }) => {
     const role = getUserRoles();
-    const auth = role === "Admin" ? "byVis" : (role === "User" ? "byVis" : "byAuth");
+    const auth = role === "Admin" ? "byAuth" : "byVis";
     let endpoint = "";
     let kind = "";
 

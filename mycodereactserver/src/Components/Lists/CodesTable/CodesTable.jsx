@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
-import ConstructPagination from "../../Forms/PaginationForm/index";
-import DeleteActions from "../../Delete/DeleteActions";
-import Modal from 'react-bootstrap/Modal';
-import Notify from "./../../../Pages/Services/ToastNotifications";
 import { Link } from "react-router-dom";
-import { cList, cOthers, cUpdate } from "../../../Services/frontend.endpoints";
+import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
@@ -12,6 +8,10 @@ import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
+import ConstructPagination from "../../Forms/PaginationForm/index";
+import DeleteActions from "../../Delete/DeleteActions";
+import Modal from "react-bootstrap/Modal";
+import Notify from "./../../../Pages/Services/ToastNotifications";
 
 const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [updatedCodes, setUpdatedCodes] = useState(codes);
@@ -25,11 +25,10 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [visibilityFilter, setVisibilityFilter] = useState("all"); //"all", "visible", or "hidden"
     const [sortOrder, setSortOrder] = useState("A-Z");
     const isAllowed = auth === "byAuth";
-    const isAbleToLook = auth === "byVis";
     const codeTypeOptions = ["C#", "Java", "Python", "JavaScript", "C++",
                              "Ruby", "Swift", "Go", "Kotlin", "PHP",
                              "TypeScript", "Rust", "Objective-C", "C", "Scala",
-                             "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal"];
+        "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal"];
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
@@ -147,7 +146,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                     {updatedCodes &&
                         updatedCodes
                             .filter((code) => {
-                                if (!isAllowed && kind !== "visible Codes") {
+                                if (!isAllowed && kind !== "visible Codes" || role === "Admin") {
                                     return code.codeTitle && code.codeTitle.toLowerCase().includes(codeTitleFilter.toLowerCase().slice(0, 3));
                                 } else {
                                     return code.displayName && code.displayName.toLowerCase().includes(displayNameFilter.toLowerCase().slice(0, 3));
@@ -172,13 +171,13 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                     <StyledTd>{code.myCode}</StyledTd>
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
-                                    {isAllowed && kind === "visible Codes" && (
+                                    {isAllowed && kind === "visible Codes" || role === "Admin" && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
                                     {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
-                                    {!isAllowed && auth !== "byVis" && (
+                                    {!isAllowed && auth !== "byVis" || role === "Admin" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
                                                 <ButtonContainer type="button">Edit</ButtonContainer>
@@ -208,7 +207,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                         <td colSpan={headers.length}>
                             <ConstructPagination
                                 element={codes}
-                                url={auth === "byAuth" ? cList : cOthers}
+                                url={isAllowed && role === "Admin" ? cList : (!isAllowed && kind !== "visible Codes" ? cOwn : cOthers)}
                                 page={Number(page)}
                                 recordPerPage={recordPerPage}
                                 setRecordPerPage={setRecordPerPage}

@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
-import ConstructPagination from "../../Forms/PaginationForm/index";
-import DeleteActions from "../../Delete/DeleteActions";
-import Modal from 'react-bootstrap/Modal';
-import Notify from "./../../../Pages/Services/ToastNotifications";
 import { Link } from "react-router-dom";
 import { formatElapsedTime } from "../../../Services/elapsedTime";
-import { uList, uUpdate } from "../../../Services/frontend.endpoints";
+import { uList, uUpdate } from "../../../Services/Frontend.endpoints";
 import { deleteSuperUser } from "../../../Services/Backend.Endpoints";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
@@ -13,6 +9,10 @@ import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
+import ConstructPagination from "../../Forms/PaginationForm/index";
+import DeleteActions from "../../Delete/DeleteActions";
+import Modal from "react-bootstrap/Modal";
+import Notify from "./../../../Pages/Services/ToastNotifications";
 
 const UsersTable = ({ users, headers, role, page }) => {
     const [updatedUsers, setUpdatedUsers] = useState(users);
