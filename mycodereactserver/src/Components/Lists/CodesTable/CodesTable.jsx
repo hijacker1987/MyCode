@@ -25,6 +25,11 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [visibilityFilter, setVisibilityFilter] = useState("all"); //"all", "visible", or "hidden"
     const [sortOrder, setSortOrder] = useState("A-Z");
     const isAllowed = auth === "byAuth";
+    const isAbleToLook = auth === "byVis";
+    const codeTypeOptions = ["C#", "Java", "Python", "JavaScript", "C++",
+                             "Ruby", "Swift", "Go", "Kotlin", "PHP",
+                             "TypeScript", "Rust", "Objective-C", "C", "Scala",
+                             "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal"];
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
@@ -80,30 +85,53 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
             <StyledTable className="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <StyledTh className="search-1">
-                            <input
-                                type="text"
-                                placeholder={!isAllowed ? "Search by Code Title" : "Search by Display Name"}
-                                value={!isAllowed ? codeTitleFilter : displayNameFilter}
-                                onChange={(e) => (!isAllowed ? setCodeTitleFilter(e.target.value) : setDisplayNameFilter(e.target.value))}
-                                style={{ cursor: "pointer" }}
-                            />
-                        </StyledTh>
+                        {!isAllowed && kind !== "visible Codes" && (
+                            <StyledTh className="search-1">
+                                <input
+                                    type="text"
+                                    placeholder={"Search by Code Title"}
+                                    value={codeTitleFilter}
+                                    onChange={(e) => (setCodeTitleFilter(e.target.value))}
+                                    style={{ cursor: "pointer" }}
+                                />
+                            </StyledTh>                       
+                        )}
+                        {!isAllowed && auth === "byVis" && kind === "visible Codes" && (
+                            <StyledTh className="search-1">
+                                <input
+                                    type="text"
+                                    placeholder={"Search by Display Name"}
+                                    value={displayNameFilter}
+                                    onChange={(e) => (setDisplayNameFilter(e.target.value))}
+                                    style={{ cursor: "pointer" }}
+                                />
+                            </StyledTh>
+                        )}
                         <StyledTh className="search-2">
                             <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)} style={{ cursor: "pointer" }}>
                                 <option value="">All Code Types</option>
-                                <option value="C#">C#</option>
-                                <option value="C++">C++</option>
+                                {codeTypeOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
                             </select>
                         </StyledTh>
-                        {!isAllowed && (
+                        {isAllowed && auth === "byVis" && (
                             <StyledTh className="search-3">
-                            <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }} style={{ cursor: "pointer" }}>
+                            <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }}>
                                     <option value="all">All</option>
                                     <option value="visible">Visible</option>
                                     <option value="hidden">Hidden</option>
                                 </select>
                             </StyledTh>
+                        )}
+                        {!isAllowed && kind !== "visible Codes" && (
+                        <StyledTh className="search-3">
+                            <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }}>
+                                <option value="all">All</option>
+                                <option value="visible">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                        </StyledTh>
                         )}
                         <StyledTh className="search-4" onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
@@ -119,7 +147,12 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                     {updatedCodes &&
                         updatedCodes
                             .filter((code) => {
-                                if (!isAllowed) {
+                                if (!isAllowed && kind !== "visible Codes") {
+                                    return code.codeTitle && code.codeTitle.toLowerCase().includes(codeTitleFilter.toLowerCase().slice(0, 3));
+                                } else {
+                                    return code.displayName && code.displayName.toLowerCase().includes(displayNameFilter.toLowerCase().slice(0, 3));
+                                }
+                                if (!isAllowed && kind === "visible Codes") {
                                     return code.codeTitle && code.codeTitle.toLowerCase().includes(codeTitleFilter.toLowerCase().slice(0, 3));
                                 } else {
                                     return code.displayName && code.displayName.toLowerCase().includes(displayNameFilter.toLowerCase().slice(0, 3));
@@ -132,15 +165,30 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                             <React.Fragment key={code.id}>
                                 <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
                                     <StyledTd>{index + 1}</StyledTd>
-                                        {isAllowed && (
-                                            <StyledTd>{code.displayName}</StyledTd>
-                                        )}
+                                    {!isAllowed && kind === "visible Codes" && (
+                                        <StyledTd>{code.displayName}</StyledTd>
+                                    )}
                                     <StyledTd>{code.codeTitle}</StyledTd>
                                     <StyledTd>{code.myCode}</StyledTd>
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
-                                    <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
-                                        {!isAllowed && kind !== "visible Codes" && (
+                                    {isAllowed && kind === "visible Codes" && (
+                                        <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
+                                    )}
+                                    {!isAllowed && kind !== "visible Codes" && (
+                                        <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
+                                    )}
+                                    {!isAllowed && auth !== "byVis" && (
+                                        <StyledTd>
+                                            <Link to={`${cUpdate}${code.id}`}>
+                                                <ButtonContainer type="button">Edit</ButtonContainer>
+                                            </Link>
+                                            <ButtonContainer type="button" onClick={() => handleDelete(code.id)}>
+                                                Delete
+                                            </ButtonContainer>
+                                        </StyledTd>
+                                    )}
+                                    {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
                                                 <ButtonContainer type="button">Edit</ButtonContainer>
