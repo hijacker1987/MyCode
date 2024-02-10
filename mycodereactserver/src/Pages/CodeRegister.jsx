@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApi } from "../Services/Api";
-import { getToken } from "../Services/AuthService";
 import { codeRegistration } from "../Services/Backend.Endpoints";
 import CodeForm from "../Components/Forms/CodeForm";
 import Loading from "../Components/Loading/Loading";
@@ -11,13 +10,11 @@ import ErrorPage from "./Services/ErrorPage";
 const CodeRegister = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setRegError] = useState("");
+    const [errorMessage, setError] = useState("");
 
     const handleCreateCode = (code) => {
         setLoading(true);
-        const token = getToken();
-
-        postApi(code, token, codeRegistration)
+        postApi(codeRegistration, code)
             .then((data) => {
                 setLoading(false);
                 if (data) {
@@ -29,7 +26,7 @@ const CodeRegister = () => {
             })
             .catch((error) => {
                 setLoading(false);
-                setRegError(`Error occurred during registration: ${error}`);
+                setError(`Error occurred during registration: ${error}`);
             });
     };
 
@@ -43,13 +40,13 @@ const CodeRegister = () => {
 
     return <div>
         {errorMessage == "" ? (
-            <CodeForm
-                onSave={handleCreateCode}
-                onCancel={handleCancel}
-            />
-        ) : (
-            <ErrorPage errorMessage={errorMessage} />
-        )}
+                               <CodeForm
+                                  onSave={handleCreateCode}
+                                  onCancel={handleCancel}
+                               />
+                          ) : (
+                               <ErrorPage errorMessage={errorMessage} />
+                          )}
     </div>
 };
 

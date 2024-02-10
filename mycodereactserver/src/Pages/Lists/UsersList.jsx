@@ -1,10 +1,11 @@
-import { getUserRoles } from "../../Services/AuthService";
+import { useUser } from "../../Services/UserContext";
 import { getAllUsers } from "../../Services/Backend.Endpoints";
 import GenericList from "./GenericList";
 
 const UsersList = () => {
     const headers = ["Counter", "Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number", "Modify"];
-    const role = getUserRoles();
+    const { userData } = useUser();
+    const { role } = userData;
 
     return <GenericList
         endpoint={getAllUsers}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { getToken, getUserRoles } from "../../Services/AuthService";
 import { ButtonRowContainer, ButtonRowButtonContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
@@ -8,36 +7,21 @@ import { CenteredContainer } from "../../Components/Styles/TextContainer.styled"
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris } from "../../Services/Backend.Endpoints";
+import { useUser } from "../../Services/UserContext";
 import Notify from "../Services/ToastNotifications";
 import Modal from 'react-bootstrap/Modal';
-import Cookies from "js-cookie";
 import ErrorPage from "../Services/ErrorPage";
 import "../../index.css";
 
 const Layout = () => {
+    const navigate = useNavigate();
     const location = useLocation();
-    const [jwtToken, setJwtToken] = useState(getToken);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [logoutSuccess, setLogoutSuccess] = useState(null);
-    const [userRoles, setUserRoles] = useState([]);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
+    const { userData, setUserData } = useUser();
+    const { role, userid } = userData;
     const [errorMessage, setError] = useState("");
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        try {
-            const token = getToken();
-
-            if (typeof token === "string" && token.length > 0) {
-                const roles = getUserRoles();
-
-                setJwtToken(token);
-                setUserRoles(roles);
-            }
-        } catch (error) {
-            setError(`Token error: ${error}`);
-        }
-    }, [location]);
 
     useEffect(() => {
         const fetchJoke = async () => {
@@ -49,7 +33,6 @@ const Layout = () => {
                 setError(`Error occurred while fetching Chuck Norris: ${error}`);
             }
         };
-
         fetchJoke();
 
         const intervalId = setInterval(fetchJoke, 20000);
@@ -64,25 +47,26 @@ const Layout = () => {
     const confirmLogout = (loggedOut) => {
         setShowLogoutModal(false);
         if (loggedOut) {
+            setUserData(null);
             setLogoutSuccess(true);
         } else {
-            setLogoutSuccess(false)
+            setLogoutSuccess(false);
         }
-        Cookies.remove("jwtToken");
-        Cookies.remove("refreshToken");
-        setJwtToken(null);
     };
 
     useEffect(() => {
-        if (jwtToken === null && !logoutSuccess) {
-            navigate(uLogin);
-            Notify("Error", "Session has expired. Please log in again.");
+        if (userid && logoutSuccess !== null) {
+            if (logoutSuccess) {
+                navigate(homePage);
+                window.location.reload();
+                Notify("Success", "You logged out successfully!");
+            } else {
+                navigate(uLogin);
+                window.location.reload();
+                Notify("Error", "Session has expired. Please log in again.");
+            }
         }
-        else if (jwtToken === null && logoutSuccess) {
-            navigate(homePage);
-            Notify("Success", "You logged out successfully!");
-        }
-    }, [jwtToken, navigate]);
+    }, [logoutSuccess]);
 
     return (
         <div className="Layout">
@@ -91,7 +75,7 @@ const Layout = () => {
                 <CenteredContainer>
                     {chuckNorrisFact}
                 </CenteredContainer>
-                {!jwtToken ? (
+                {!role && !userid ? (
                     <ButtonRowContainer>
                         {location.pathname !== uLogin && location.pathname !== uReg && (
                             <ButtonRowButtonContainer>
@@ -107,12 +91,11 @@ const Layout = () => {
                 ) : (
                     <ButtonRowContainer>
                         <ButtonRowButtonContainer>
-
                             <ButtonContainer type="button" onClick={handleLogout}>Logout</ButtonContainer>
                                 <Link to={`${homePage}`} className="link">
                             <ButtonContainer type="button">MyCode Home</ButtonContainer>
                             </Link>
-                            {userRoles.includes("Admin") ? (
+                            {role === "Admin" ? (
                             <>
                                 <Link to={`${uList}1`} className="link">
                                     <ButtonContainer type="button">List Users</ButtonContainer>
@@ -123,7 +106,6 @@ const Layout = () => {
                                 <Link to={uPwChange} className="link">
                                     <ButtonContainer type="button">Password Change</ButtonContainer>
                                 </Link>
-                            
                             </>
                         ) : (
                             <>

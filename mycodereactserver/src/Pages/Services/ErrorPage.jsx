@@ -5,8 +5,8 @@ import { Form, FormRow } from "../../Components/Styles/Form.styled";
 import { ErrorTextContainerRed, ErrorTextContainerWhite, ColumnTextWrapper } from "../../Components/Styles/TextContainer.styled";
 
 const ErrorPage = ({ errorMessage }) => {
-    const [countdown, setCountdown] = useState(5);
     const navigate = useNavigate();
+    const [countdown, setCountdown] = useState(5);
 
     useEffect(() => {
         const countdownInterval = setInterval(() => {

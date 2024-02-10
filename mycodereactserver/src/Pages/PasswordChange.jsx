@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApi, patchApi } from "../Services/Api";
-import { getToken } from "../Services/AuthService";
 import { homePage } from "../Services/Frontend.Endpoints";
 import { getUser, changePassword } from "../Services/Backend.Endpoints";
 import PassChange from "../Components/PassChange/PassChange";
@@ -12,36 +11,28 @@ import ErrorPage from "./Services/ErrorPage";
 const PasswordChange = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setPWCError] = useState("");
-    const [userData, setUserData] = useState(null);
+    const [data, setUserData] = useState(null);
+    const [errorMessage, setError] = useState("");
 
     useEffect(() => {
         setLoading(true);
         try {
-            const token = getToken();
-
-            if (typeof token === "string" && token.length > 0) {
-                getApi(token, getUser)
-                    .then((getUserData) => {
-                        setLoading(false);
-                        setUserData(getUserData);
-                    })
-                    .catch((error) => {
-                        setLoading(false);
-                        setUpdateError(`Error occurred while fetching user data: ${error}`);
-                    });
-            }
-        } catch (error) {
-            setUpdateError(`Error occurred while fetching user data: ${error}`);
+            getApi(getUser)
+                .then((getUserData) => {
+                    setLoading(false);
+                    setUserData(getUserData);
+                })
+        } catch (e) {
+            setLoading(false);
+            setError(`Error occurred while fetching user data: ${error}`);
         }
     }, []);
 
     const handleUserPasswordUpdate = async (user) => {
         setLoading(true);
-        const token = getToken();
 
         try {
-            const response = await patchApi(user, token, changePassword);
+            const response = await patchApi(changePassword, user);
 
             setLoading(false);
             if (response && response.message) {
@@ -66,14 +57,14 @@ const PasswordChange = () => {
 
     return <div>
                 {errorMessage == "" ? (
-                    <PassChange
-                        onPassChange={handleUserPasswordUpdate}
-                        user={userData}
-                        onCancel={handleCancel}
-                    />
-                ) : (
-                    <ErrorPage errorMessage={errorMessage} />
-                )}
+                                       <PassChange
+                                          onPassChange={handleUserPasswordUpdate}
+                                          user={data}
+                                          onCancel={handleCancel}
+                                       />
+                                  ) : (
+                                       <ErrorPage errorMessage={errorMessage} />
+                                  )}
             </div>
 };
 

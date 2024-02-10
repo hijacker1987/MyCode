@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApiV2 } from "../Services/Api";
+import { postApi } from "../Services/Api";
 import { homePage } from "../Services/Frontend.Endpoints";
 import { userRegistration } from "../Services/Backend.Endpoints";
 import UserForm from "../Components/Forms/UserForm";
@@ -11,11 +11,11 @@ import ErrorPage from "./Services/ErrorPage";
 const UserRegister = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setRegError] = useState("");
+    const [errorMessage, setError] = useState("");
 
     const handleCreateUser = (user) => {
         setLoading(true);
-        postApiV2(user, userRegistration)
+        postApi(userRegistration, user)
             .then((res) => {
                 setLoading(false);
                 navigate(homePage);
@@ -27,7 +27,7 @@ const UserRegister = () => {
             })
             .catch((error) => {
                 setLoading(false);
-                setRegError(`Error occurred during registration: ${error}`);
+                setError(`Error occurred during registration: ${error}`);
             });
     };
 

@@ -1,25 +1,23 @@
 import { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { getApi } from "../../Services/Api";
-import { getToken } from "../../Services/AuthService";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
 import Notify from "../Services/ToastNotifications";
 
 const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
+    const { page } = useParams();
     const [loading, setLoading] = useState(false);
     const [errorNotify, setErrorNotify] = useState(false);
     const [data, setData] = useState(null);
-    const { page } = useParams();
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
 
-            const token = getToken();
             try {
-                const responseData = await getApi(token, endpoint);
+                const responseData = await getApi(endpoint);
                 setLoading(false);
 
                 if (responseData) {
@@ -28,7 +26,6 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
                 }
             } catch (error) {
                 setLoading(false);
-                console.log(error);
                 setErrorNotify(true);
             }
         };

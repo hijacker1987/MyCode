@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../Services/Api";
-import { getToken, getUserRoles } from "../Services/AuthService";
+import { useUser } from "../Services/UserContext";
 import { getUser, userById, userUpdate, userSuperUpdate } from "../Services/Backend.Endpoints";
 import UserForm from "../Components/Forms/UserForm/UserForm";
 import Loading from "../Components/Loading/Loading";
@@ -10,46 +10,36 @@ import ErrorPage from "./Services/ErrorPage";
 
 const UserUpdate = () => {
     const navigate = useNavigate();
-    const { userId } = useParams();
+    const { userIdParam } = useParams();
+    const { userData } = useUser();
+    const { role, userid } = userData;
     const [user, setUser] = useState(null);
-    const [userRole, setUserRole] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [userDataId, setUserDataId] = useState(null);
-    const [errorMessage, setUpdateError] = useState("");
+    const [errorMessage, setError] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const token = getToken();
-                const role = getUserRoles();
-                setUserRole(role);
-
-                const userEndpoint = role === "Admin" ? `${userById}${userId}` : getUser;
-                const userData = await getApi(token, userEndpoint);
-
-                if (role === "User") {
-                    setUserDataId(userData.id);
-                }
-
+                const userEndpoint = role === "Admin" ? `${userById}${userIdParam}` : getUser;
+                const data = await getApi(userEndpoint);
                 setLoading(false);
-                setUser(userData);
+                setUser(data);
             } catch (error) {
                 setLoading(false);
-                setUpdateError(`Error occurred while fetching user data: ${error}`);
+                setError(`Error occurred while fetching user data: ${error}`);
             }
         };
 
         fetchData();
-    }, [userId]);
+    }, [userIdParam]);
 
     const handleOnSave = (user) => {
         setLoading(true);
-        const token = getToken();
-        const endpoint = userRole.includes("Admin") ? userSuperUpdate : userUpdate;
-        const apiUrl = userRole.includes("Admin") ? `${endpoint}${user.id}` : `${endpoint}${userDataId}`;
+        const endpoint = role === "Admin" ? userSuperUpdate : userUpdate;
+        const apiUrl = `${endpoint}${user.id}`;
 
-        putApi(user, token, apiUrl)
+        putApi(apiUrl, user)
             .then((data) => {
                 setLoading(false);
                 if (data) {
@@ -62,7 +52,7 @@ const UserUpdate = () => {
             })
             .catch((error) => {
                 setLoading(false);
-                setUpdateError(`Error occurred during update: ${error}`);
+                setError(`Error occurred during update: ${error}`);
             });
     };
 
@@ -79,7 +69,7 @@ const UserUpdate = () => {
                     <UserForm
                         onSave={handleOnSave}
                         user={user}
-                        role={userRole}
+                        role={role}
                         onCancel={handleCancel}
                     />
                 ) : (

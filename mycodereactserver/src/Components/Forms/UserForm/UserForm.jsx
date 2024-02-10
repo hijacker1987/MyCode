@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getToken, getUserRoles, getUserIdFromToken } from "../../../Services/AuthService";
+import { useUser } from "../../../Services/UserContext";
 import { homePage, uPwChange } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
@@ -14,9 +14,9 @@ import DeleteActions from "../../../Components/Delete/DeleteActions";
 import Loading from "../../Loading/Loading";
 import Modal from 'react-bootstrap/Modal';
 import ErrorPage from "./../../../Pages/Services/ErrorPage";
-import Cookies from "js-cookie";
 
-const UserForm = ({ onSave, user, role, onCancel }) => {
+const UserForm = ({ onSave, user, onCancel }) => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState(user?.email ?? "");
     const [username, setUsername] = useState(user?.userName ?? "");
@@ -24,13 +24,12 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
     const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
     const [isRegistration, setIsRegistration] = useState(!user);
-    const [jwtToken, setJwtToken] = useState(getToken);
-    const [userRoles, setUserRoles] = useState([]);
     const [updateUrl, setUpdateUrl] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDeleteId, setUserToDeleteId] = useState(null);
+    const { userData } = useUser();
+    const { role, userid } = userData;
     const [errorMessage, setError] = useState("");
-    const navigate = useNavigate();
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -65,21 +64,14 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
 
     useEffect(() => {
         try {
-            const token = jwtToken;
-
-            if (typeof token === "string" && token.length > 0) {
-                const roles = getUserRoles();
-                const userIdFromToken = getUserIdFromToken();
-                setUserRoles(roles);
-                setUpdateUrl(userIdFromToken);
-            }
+               setUpdateUrl(userid);
         } catch (error) {
             setError(`Token error: ${error}`);
         }
     }, [location]);
 
-    const handleDelete = (userId) => {
-        setUserToDeleteId(userId);
+    const handleDelete = (userid) => {
+        setUserToDeleteId(userid);
         setShowDeleteModal(true);
     };
 
@@ -89,9 +81,6 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
                 `${deleteAccount}${userToDeleteId}`,
                 () => {
                     Notify("Success", "Successfully removed!");                   
-
-                    setJwtToken(null);
-                    setUserRoles([]);
                     setUpdateUrl([]);
                     confirmLogout();
                 },
@@ -104,7 +93,6 @@ const UserForm = ({ onSave, user, role, onCancel }) => {
     };
 
     const confirmLogout = () => {
-        Cookies.remove("jwtToken");
         navigate(homePage);
         window.location.reload();
     };
