@@ -1,9 +1,8 @@
 ﻿namespace MyCode_Backend_Server.Contracts.Services
 {
-    public class AuthResponse(string Token, string RefreshToken, DateTime RtExpired)
+    public class AuthResponse(string Role, string Id)
     {
-        public string Token { get; set; } = Token;
-        public string RefreshToken { get; set; } = RefreshToken;
-        public DateTime RtExpired { get; set; } = RtExpired;
+        public string Role { get; set; } = Role;
+        public string Id { get; set; } = Id;
     }
 }

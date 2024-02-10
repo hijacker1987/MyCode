@@ -6,5 +6,6 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
     {
         string CreateToken(User user, IList<string> roles);
         string GenerateRefreshToken();
+        string Refresh(string authCookie, string refCookie);
     }
 }

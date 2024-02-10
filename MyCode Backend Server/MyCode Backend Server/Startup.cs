@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Controllers;
 
 namespace MyCode_Backend_Server
 {
@@ -51,15 +52,19 @@ namespace MyCode_Backend_Server
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
+
             var connection = _configuration["ConnectionString"];
             services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+
             var issuer = _configuration["IssueAudience"];
             var issueSign = _configuration["IssueSign"];
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddCookie(c => { c.Cookie.Name = "Authorization"; })
                     .AddJwtBearer(options =>
                     {
                         if (issueSign != null)
+                        {
                             options.TokenValidationParameters = new TokenValidationParameters
                             {
                                 ClockSkew = TimeSpan.FromMinutes(5),
@@ -71,6 +76,15 @@ namespace MyCode_Backend_Server
                                 ValidAudience = issuer,
                                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign)),
                             };
+                            options.Events = new JwtBearerEvents
+                            {
+                                OnMessageReceived = context =>
+                                {
+                                    context.Token = context.Request.Cookies["Authorization"];
+                                    return Task.CompletedTask;
+                                }
+                            };
+                        }
                     });
 
             services.AddIdentityCore<User>(options =>
