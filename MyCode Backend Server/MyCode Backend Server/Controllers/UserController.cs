@@ -29,7 +29,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
-        private readonly DateTime RefreshTokenExpiration = DateTime.UtcNow.AddMinutes(30);
+        private readonly DateTime RefreshTokenExpiration = DateTime.UtcNow.AddHours();
 
         private CookieOptions GetCookieOptions()
         {

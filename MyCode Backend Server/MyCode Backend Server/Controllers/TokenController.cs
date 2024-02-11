@@ -12,7 +12,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly UserManager<User> _userManager = userManager;
         private readonly ILogger<TokenController> _logger = logger;
 
-        [HttpDelete("revoke"), Authorize]
+        [HttpDelete("revoke"), Authorize(Roles = ("Admin, User"))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -28,6 +28,8 @@ namespace MyCode_Backend_Server.Controllers
             if (user == null)
                 return Unauthorized();
 
+            Response.Cookies.Delete("Authorization");
+            Response.Cookies.Delete("RefreshAuthorization");
             user.RefreshToken = null;
 
             await _userManager.UpdateAsync(user);
