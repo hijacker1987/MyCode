@@ -29,11 +29,47 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
+        private readonly DateTime RefreshTokenExpiration = DateTime.UtcNow.AddHours();
+
+        private CookieOptions GetCookieOptions()
+        {
+            return new CookieOptions
+            {
+                Domain = Request.Host.Host,
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+            };
+        }
+
         [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
         public ActionResult<UserRegResponse> GetUser()
         {
             try
             {
+                var authorizationCookie = Request.Cookies["Authorization"];
+                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
+
+                if (authorizationCookie == null || refreshTokenCookie == null)
+                {
+                    _logger.LogError("Not enough cookies.");
+                    return BadRequest("Not enough cookies.");
+                }
+                else
+                {
+                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+
+                    if (chekedToken == null)
+                    {
+                        _logger.LogError("Token expired.");
+                        return BadRequest("Token expired.");
+                    }
+
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
+                }
+
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userIdClaim == null)
@@ -136,14 +172,17 @@ namespace MyCode_Backend_Server.Controllers
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             managedUser.RefreshToken = refreshToken;
-            managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+            managedUser.RefreshTokenExpiry = RefreshTokenExpiration;
 
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
 
             var accessToken = _tokenService.CreateToken(managedUser, roles);
 
-            return new AuthResponse(accessToken, refreshToken, managedUser.RefreshTokenExpiry);
+            Response.Cookies.Append("Authorization", accessToken, GetCookieOptions());
+            Response.Cookies.Append("RefreshAuthorization", refreshToken, GetCookieOptions());
+
+            return new AuthResponse(roles[0], managedUser.Id.ToString());
         }
 
         [HttpPut("u-{id}"), Authorize(Roles = "User")]
@@ -151,6 +190,28 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
+                var authorizationCookie = Request.Cookies["Authorization"];
+                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
+
+                if (authorizationCookie == null || refreshTokenCookie == null)
+                {
+                    _logger.LogError("Not enough cookies.");
+                    return BadRequest("Not enough cookies.");
+                }
+                else
+                {
+                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+
+                    if (chekedToken == null)
+                    {
+                        _logger.LogError("Token expired.");
+                        return BadRequest("Token expired.");
+                    }
+
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
@@ -187,6 +248,28 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
+                var authorizationCookie = Request.Cookies["Authorization"];
+                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
+
+                if (authorizationCookie == null || refreshTokenCookie == null)
+                {
+                    _logger.LogError("Not enough cookies.");
+                    return BadRequest("Not enough cookies.");
+                }
+                else
+                {
+                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+
+                    if (chekedToken == null)
+                    {
+                        _logger.LogError("Token expired.");
+                        return BadRequest("Token expired.");
+                    }
+
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
+                }
+
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
                 if (existingUser == null)
@@ -223,6 +306,28 @@ namespace MyCode_Backend_Server.Controllers
 
             try
             {
+                var authorizationCookie = Request.Cookies["Authorization"];
+                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
+
+                if (authorizationCookie == null || refreshTokenCookie == null)
+                {
+                    _logger.LogError("Not enough cookies.");
+                    return BadRequest("Not enough cookies.");
+                }
+                else
+                {
+                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+
+                    if (chekedToken == null)
+                    {
+                        _logger.LogError("Token expired.");
+                        return BadRequest("Token expired.");
+                    }
+
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
+                }
+
                 var user = await _userManager.FindByIdAsync(id.ToString());
 
                 if (user == null)

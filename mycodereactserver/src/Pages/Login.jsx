@@ -1,40 +1,34 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApiV2 } from "../Services/Api";
+import { postApi } from "../Services/Api";
 import { homePage } from "../Services/Frontend.Endpoints";
 import { userLogin } from "../Services/Backend.Endpoints";
-import { jwtDecode } from "jwt-decode";
+import { useUser } from "../Services/UserContext";
 import Login from "../Components/Login/Login";
 import Loading from "../Components/Loading/Loading";
 import Notify from "../Pages/Services/ToastNotifications";
 import ErrorPage from "./Services/ErrorPage";
-import Cookies from "js-cookie";
 
 const UserLogin = () => {
     const navigate = useNavigate();
+    const { setUserData } = useUser();
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setLoginError] = useState("");
+    const [errorMessage, setError] = useState("");
 
     const handleOnLogin = async (user) => {
         setLoading(true);
         try {
-            const data = await postApiV2(user, userLogin);
+            const data = await postApi(userLogin, user);
 
             if (data) {
-                const decodedToken = jwtDecode(data.token);
-                const expirationTime = decodedToken.exp * 1000;
-                const expTime = Date.parse(data.rtExpired);
-                
-                Cookies.set("jwtToken", data.token, { expires: new Date(expirationTime) });
-                Cookies.set("refreshToken", data.refreshToken, { expires: new Date(expTime) });
-
+                setUserData(data.role, data.userid);
                 Notify("Success", "Successful Login!");
                 navigate(homePage);
             } else {
                 Notify("Error", "Unable to Login!");
             }
         } catch (error) {
-            setLoginError(`Error occurred during login: ${error}`);
+            setError(`Error occurred during login: ${error}`);
         } finally {
             setLoading(false);
         }

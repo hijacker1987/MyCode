@@ -48,5 +48,4 @@ const u = "users/"
     export const deleteSuperCode = `${a}adc-`; //{id}
 
 //SERVICE
-    export const updateToken = `token/refresh`;
-    export const deleteRT = `token/revoke`;
+    export const revoke = `token/revoke`;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { StyledUl, StyledLi } from "../../Styles/Pagination.styled";
 
 const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPage, paginationSlice, setPaginationSlice }) => {

@@ -1,30 +1,36 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
-import { getToken } from "../Services/AuthService";
-import { getApi } from "../Services/Api";
+import { getApi, handleResponse } from "../Services/Api";
+import { useUser } from "../Services/UserContext";
 import { MidContainer } from "./Styles/TextContainer.styled";
 import ErrorPage from "../Pages/Services/ErrorPage";
 
 const Homepage = () => {
+    const navigate = useNavigate();
+    const { userData, setUserData } = useUser();
+    const { role, userid } = userData;
     const [visibleCodes, setVisibleCodes] = useState([]);
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
-    const [jwtToken, setJwtToken] = useState(getToken());
     const [errorMessage, setError] = useState("");
 
     useEffect(() => {
         const fetchVisibleCodes = async () => {
             try {
-                if (jwtToken) {
-                    const responseData = await getApi(jwtToken, getCodesByVisibility);
+                const responseData = await getApi(getCodesByVisibility);
+                if (responseData === "Unauthorized") {
+                    handleResponse(responseData, navigate, setUserData);
+                } else {
                     setVisibleCodes(responseData);
                 }
             } catch (error) {
+
                 setError(`Error fetching visible codes: ${error}`);
             }
         };
 
         fetchVisibleCodes();
-    }, [jwtToken]);
+    }, []);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -35,7 +41,7 @@ const Homepage = () => {
         }, 30000);
 
         return () => clearInterval(intervalId);
-    }, [jwtToken, visibleCodes]);
+    }, [visibleCodes]);
 
     useEffect(() => {
         const initialRandomCode = setTimeout(() => {
@@ -52,7 +58,7 @@ const Homepage = () => {
         <div>
             {errorMessage === "" ? (
                 <div>
-                {!jwtToken ? (
+                {!role && !userid ? (
                     <MidContainer className="welcome-text">
                         Welcome Code Fanatic!
                         <p>Please login or register</p>

@@ -1,6 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using MyCode_Backend_Server.Models;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -8,10 +8,12 @@ using System.Text;
 
 namespace MyCode_Backend_Server.Service.Authentication.Token
 {
-    public class TokenService(IConfiguration configuration, ILogger<TokenService> logger) : ITokenService
+    public class TokenService(IConfiguration configuration, UserManager<User> userManager, ILogger<TokenService> logger) : ITokenService
     {
-        private const int ExpirationMinutes = 10;
+        private const int ExpirationMinutes = 15;
+
         private readonly IConfiguration _configuration = configuration;
+        private readonly UserManager<User> _userManager = userManager;
         private readonly ILogger<TokenService> _logger = logger;
 
         public string CreateToken(User user, IList<string> roles)
@@ -79,6 +81,48 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             generator.GetBytes(randomNumber);
 
             return Convert.ToBase64String(randomNumber);
+        }
+
+        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+        {
+            var validation = new TokenValidationParameters
+            {
+                ValidIssuer = _configuration["IssueAudience"],
+                ValidAudience = _configuration["IssueAudience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["IssueSign"]!)),
+                ValidateLifetime = false
+            };
+
+            return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
+        }
+
+        public string Refresh(string authCookie, string refCookie)
+        {
+            var principal = GetPrincipalFromExpiredToken(authCookie);
+
+            if (principal?.Identity?.Name is null)
+                return null!;
+
+            var user = _userManager.FindByNameAsync(principal.Identity.Name).Result;
+
+            if (user == null || user.RefreshToken != refCookie || user.RefreshTokenExpiry < DateTime.UtcNow)
+            {
+                if (user!.RefreshTokenExpiry < DateTime.UtcNow)
+                {
+                    user.RefreshToken = null;
+
+                    _userManager.UpdateAsync(user).Wait();
+                }
+
+                return null!;
+            }
+
+            var roles = _userManager.GetRolesAsync(user).Result;
+            var token = CreateToken(user, roles);
+
+            _logger.LogInformation("Refresh went successfully!");
+
+            return token;
         }
     }
 }

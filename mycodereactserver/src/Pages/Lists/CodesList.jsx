@@ -1,11 +1,12 @@
 import React from "react";
-import { getUserRoles } from "../../Services/AuthService";
+import { useUser } from "../../Services/UserContext";
 import { getCodesByUser, getAllCodes, getCodesByVisibility } from "../../Services/Backend.Endpoints";
 import GenericList from "./GenericList";
 
 const CodesList = ({ type }) => {
-    const role = getUserRoles();
-    const auth = role === "Admin" ? "byVis" : (role === "User" ? "byVis" : "byAuth");
+    const { userData } = useUser();
+    const { role } = userData;
+    const auth = role === "Admin" ? "byAuth" : "byVis";
     let endpoint = "";
     let kind = "";
 
