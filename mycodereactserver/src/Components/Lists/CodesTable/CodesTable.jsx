@@ -28,7 +28,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const codeTypeOptions = ["C#", "Java", "Python", "JavaScript", "C++",
                              "Ruby", "Swift", "Go", "Kotlin", "PHP",
                              "TypeScript", "Rust", "Objective-C", "C", "Scala",
-        "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal"];
+                             "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal"];
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;
@@ -168,7 +168,8 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                         <StyledTd>{code.displayName}</StyledTd>
                                     )}
                                     <StyledTd>{code.codeTitle}</StyledTd>
-                                    <StyledTd>{code.myCode}</StyledTd>
+                                    {code.myCode.length <= 20 ? (<StyledTd>{code.myCode}</StyledTd>)
+                                                              : (<StyledTd>{code.myCode.slice(0, 17) + "..."}</StyledTd>)}
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
                                     {isAllowed && kind === "visible Codes" || role === "Admin" && (

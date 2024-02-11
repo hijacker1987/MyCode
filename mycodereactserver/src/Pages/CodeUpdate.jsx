@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getApi, putApi } from "../Services/Api";
+import { getApi, putApi, handleResponse } from "../Services/Api";
 import { useUser } from "../Services/UserContext";
 import { getCodesByUserId, codeUpdate, codeSuperUpdate } from "../Services/Backend.Endpoints";
 import CodeForm from "../Components/Forms/CodeForm/CodeForm";
@@ -11,7 +11,7 @@ import ErrorPage from "./Services/ErrorPage";
 const CodeUpdate = () => {
     const navigate = useNavigate();
     const { codeId } = useParams();
-    const { userData } = useUser();
+    const { userData, setUserData } = useUser();
     const { role } = userData;
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
@@ -24,7 +24,9 @@ const CodeUpdate = () => {
                 const data = await getApi(`${getCodesByUserId}${codeId}`);
 
                 setLoading(false);
-                if (data) {
+                if (responseData === "Unauthorized") {
+                    handleResponse(responseData, navigate, setUserData);
+                } else if (data) {
                     setCodeData(data);
                 } else {
                     Notify("Error", "Unable to fetch the codes!");
@@ -46,7 +48,9 @@ const CodeUpdate = () => {
         putApi(apiUrl, code)
             .then((data) => {
                 setLoading(false);
-                if (data) {
+                if (data === "Unauthorized") {
+                    handleResponse(responseData, navigate, setUserData);
+                } else if (data) {
                     setCodeData(data);
                     navigate(-1);
                     Notify("Success", "Successful code update!");

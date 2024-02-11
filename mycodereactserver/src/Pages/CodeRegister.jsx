@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApi } from "../Services/Api";
+import { useUser } from "../Services/UserContext";
+import { postApi, handleResponse } from "../Services/Api";
 import { codeRegistration } from "../Services/Backend.Endpoints";
 import CodeForm from "../Components/Forms/CodeForm";
 import Loading from "../Components/Loading/Loading";
@@ -9,6 +10,7 @@ import ErrorPage from "./Services/ErrorPage";
 
 const CodeRegister = () => {
     const navigate = useNavigate();
+    const { setUserData } = useUser();
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
 
@@ -17,7 +19,9 @@ const CodeRegister = () => {
         postApi(codeRegistration, code)
             .then((data) => {
                 setLoading(false);
-                if (data) {
+                if (data === "Unauthorized") {
+                    handleResponse(data, navigate, setUserData);
+                } else if (data) {
                     navigate(-1);
                     Notify("Success", "Successful code registration!");
                 } else {

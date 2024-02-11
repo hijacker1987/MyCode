@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getApi } from "../../Services/Api";
+import { useParams, useNavigate } from "react-router-dom";
+import { getApi, handleResponse } from "../../Services/Api";
+import { useUser } from "../../Services/UserContext";
 import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
 import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
 import Loading from "../../Components/Loading/Loading";
 import Notify from "../Services/ToastNotifications";
 
 const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
+    const navigate = useNavigate();
     const { page } = useParams();
+    const { setUserData } = useUser();
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [errorNotify, setErrorNotify] = useState(false);
-    const [data, setData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,13 +22,14 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
             try {
                 const responseData = await getApi(endpoint);
                 setLoading(false);
-
-                if (responseData) {
+                if (responseData === "Unauthorized") {
+                    handleResponse(responseData, navigate, setUserData);
+                } else if (responseData !== "Unauthorized") {
                     setData(responseData);
                     setErrorNotify(false);
                 }
             } catch (error) {
-                setLoading(false);
+                setLoading(false); 
                 setErrorNotify(true);
             }
         };

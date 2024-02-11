@@ -1,4 +1,6 @@
 import { backendUrl } from "../Services/Config";
+import { homePage } from "../Services/Frontend.Endpoints";
+import Notify from "../Pages/Services/ToastNotifications";
 
 export const getApi = async (endpoint) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
@@ -8,9 +10,12 @@ export const getApi = async (endpoint) => {
         },
         credentials: "include",
     });
-
-    const data = await response.json();
-    return data;
+    if (response.status === 400 || response.status === 401) {
+        return "Unauthorized";
+    } else {
+        const data = await response.json();
+        return data;
+    }
 };
 
 export const postApi = async (endpoint, user) => {
@@ -22,9 +27,12 @@ export const postApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user),
     });
-
-    const data = await response.json();
-    return data;
+    if (response.status === 400 || response.status === 401) {
+        return "Unauthorized";
+    } else {
+        const data = await response.json();
+        return data;
+    }
 };
 
 export const patchApi = async (endpoint, user) => {
@@ -36,9 +44,12 @@ export const patchApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user)
     });
-
-    const data = await response.json();
-    return data;
+    if (response.status === 400 || response.status === 401) {
+        return "Unauthorized";
+    } else {
+        const data = await response.json();
+        return data;
+    }
 };
 
 export const putApi = async (endpoint, user) => {
@@ -50,9 +61,12 @@ export const putApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user)
     });
-
-    const data = await response.json();
-    return data;
+    if (response.status === 400 || response.status === 401) {
+        return "Unauthorized";
+    } else {
+        const data = await response.json();
+        return data;
+    }
 };
 
 export const deleteApi = async (endpoint) => {
@@ -63,6 +77,19 @@ export const deleteApi = async (endpoint) => {
         },
         credentials: "include",
     });
+    if (response.status === 400 || response.status === 401) {
+        return "Unauthorized";
+    } else {
+        return response.status;
+    }
+};
 
-    return response.status;
+export const handleResponse = async (response, navigate, setUserData) => {
+    if (response === "Unauthorized") {
+        setUserData(null);
+        Notify("Error", "Session has expired. Please log in again.");
+        navigate(homePage);
+    } else {
+        console.log(response);
+    }
 };

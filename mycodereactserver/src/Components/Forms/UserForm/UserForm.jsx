@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUser } from "../../../Services/UserContext";
+import { useUser, logoutUser } from "../../../Services/UserContext";
 import { homePage, uPwChange } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
@@ -64,7 +64,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
 
     useEffect(() => {
         try {
-               setUpdateUrl(userid);
+            setUpdateUrl(userid);
         } catch (error) {
             setError(`Token error: ${error}`);
         }
@@ -81,7 +81,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
                 `${deleteAccount}${userToDeleteId}`,
                 () => {
                     Notify("Success", "Successfully removed!");                   
-                    setUpdateUrl([]);
                     confirmLogout();
                 },
                 () => {
@@ -93,6 +92,9 @@ const UserForm = ({ onSave, user, onCancel }) => {
     };
 
     const confirmLogout = () => {
+        logoutUser();
+        setUpdateUrl([]);
+        setUserData(null);
         navigate(homePage);
         window.location.reload();
     };

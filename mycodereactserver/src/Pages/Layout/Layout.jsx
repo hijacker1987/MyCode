@@ -7,7 +7,7 @@ import { CenteredContainer } from "../../Components/Styles/TextContainer.styled"
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
 import { recentChuckNorris } from "../../Services/Backend.Endpoints";
-import { useUser } from "../../Services/UserContext";
+import { useUser, logoutUser } from "../../Services/UserContext";
 import Notify from "../Services/ToastNotifications";
 import Modal from 'react-bootstrap/Modal';
 import ErrorPage from "../Services/ErrorPage";
@@ -16,11 +16,11 @@ import "../../index.css";
 const Layout = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { userData, setUserData } = useUser();
+    const { role, userid } = userData;
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [logoutSuccess, setLogoutSuccess] = useState(null);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
-    const { userData, setUserData } = useUser();
-    const { role, userid } = userData;
     const [errorMessage, setError] = useState("");
 
     useEffect(() => {
@@ -46,24 +46,25 @@ const Layout = () => {
 
     const confirmLogout = (loggedOut) => {
         setShowLogoutModal(false);
+        logoutUser();
+        setUserData(null);
         if (loggedOut) {
-            setUserData(null);
+            Notify("Success", "You logged out successfully!");
             setLogoutSuccess(true);
         } else {
+            Notify("Error", "Session has expired. Please log in again.");
             setLogoutSuccess(false);
         }
     };
 
     useEffect(() => {
-        if (userid && logoutSuccess !== null) {
+        if (logoutSuccess !== null) {
             if (logoutSuccess) {
+                setLogoutSuccess(null);
                 navigate(homePage);
-                window.location.reload();
-                Notify("Success", "You logged out successfully!");
             } else {
+                setLogoutSuccess(null);
                 navigate(uLogin);
-                window.location.reload();
-                Notify("Error", "Session has expired. Please log in again.");
             }
         }
     }, [logoutSuccess]);
