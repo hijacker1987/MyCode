@@ -15,33 +15,19 @@ namespace MyCode_Backend_Server.Controllers
     [ApiController]
     [Route("/users")]
     public class UserController(
-        ILogger<UserController> logger,
         IConfiguration configuration,
+        ILogger<UserController> logger,
         IAuthService authenticationService,
         ITokenService tokenService,
         DataContext dataContext,
         UserManager<User> userManager) : ControllerBase
     {
-        private readonly ILogger<UserController> _logger = logger;
         private readonly IConfiguration _configuration = configuration;
+        private readonly ILogger<UserController> _logger = logger;
         private readonly IAuthService _authenticationService = authenticationService;
         private readonly ITokenService _tokenService = tokenService;
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
-
-        private readonly DateTime RefreshTokenExpiration = DateTime.UtcNow.AddHours();
-
-        private CookieOptions GetCookieOptions()
-        {
-            return new CookieOptions
-            {
-                Domain = Request.Host.Host,
-                HttpOnly = true,
-                SameSite = SameSiteMode.None,
-                Secure = true,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
-            };
-        }
 
         [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
         public ActionResult<UserRegResponse> GetUser()
@@ -56,18 +42,15 @@ namespace MyCode_Backend_Server.Controllers
                     _logger.LogError("Not enough cookies.");
                     return BadRequest("Not enough cookies.");
                 }
-                else
+                else if (_tokenService.ValidateToken(authorizationCookie))
                 {
-                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
 
-                    if (chekedToken == null)
+                    if (checkedToken == null)
                     {
                         _logger.LogError("Token expired.");
                         return BadRequest("Token expired.");
                     }
-
-                    Response.Cookies.Delete("Authorization");
-                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
                 }
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -141,7 +124,7 @@ namespace MyCode_Backend_Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authenticationService.LoginAsync(request.Email, request.Password);
+            var result = await _authenticationService.LoginAsync(request.Email, request.Password, Request, Response);
 
             if (!result.Success)
             {
@@ -169,18 +152,8 @@ namespace MyCode_Backend_Server.Controllers
 
             managedUser.LastTimeLogin = DateTime.UtcNow;
 
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
-            managedUser.RefreshToken = refreshToken;
-            managedUser.RefreshTokenExpiry = RefreshTokenExpiration;
-
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
-
-            var accessToken = _tokenService.CreateToken(managedUser, roles);
-
-            Response.Cookies.Append("Authorization", accessToken, GetCookieOptions());
-            Response.Cookies.Append("RefreshAuthorization", refreshToken, GetCookieOptions());
 
             return new AuthResponse(roles[0], managedUser.Id.ToString());
         }
@@ -198,18 +171,15 @@ namespace MyCode_Backend_Server.Controllers
                     _logger.LogError("Not enough cookies.");
                     return BadRequest("Not enough cookies.");
                 }
-                else
+                else if (_tokenService.ValidateToken(authorizationCookie))
                 {
-                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
 
                     if (chekedToken == null)
                     {
                         _logger.LogError("Token expired.");
                         return BadRequest("Token expired.");
                     }
-
-                    Response.Cookies.Delete("Authorization");
-                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
                 }
 
                 if (!ModelState.IsValid)
@@ -256,18 +226,15 @@ namespace MyCode_Backend_Server.Controllers
                     _logger.LogError("Not enough cookies.");
                     return BadRequest("Not enough cookies.");
                 }
-                else
+                else if (_tokenService.ValidateToken(authorizationCookie))
                 {
-                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
 
-                    if (chekedToken == null)
+                    if (checkedToken == null)
                     {
                         _logger.LogError("Token expired.");
                         return BadRequest("Token expired.");
                     }
-
-                    Response.Cookies.Delete("Authorization");
-                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
                 }
 
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);
@@ -314,18 +281,15 @@ namespace MyCode_Backend_Server.Controllers
                     _logger.LogError("Not enough cookies.");
                     return BadRequest("Not enough cookies.");
                 }
-                else
+                else if (_tokenService.ValidateToken(authorizationCookie))
                 {
-                    var chekedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
 
-                    if (chekedToken == null)
+                    if (checkedToken == null)
                     {
                         _logger.LogError("Token expired.");
                         return BadRequest("Token expired.");
                     }
-
-                    Response.Cookies.Delete("Authorization");
-                    Response.Cookies.Append("Authorization", chekedToken, GetCookieOptions());
                 }
 
                 var user = await _userManager.FindByIdAsync(id.ToString());
@@ -335,7 +299,7 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest("User not found!");
                 }
 
-                if (_configuration["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                if (_configuration!["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
                 {
                     return Unauthorized();
                 }
@@ -344,6 +308,8 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _dataContext.SaveChangesAsync();
+
                     return Ok($"Account with ID {id} successfully deleted.");
                 }
                 else

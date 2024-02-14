@@ -4,8 +4,9 @@ using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Service.Authentication
 {
-        public class AuthService(UserManager<User> userManager, ITokenService tokenService, ILogger<AuthService> logger) : IAuthService
+        public class AuthService(IConfiguration configuration, UserManager<User> userManager, ITokenService tokenService, ILogger<AuthService> logger) : IAuthService
         {
+        private readonly IConfiguration _configuration = configuration;
         private readonly UserManager<User> _userManager = userManager;
         private readonly ITokenService _tokenService = tokenService;
         private readonly ILogger<AuthService> _logger = logger;
@@ -45,7 +46,7 @@ namespace MyCode_Backend_Server.Service.Authentication
             return authenticationResult;
         }
 
-        public async Task<AuthResult> LoginAsync(string email, string password)
+        public async Task<AuthResult> LoginAsync(string email, string password, HttpRequest request, HttpResponse response)
         {
             var managedUser = await _userManager.FindByEmailAsync(email);
 
@@ -63,6 +64,15 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             var roles = await _userManager.GetRolesAsync(managedUser);
             var accessToken = _tokenService.CreateToken(managedUser, roles);
+            var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
+            var refreshToken = _tokenService.CreateRefreshToken();
+            var refreshTokenExp = Convert.ToDouble(_configuration["RefreshTokenExp"]);
+
+            managedUser.RefreshToken = refreshToken;
+            managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
+
+            response.Cookies.Append("Authorization", accessToken, _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp)));
+            response.Cookies.Append("RefreshAuthorization", refreshToken, _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddHours(refreshTokenExp)));
 
             return new AuthResult(managedUser.Id.ToString(),
                                   true, managedUser.Email,

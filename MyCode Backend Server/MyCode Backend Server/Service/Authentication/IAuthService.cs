@@ -4,6 +4,6 @@
     {
         Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber);
 
-        Task<AuthResult> LoginAsync(string email, string password);
+        Task<AuthResult> LoginAsync(string email, string password, HttpRequest request, HttpResponse response);
     }
 }
