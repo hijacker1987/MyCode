@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,18 +9,37 @@ using System.Text;
 
 namespace MyCode_Backend_Server.Service.Authentication.Token
 {
-    public class TokenService(IConfiguration configuration, UserManager<User> userManager, ILogger<TokenService> logger) : ITokenService
+    public class TokenService(IConfiguration configuration,
+                              UserManager<User> userManager,
+                              DataContext dataContext,
+                              ILogger<TokenService> logger) : ITokenService
     {
-        private const int ExpirationMinutes = 15;
-
         private readonly IConfiguration _configuration = configuration;
         private readonly UserManager<User> _userManager = userManager;
+        private readonly DataContext _dataContext = dataContext;
         private readonly ILogger<TokenService> _logger = logger;
+
+        public CookieOptions GetCookieOptions(HttpRequest request, DateTimeOffset time)
+        {
+            var extendedTime = time.AddMinutes(5);
+
+            return new CookieOptions
+            {
+                Domain = request.Host.Host,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                Expires = time,
+                MaxAge = TimeSpan.FromSeconds((extendedTime - DateTime.UtcNow).TotalSeconds)
+            };
+        }
 
         public string CreateToken(User user, IList<string> roles)
         {
-            var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
-            var token = CreateJwtToken(CreateClaims(user, roles, _logger), CreateSigningCredentials(), expiration);
+            var token = CreateJwtToken(CreateClaims(user, roles, _logger),
+                                       CreateSigningCredentials(),
+                                       DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["AccessTokenExp"])));
+
             var tokenHandler = new JwtSecurityTokenHandler();
 
             return tokenHandler.WriteToken(token);
@@ -74,7 +94,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             return new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSignKey)), SecurityAlgorithms.HmacSha256);
         }
 
-        public string GenerateRefreshToken()
+        public string CreateRefreshToken()
         {
             var randomNumber = new byte[64];
             using var generator = RandomNumberGenerator.Create();
@@ -96,7 +116,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
         }
 
-        public string Refresh(string authCookie, string refCookie)
+        public string Refresh(string authCookie, string refCookie, HttpRequest request, HttpResponse response)
         {
             var principal = GetPrincipalFromExpiredToken(authCookie);
 
@@ -110,8 +130,11 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 if (user!.RefreshTokenExpiry < DateTime.UtcNow)
                 {
                     user.RefreshToken = null;
+                    response.Cookies.Delete(authCookie);
+                    response.Cookies.Delete(refCookie);
 
                     _userManager.UpdateAsync(user).Wait();
+                    _dataContext.SaveChangesAsync();
                 }
 
                 return null!;
@@ -119,10 +142,34 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
             var roles = _userManager.GetRolesAsync(user).Result;
             var token = CreateToken(user, roles);
+            var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
+
+            response.Cookies.Append("Authorization", token, GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp)));
 
             _logger.LogInformation("Refresh went successfully!");
 
             return token;
+        }
+
+        public bool ValidateToken(string toValToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            if (tokenHandler.ReadToken(toValToken) is not JwtSecurityToken token)
+            {
+                return true;
+            }
+
+            var expirationTime = token.ValidTo;
+
+            if (expirationTime < DateTime.UtcNow)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
