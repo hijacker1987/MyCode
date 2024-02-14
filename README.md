@@ -61,7 +61,9 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
   // Frontend Connection
   "FEAddress": "YourFrontendAddress",
   
-  // Token Claims and Signature
+  //Token Expiration (Access in minutes, Refresh in hours), Claims and Signature
+  "AccessTokenExp": 15,
+  "RefreshTokenExp": 18,
   "IssueAudience": "YourIssueAudience",
   "IssueSign": "YourIssueSignature",
   
