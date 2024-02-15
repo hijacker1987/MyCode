@@ -7,6 +7,7 @@ const CodesList = ({ type }) => {
     const { userData } = useUser();
     const { role } = userData;
     const auth = role === "Admin" ? "byAuth" : "byVis";
+
     let endpoint = "";
     let kind = "";
 

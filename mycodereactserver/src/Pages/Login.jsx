@@ -20,12 +20,12 @@ const UserLogin = () => {
         try {
             const data = await postApi(userLogin, user);
 
-            if (data) {
+            if (data.role) {
                 setUserData(data.role, data.userid);
                 Notify("Success", "Successful Login!");
-                navigate(homePage);
+                navigate("/");
             } else {
-                Notify("Error", "Unable to Login!");
+                Notify("Error", "Invalid username or password. Please try again.");
             }
         } catch (error) {
             setError(`Error occurred during login: ${error}`);

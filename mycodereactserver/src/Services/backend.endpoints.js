@@ -12,40 +12,40 @@ const u = "users/"
     export const userRegistration = `${u}register`;
 
     //PATCH
-    export const userUpdate = `${u}u-`; //{id}
+    export const userUpdate = `${u}user-`;               //{id}
     export const changePassword = `${u}changePassword`;         //Authorized to admin too
 
     //DELETE
-    export const deleteAccount = `${u}delete-`; //{id}
+    export const deleteAccount = `${u}delete-`;           //{id}
 
 //CODES
     //GET
     export const getCodesByUser = `${c}by-user`;                //Authorized to admin too
     export const getCodesByVisibility = `${c}by-visibility`;    //Authorized to admin too
-    export const getCodesByUserId = `${c}ci-`; //{id}             Authorized to admin too
+    export const getCodesByUserId = `${c}code-`;        //{id} Authorized to admin too
 
     //POST
     export const codeRegistration = `${c}register`;             //Authorized to admin too
 
     //PUT
-    export const codeUpdate = `${c}cu-`; //{id}
+    export const codeUpdate = `${c}cupdate-`;               //{id}
 
     //DELETE
-    export const deleteCode = `${c}cd-`; //{id}
+    export const deleteCode = `${c}cdelete-`;               //{id}
 
 //ADMIN
     //GET
     export const getAllUsers = `${a}getUsers`;
     export const getAllCodes = `${a}getCodes`;
-    export const userById = `${a}user-by-`; //{id}
+    export const userById = `${a}user-by-`;                 //{id}
 
     //PUT
-    export const userSuperUpdate = `${a}au-`;  //{id}
-    export const codeSuperUpdate = `${a}acu-`; //{id}
+    export const userSuperUpdate = `${a}aupdate-`;          //{id}
+    export const codeSuperUpdate = `${a}acupdate-`;        //{id}
 
     //DELETE
-    export const deleteSuperUser = `${a}adu-`; //{id}
-    export const deleteSuperCode = `${a}adc-`; //{id}
+    export const deleteSuperUser = `${a}aduser-`;           //{id}
+    export const deleteSuperCode = `${a}adcode-`;           //{id}
 
 //SERVICE
     export const revoke = `token/revoke`;

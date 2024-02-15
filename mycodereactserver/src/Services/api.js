@@ -10,7 +10,7 @@ export const getApi = async (endpoint) => {
         },
         credentials: "include",
     });
-    if (response.status === 400 || response.status === 401) {
+    if (response.status === 401) {
         return "Unauthorized";
     } else {
         const data = await response.json();
@@ -27,7 +27,7 @@ export const postApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user),
     });
-    if (response.status === 400 || response.status === 401) {
+    if (response.status === 401) {
         return "Unauthorized";
     } else {
         const data = await response.json();
@@ -44,7 +44,7 @@ export const patchApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user)
     });
-    if (response.status === 400 || response.status === 401) {
+    if (response.status === 401) {
         return "Unauthorized";
     } else {
         const data = await response.json();
@@ -61,7 +61,7 @@ export const putApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user)
     });
-    if (response.status === 400 || response.status === 401) {
+    if (response.status === 401) {
         return "Unauthorized";
     } else {
         const data = await response.json();
@@ -77,7 +77,7 @@ export const deleteApi = async (endpoint) => {
         },
         credentials: "include",
     });
-    if (response.status === 400 || response.status === 401) {
+    if (response.status === 401) {
         return "Unauthorized";
     } else {
         return response.status;

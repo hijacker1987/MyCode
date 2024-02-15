@@ -8,6 +8,6 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
         string CreateRefreshToken();
         bool ValidateToken(string toValToken);
         CookieOptions GetCookieOptions(HttpRequest request, DateTimeOffset time);
-        string Refresh(string authCookie, string refCookie, HttpRequest request, HttpResponse response);
+        string Refresh(string authCookie, HttpRequest request, HttpResponse response);
     }
 }

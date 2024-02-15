@@ -21,9 +21,12 @@ const UserUpdate = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
+
                 const userEndpoint = role === "Admin" ? `${userById}${userIdParam}` : getUser;
                 const data = await getApi(userEndpoint);
+
                 setLoading(false);
+
                 if (data === "Unauthorized") {
                     handleResponse(data, navigate, setUserData);
                 } else {
@@ -40,12 +43,14 @@ const UserUpdate = () => {
 
     const handleOnSave = (user) => {
         setLoading(true);
+
         const endpoint = role === "Admin" ? userSuperUpdate : userUpdate;
         const apiUrl = `${endpoint}${user.id}`;
 
         putApi(apiUrl, user)
             .then((data) => {
                 setLoading(false);
+
                 if (data === "Unauthorized") {
                     handleResponse(data, navigate, setUserData);
                 } else if (data) {

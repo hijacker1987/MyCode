@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
+import { useUser } from "../../../Services/UserContext";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { TableContainer } from "../../Styles/TableContainer.styled";
@@ -14,6 +15,8 @@ import Modal from "react-bootstrap/Modal";
 import Notify from "./../../../Pages/Services/ToastNotifications";
 
 const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
+    const navigate = useNavigate();
+    const { setUserData } = useUser();
     const [updatedCodes, setUpdatedCodes] = useState(codes);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCodeId, setSelectedCodeId] = useState(null);
@@ -75,7 +78,9 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
             },
             () => {
                 Notify("Error", "Unable to delete the code!")
-            }
+            },
+            navigate,
+            setUserData
         );
     };
 

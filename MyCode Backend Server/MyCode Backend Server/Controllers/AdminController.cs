@@ -22,16 +22,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -64,16 +58,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -82,7 +70,6 @@ namespace MyCode_Backend_Server.Controllers
                     }
                 }
 
-                var idString = id.ToString();
                 var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.Equals(id));
 
                 if (user == null)
@@ -90,7 +77,7 @@ namespace MyCode_Backend_Server.Controllers
                     return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
                 }
 
-                var response = new UserRegResponse(idString, user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
+                var response = new UserRegResponse(id.ToString(), user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
 
                 return Ok(response);
             }
@@ -107,16 +94,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -142,22 +123,16 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("au-{id}"), Authorize(Roles = "Admin")]
+        [HttpPut("aupdate-{id}"), Authorize(Roles = "Admin")]
         public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
         {
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -197,22 +172,16 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("acu-{id}"), Authorize(Roles = "Admin")]
+        [HttpPut("acupdate-{id}"), Authorize(Roles = "Admin")]
         public ActionResult<Code> UpdateCode([FromRoute] Guid id, [FromBody] Code updatedCode)
         {
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -251,22 +220,16 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("adu-{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("aduser-{id}"), Authorize(Roles = "Admin")]
         public ActionResult DeleteUser([FromRoute] Guid id)
         {
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -299,22 +262,16 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("adc-{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("adcode-{id}"), Authorize(Roles = "Admin")]
         public ActionResult DeleteCode([FromRoute] Guid id)
         {
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {

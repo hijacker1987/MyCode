@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUser, logoutUser } from "../../../Services/UserContext";
+import { useUser } from "../../../Services/UserContext";
 import { homePage, uPwChange } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
@@ -17,6 +17,8 @@ import ErrorPage from "./../../../Pages/Services/ErrorPage";
 
 const UserForm = ({ onSave, user, onCancel }) => {
     const navigate = useNavigate();
+    const { userData, setUserData } = useUser();
+    const { role, userid } = userData;
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState(user?.email ?? "");
     const [username, setUsername] = useState(user?.userName ?? "");
@@ -27,8 +29,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [updateUrl, setUpdateUrl] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDeleteId, setUserToDeleteId] = useState(null);
-    const { userData } = useUser();
-    const { role, userid } = userData;
     const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
@@ -76,7 +76,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
     };
 
     const confirmDelete = () => {
-        if (userRoles.includes("User")) {
+        if (role === "User") {
             DeleteActions.deleteRecord(
                 `${deleteAccount}${userToDeleteId}`,
                 () => {
@@ -85,18 +85,18 @@ const UserForm = ({ onSave, user, onCancel }) => {
                 },
                 () => {
                     Notify("Error", "Unable to delete the acc!");
-                }
+                },
+                navigate,
+                setUserData
             );
         }
         setShowDeleteModal(false);
     };
 
     const confirmLogout = () => {
-        logoutUser();
         setUpdateUrl([]);
         setUserData(null);
         navigate(homePage);
-        window.location.reload();
     };
 
     if (loading) {
@@ -179,7 +179,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
                             <Link to={uPwChange} className="link">
                                 <ButtonContainer type="button">Password Change</ButtonContainer>
                             </Link>
-                            <ButtonContainer type="button" onClick={() => handleDelete(updateUrl)}>
+                            <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>
                                 Delete Account
                             </ButtonContainer>
                         </ButtonRowContainer>

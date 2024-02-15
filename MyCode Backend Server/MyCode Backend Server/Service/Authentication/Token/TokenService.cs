@@ -116,12 +116,15 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
         }
 
-        public string Refresh(string authCookie, string refCookie, HttpRequest request, HttpResponse response)
+        public string Refresh(string authCookie, HttpRequest request, HttpResponse response)
         {
+            var refCookie = request.Cookies["RefreshAuthorization"];
             var principal = GetPrincipalFromExpiredToken(authCookie);
 
-            if (principal?.Identity?.Name is null)
+            if (authCookie == null || refCookie == null || principal?.Identity?.Name is null)
+            {
                 return null!;
+            }
 
             var user = _userManager.FindByNameAsync(principal.Identity.Name).Result;
 
