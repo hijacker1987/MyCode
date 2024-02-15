@@ -123,7 +123,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("au-{id}"), Authorize(Roles = "Admin")]
+        [HttpPut("aupdate-{id}"), Authorize(Roles = "Admin")]
         public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
         {
             try
@@ -172,7 +172,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("acu-{id}"), Authorize(Roles = "Admin")]
+        [HttpPut("acupdate-{id}"), Authorize(Roles = "Admin")]
         public ActionResult<Code> UpdateCode([FromRoute] Guid id, [FromBody] Code updatedCode)
         {
             try
@@ -220,7 +220,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("adu-{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("aduser-{id}"), Authorize(Roles = "Admin")]
         public ActionResult DeleteUser([FromRoute] Guid id)
         {
             try
@@ -262,7 +262,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("adc-{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("adcode-{id}"), Authorize(Roles = "Admin")]
         public ActionResult DeleteCode([FromRoute] Guid id)
         {
             try

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Data;
@@ -10,11 +11,12 @@ namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
     [Route("/codes")]
-    public class CodeController(ITokenService tokenService, ILogger<CodeController> logger, DataContext dataContext) : ControllerBase
+    public class CodeController(ITokenService tokenService, ILogger<CodeController> logger, DataContext dataContext, UserManager<User> userManager) : ControllerBase
     {
         private readonly ITokenService _tokenService = tokenService;
         private readonly ILogger<CodeController> _logger = logger;
         private readonly DataContext _dataContext = dataContext;
+        private readonly UserManager<User> _userManager = userManager;
 
         [HttpGet("by-user"), Authorize(Roles = "Admin, User")]
         public ActionResult<List<Code>> GetAllCodesByUser()
@@ -120,7 +122,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("ci-{id}"), Authorize(Roles = "Admin, User")]
+        [HttpGet("code-{id}"), Authorize(Roles = "Admin, User")]
         public ActionResult<Code> GetCodeById([FromRoute] Guid id)
         {
             try
@@ -224,7 +226,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("cu-{id}"), Authorize(Roles = "Admin, User")]
+        [HttpPut("cupdate-{id}"), Authorize(Roles = "Admin, User")]
         public ActionResult<CodeRegResponse> UpdateCode([FromRoute] Guid id, [FromBody] CodeRegRequest updatedCode)
         {
             try
@@ -302,7 +304,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("cd-{id}"), Authorize(Roles = "User")]
+        [HttpDelete("cdelete-{id}"), Authorize(Roles = "User")]
         public ActionResult DeleteCodeByUser([FromRoute] Guid id)
         {
             try
@@ -319,7 +321,6 @@ namespace MyCode_Backend_Server.Controllers
                         return BadRequest("Token expired.");
                     }
                 }
-
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userIdClaim == null)

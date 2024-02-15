@@ -123,21 +123,21 @@ namespace MyCode_Backend_Server.Controllers
             if (!result.Success)
             {
                 AddErrors(result);
-                return BadRequest(ModelState);
+                return NotFound(ModelState);
             }
 
             var managedUser = await _userManager.FindByEmailAsync(request.Email);
 
             if (managedUser == null)
             {
-                return BadRequest("User not found.");
+                return NotFound("User not found.");
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, request.Password);
 
             if (!isPasswordValid)
             {
-                return BadRequest("PW not valid.");
+                return Unauthorized("PW not valid.");
             }
 
             var roles = await _userManager.GetRolesAsync(managedUser);
@@ -151,7 +151,7 @@ namespace MyCode_Backend_Server.Controllers
             return new AuthResponse(roles[0], managedUser.Id.ToString());
         }
 
-        [HttpPut("u-{id}"), Authorize(Roles = "User")]
+        [HttpPut("user-{id}"), Authorize(Roles = "User")]
         public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
         {
             try
