@@ -24,8 +24,8 @@ const CodeUpdate = () => {
                 const data = await getApi(`${getCodesByUserId}${codeId}`);
 
                 setLoading(false);
-                if (responseData === "Unauthorized") {
-                    handleResponse(responseData, navigate, setUserData);
+                if (data === "Unauthorized") {
+                    handleResponse(data, navigate, setUserData);
                 } else if (data) {
                     setCodeData(data);
                 } else {
@@ -42,12 +42,14 @@ const CodeUpdate = () => {
 
     const handleOnSave = (code) => {
         setLoading(true);
+
         const endpoint = role.includes("Admin") ? codeSuperUpdate : codeUpdate;
         const apiUrl = `${endpoint}${codeId}`;
 
         putApi(apiUrl, code)
             .then((data) => {
                 setLoading(false);
+
                 if (data === "Unauthorized") {
                     handleResponse(responseData, navigate, setUserData);
                 } else if (data) {

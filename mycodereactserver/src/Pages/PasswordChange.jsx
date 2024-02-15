@@ -18,10 +18,12 @@ const PasswordChange = () => {
 
     useEffect(() => {
         setLoading(true);
+
         try {
             getApi(getUser)
                 .then((getUserData) => {
                     setLoading(false);
+
                     if (getUserData === "Unauthorized") {
                         handleResponse(getUserData, navigate, setUserData);
                     } else {

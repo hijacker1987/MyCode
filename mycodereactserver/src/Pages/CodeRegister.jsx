@@ -16,9 +16,11 @@ const CodeRegister = () => {
 
     const handleCreateCode = (code) => {
         setLoading(true);
+
         postApi(codeRegistration, code)
             .then((data) => {
                 setLoading(false);
+
                 if (data === "Unauthorized") {
                     handleResponse(data, navigate, setUserData);
                 } else if (data) {

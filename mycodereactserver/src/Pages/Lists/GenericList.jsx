@@ -21,7 +21,9 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
 
             try {
                 const responseData = await getApi(endpoint);
+
                 setLoading(false);
+
                 if (responseData === "Unauthorized") {
                     handleResponse(responseData, navigate, setUserData);
                 } else if (responseData !== "Unauthorized") {

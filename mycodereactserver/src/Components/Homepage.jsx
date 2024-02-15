@@ -18,6 +18,7 @@ const Homepage = () => {
         const fetchVisibleCodes = async () => {
             try {
                 const responseData = await getApi(getCodesByVisibility);
+
                 if (responseData === "Unauthorized") {
                     handleResponse(responseData, navigate, setUserData);
                 } else {

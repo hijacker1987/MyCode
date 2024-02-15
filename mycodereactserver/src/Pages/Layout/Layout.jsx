@@ -48,6 +48,7 @@ const Layout = () => {
         setShowLogoutModal(false);
         logoutUser();
         setUserData(null);
+
         if (loggedOut) {
             Notify("Success", "You logged out successfully!");
             setLogoutSuccess(true);
