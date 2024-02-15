@@ -22,16 +22,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -75,16 +69,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -138,16 +126,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -179,16 +161,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -254,16 +230,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
@@ -338,16 +308,10 @@ namespace MyCode_Backend_Server.Controllers
             try
             {
                 var authorizationCookie = Request.Cookies["Authorization"];
-                var refreshTokenCookie = Request.Cookies["RefreshAuthorization"];
 
-                if (authorizationCookie == null || refreshTokenCookie == null)
+                if (_tokenService.ValidateToken(authorizationCookie!))
                 {
-                    _logger.LogError("Not enough cookies.");
-                    return BadRequest("Not enough cookies.");
-                }
-                else if (_tokenService.ValidateToken(authorizationCookie))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie, refreshTokenCookie, Request, Response);
+                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
 
                     if (checkedToken == null)
                     {
