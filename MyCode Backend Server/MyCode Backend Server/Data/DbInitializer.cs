@@ -44,10 +44,10 @@ namespace MyCode_Backend_Server.Data
 
             var random = new Random();
             var userNames = new List<string>() { "John Doe", "Jane Doe" };
-            var codeTypes = new List<string>() { "C#", "Java", "Python", "JavaScript", "C++",
-                                                 "Ruby", "Swift", "Go", "Kotlin", "PHP",
-                                                 "TypeScript", "Rust", "Objective-C", "C", "Scala",
-                                                 "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal" };
+            var codeTypes = new List<string>() { "Batch", "C", "C#", "C++", "CoffeeScript", "CSS", "Diff", "Elm", "F#", "Go",
+                                                 "Handlebars", "Haskell", "HTML", "Java", "JavaScript", "JSON", "Kotlin", "LESS", "Lua", "Markdown",
+                                                 "MATLAB", "Objective-C", "Perl", "PHP", "Powershell", "Pug", "Python", "R", "Razor", "Ruby",
+                                                 "Rust", "SASS", "Scala", "SCSS", "Shell", "Swift", "TypeScript", "Turbo Pascal", "VB", "XML" };
 
             var users = Enumerable.Range(1, 30).Select(i => new User
             {

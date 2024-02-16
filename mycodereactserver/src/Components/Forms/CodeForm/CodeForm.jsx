@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
@@ -14,6 +15,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [whatKindOfCode, setWhatKindOfCode] = useState(code?.whatKindOfCode ?? "");
     const [isBackend, setIsBackend] = useState(code?.isBackend ?? false);
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
+    const [otherCodeType, setOtherCodeType] = useState("");
     const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
@@ -88,14 +90,27 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
 
                         <TextContainer>What kind of code:</TextContainer>
                         <InputWrapper>
-                            <InputForm
+                            <select
                                 value={whatKindOfCode}
                                 onChange={(e) => setWhatKindOfCode(e.target.value)}
                                 name="codetype"
                                 id="codetype"
-                                placeholder="What type"
-                                autoComplete="off"
-                            />
+                            >
+                                {codeTypeOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                                <option value="Other">Other</option>
+                            </select>
+                            {whatKindOfCode === "Other" && (
+                                <InputForm
+                                    value={otherCodeType}
+                                    onChange={(e) => setOtherCodeType(e.target.value)}
+                                    name="othercodetype"
+                                    id="othercodetype"
+                                    placeholder="Specify other code type"
+                                    autoComplete="off"
+                                />
+                            )}
                         </InputWrapper>
 
                         <TextContainer>Backend Code?</TextContainer>
