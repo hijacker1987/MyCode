@@ -170,7 +170,7 @@ export const MidContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 30%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: auto;

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import Editor from "@monaco-editor/react";
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 import { getApi, handleResponse } from "../Services/Api";
 import { useUser } from "../Services/UserContext";
@@ -8,6 +9,7 @@ import ErrorPage from "../Pages/Services/ErrorPage";
 
 const Homepage = () => {
     const navigate = useNavigate();
+    const editorRef = useRef(null);
     const { userData, setUserData } = useUser();
     const { role, userid } = userData;
     const [visibleCodes, setVisibleCodes] = useState([]);
@@ -55,6 +57,10 @@ const Homepage = () => {
         return () => clearTimeout(initialRandomCode);
     }, [visibleCodes]);
 
+    function handleEditorDidMount(editor, monaco) {
+        editorRef.current = editor;
+    }
+
     return (
         <div>
             {errorMessage === "" ? (
@@ -67,9 +73,20 @@ const Homepage = () => {
                 ) : (
                     randomCodeIndex !== null && visibleCodes.length > 0 && (
                         <MidContainer className="random-code">
-                            Random Code of <p>{visibleCodes[randomCodeIndex].displayName}</p>
-                            <div>Title: {visibleCodes[randomCodeIndex].codeTitle}</div>
-                            <div>Code: {visibleCodes[randomCodeIndex].myCode}</div>
+                            <div>
+                            Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
+                            <h4>Title:</h4>
+                            <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
+                            </div>
+                            <Editor
+                                height="30vh"
+                                width="90vh"
+                                defaultLanguage={visibleCodes[randomCodeIndex].whatKindofCode}
+                                defaultValue={visibleCodes[randomCodeIndex].myCode}
+                                onMount={handleEditorDidMount}
+                                options={{ readOnly: true }}
+                                theme="vs-dark"
+                            />
                         </MidContainer>
                     )
                     )}
