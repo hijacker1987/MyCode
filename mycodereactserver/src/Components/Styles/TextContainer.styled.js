@@ -1,4 +1,16 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const wave = keyframes`
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+`;
 
 export const TextContainer = styled.div`
   margin-top: 23px;
@@ -17,6 +29,8 @@ export const TextContainer = styled.div`
   padding: 5%;
   gap: 12px;
   border-radius: 8px;
+  animation: ${wave} 10s infinite linear;
+  color: darkgreen;
 
   &::before {
     content: '';
@@ -24,16 +38,15 @@ export const TextContainer = styled.div`
     inset: 0;
     left: -2px;
     margin-top: -3px;
-    width: 103%;
-    height: 111%;
+    width: 100.5%;
+    height: 102%;
     border-radius: 10px;
-    background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+    background: linear-gradient(45deg, #e81cff 0%, #40c9ff 100%);
     z-index: -10;
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 `;
-
 
 export const ErrorTextContainerRed = styled.div`
   position: relative;
@@ -170,7 +183,7 @@ export const MidContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 30%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: auto;
@@ -184,18 +197,19 @@ export const MidContainer = styled.div`
   gap: 12px;
   border-radius: 8px;
   text-align: center;
+  animation: ${wave} 10s infinite linear;
+  color: aliceblue;
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     left: -2px;
-    margin-top: -2px;
-    margin-right: -2px;
-    width: auto;
-    height: auto;
+    margin-top: -3px;
+    width: 100.5%;
+    height: 102%;
     border-radius: 10px;
-    background: linear-gradient(-45deg, #ffd700 0%, #000 69%);
+    background: linear-gradient(45deg, #e81cff 29%, #40c9ff 100%);
     z-index: -10;
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);

@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 import { getApi, handleResponse } from "../Services/Api";
 import { useUser } from "../Services/UserContext";
 import { MidContainer } from "./Styles/TextContainer.styled";
+import Editor from "@monaco-editor/react";
+import Notify from "../Pages/Services/ToastNotifications";
 import ErrorPage from "../Pages/Services/ErrorPage";
 
 const Homepage = () => {
     const navigate = useNavigate();
+    const editorRef = useRef(null);
     const { userData, setUserData } = useUser();
     const { role, userid } = userData;
     const [visibleCodes, setVisibleCodes] = useState([]);
@@ -55,6 +58,31 @@ const Homepage = () => {
         return () => clearTimeout(initialRandomCode);
     }, [visibleCodes]);
 
+    function handleEditorDidMount(editor, monaco) {
+        editorRef.current = editor;
+    }
+
+    function copyContentToClipboard() {
+        const editor = editorRef.current;
+        if (editor) {
+            const code = editor.getValue();
+            navigator.clipboard.writeText(code)
+                .then(() => Notify("Success", "Code copied to clipboard"))
+                .catch(error => console.error("Error copying code to clipboard:", error));
+        }
+    }
+
+    function toggleFullscreen() {
+        const editor = editorRef.current;
+        if (editor) {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                editor.getDomNode().requestFullscreen();
+            }
+        }
+    }
+
     return (
         <div>
             {errorMessage === "" ? (
@@ -67,9 +95,24 @@ const Homepage = () => {
                 ) : (
                     randomCodeIndex !== null && visibleCodes.length > 0 && (
                         <MidContainer className="random-code">
-                            Random Code of <p>{visibleCodes[randomCodeIndex].displayName}</p>
-                            <div>Title: {visibleCodes[randomCodeIndex].codeTitle}</div>
-                            <div>Code: {visibleCodes[randomCodeIndex].myCode}</div>
+                            <div>
+                            Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
+                            <h4>Title:</h4>
+                            <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
+                            </div>
+                            <Editor
+                                height="30vh"
+                                width="90vh"
+                                defaultLanguage={visibleCodes[randomCodeIndex].whatKindofCode}
+                                defaultValue={visibleCodes[randomCodeIndex].myCode}
+                                onMount={handleEditorDidMount}
+                                options={{ readOnly: true, fontSize: 14 }}
+                                theme="vs-dark"
+                            />
+                            <div>
+                                <button onClick={copyContentToClipboard}>Copy to Clipboard</button>
+                                <button onClick={toggleFullscreen}>Fullscreen</button>
+                            </div>
                         </MidContainer>
                     )
                     )}

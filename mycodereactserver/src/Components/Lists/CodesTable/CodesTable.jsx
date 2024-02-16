@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import { useUser } from "../../../Services/UserContext";
+import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { TableContainer } from "../../Styles/TableContainer.styled";
@@ -28,10 +29,6 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [visibilityFilter, setVisibilityFilter] = useState("all"); //"all", "visible", or "hidden"
     const [sortOrder, setSortOrder] = useState("A-Z");
     const isAllowed = auth === "byAuth";
-    const codeTypeOptions = ["C#", "Java", "Python", "JavaScript", "C++",
-                             "Ruby", "Swift", "Go", "Kotlin", "PHP",
-                             "TypeScript", "Rust", "Objective-C", "C", "Scala",
-                             "Perl", "Haskell", "Shell", "MATLAB", "Turbo Pascal"];
 
     useEffect(() => {
         const initialPage = page ? Math.max(1, Number(page)) : 1;

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const InputWrapper = styled.div`
-  content: '';
+  position: relative;
   margin-top: 21px;
   margin-left: 20px;
   margin-right: 21px;
@@ -9,6 +9,19 @@ export const InputWrapper = styled.div`
   height: 47px;
   border-radius: 10px;
   background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+
+  input[type="checkbox"] {
+    width: 100px;
+    height: 40px;
+  }
+
+  select[id="codetype"] {
+    margin-top: 3px;
+    width: 150px;
+    height: 40px;
+    font-size: 18px;
+    text-align: center;
+  }
 `;
 
 export const InputForm = styled.input`

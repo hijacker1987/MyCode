@@ -23,7 +23,7 @@ const UserLogin = () => {
             if (data.role) {
                 setUserData(data.role, data.userid);
                 Notify("Success", "Successful Login!");
-                navigate("/");
+                navigate(homePage);
             } else {
                 Notify("Error", "Invalid username or password. Please try again.");
             }

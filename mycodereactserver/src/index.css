@@ -1,27 +1,42 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 500;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-body
-{
+body {
     margin: 0;
     display: flex;
     place-items: center, center;
     min-width: 320px;
     min-height: 100vh;
-    background-color: rgb(0, 29, 22);
-    color:aliceblue
+    background: linear-gradient(-45deg, rgba(40, 10, 50, 2.8) 5%, rgb(0, 47, 43) 75%);
+    background-size: 400% 400%;
+    animation: wave 30s infinite linear;
+    color: aliceblue
+}
+
+@keyframes wave {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+    font-size: 3.2em;
+    line-height: 1.1;
 }
 
 .link {
