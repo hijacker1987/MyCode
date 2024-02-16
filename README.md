@@ -28,6 +28,7 @@ The frontend is powered by React using VITE to provide a fast and an interactive
   - .ENV
   - Style Components
   - Easy to use: for example -> Centralized data structure in the Services folder
+  - Monaco Editor
   
 ## Security
 The application implements secure practices such as JWT token usage and secure password storage, currently running dockerized MSSQL database.
