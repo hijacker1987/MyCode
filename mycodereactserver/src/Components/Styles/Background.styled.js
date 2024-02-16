@@ -1,5 +1,4 @@
-import styled from 'styled-components';
-import { Modal } from 'react-bootstrap';
+import styled from "styled-components";
 
 export const BlurredOverlay = styled.div`
   position: fixed;
