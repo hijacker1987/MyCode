@@ -5,6 +5,7 @@ import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 import { getApi, handleResponse } from "../Services/Api";
 import { useUser } from "../Services/UserContext";
 import { MidContainer } from "./Styles/TextContainer.styled";
+import Notify from "../Pages/Services/ToastNotifications";
 import ErrorPage from "../Pages/Services/ErrorPage";
 
 const Homepage = () => {
@@ -61,6 +62,27 @@ const Homepage = () => {
         editorRef.current = editor;
     }
 
+    function copyContentToClipboard() {
+        const editor = editorRef.current;
+        if (editor) {
+            const code = editor.getValue();
+            navigator.clipboard.writeText(code)
+                .then(() => Notify("Success", "Code copied to clipboard"))
+                .catch(error => console.error("Error copying code to clipboard:", error));
+        }
+    }
+
+    function toggleFullscreen() {
+        const editor = editorRef.current;
+        if (editor) {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                editor.getDomNode().requestFullscreen();
+            }
+        }
+    }
+
     return (
         <div>
             {errorMessage === "" ? (
@@ -87,6 +109,10 @@ const Homepage = () => {
                                 options={{ readOnly: true }}
                                 theme="vs-dark"
                             />
+                            <div>
+                                <button onClick={copyContentToClipboard}>Copy to Clipboard</button>
+                                <button onClick={toggleFullscreen}>Fullscreen</button>
+                            </div>
                         </MidContainer>
                     )
                     )}
