@@ -1,7 +1,5 @@
 import styled from "styled-components";
 
-import styled from "styled-components";
-
 export const InputWrapper = styled.div`
   position: relative;
   margin-top: 21px;
