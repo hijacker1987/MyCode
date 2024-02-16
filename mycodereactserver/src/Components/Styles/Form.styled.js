@@ -15,7 +15,13 @@ export const Form = styled.form`
 export const FormRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto;
   grid-column-gap: 10px;
   grid-row-gap: 0px;
+`;
+
+export const FormColumn = styled.div`
+  display: grid;
+  grid-template-columns: auto;
+  grid-row-gap: 10px;
 `;

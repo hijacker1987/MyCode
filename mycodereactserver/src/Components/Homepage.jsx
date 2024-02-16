@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Editor from "@monaco-editor/react";
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 import { getApi, handleResponse } from "../Services/Api";
 import { useUser } from "../Services/UserContext";
 import { MidContainer } from "./Styles/TextContainer.styled";
+import Editor from "@monaco-editor/react";
 import Notify from "../Pages/Services/ToastNotifications";
 import ErrorPage from "../Pages/Services/ErrorPage";
 
@@ -106,7 +106,7 @@ const Homepage = () => {
                                 defaultLanguage={visibleCodes[randomCodeIndex].whatKindofCode}
                                 defaultValue={visibleCodes[randomCodeIndex].myCode}
                                 onMount={handleEditorDidMount}
-                                options={{ readOnly: true }}
+                                options={{ readOnly: true, fontSize: 14 }}
                                 theme="vs-dark"
                             />
                             <div>
