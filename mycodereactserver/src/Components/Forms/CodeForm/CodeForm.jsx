@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowButtonContainer, ButtonRowContainer } from "../../Styles/ButtonRow.styled";
@@ -19,6 +19,8 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [isBackend, setIsBackend] = useState(code?.isBackend ?? false);
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
     const [otherCodeType, setOtherCodeType] = useState("");
+    const [fontSize, setFontSize] = useState(16);
+    const [theme, setTheme] = useState("vs-dark");
     const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
@@ -76,6 +78,27 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
         }
     }
 
+    function toggleFullscreen(e) {
+        e.preventDefault();
+
+        const editor = editorRef.current;
+        if (editor) {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                editor.getDomNode().requestFullscreen();
+            }
+        }
+    }
+
+    function changeFontSize(e) {
+        setFontSize(parseInt(e.target.value));
+    }
+
+    function changeTheme(e) {
+        setTheme(e.target.value);
+    }
+
     if (loading) {
         return <Loading />;
     }
@@ -125,7 +148,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                         </ButtonRowButtonContainer>
 
                         <FormColumn>
-                            <TextContainer>The Code Itself:
+                            <TextContainer>The Code Itself
                                 <>
                                     <Editor
                                         height="30vh"
@@ -137,11 +160,25 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                         id="mycode"
                                         autoComplete="off"
                                         onMount={handleEditorDidMount}
-                                        options={{ readOnly: false, fontSize: 16 }}
-                                        theme="vs-dark"
+                                        options={{ readOnly: false, fontSize: fontSize }}
+                                        theme={theme}
                                     />
                                     <div>
+                                        <label htmlFor="fontSizeSelector"> Font Size: </label>
+                                        <select id="fontSizeSelector" onChange={changeFontSize} value={fontSize}>
+                                            {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
+                                                <option key={size} value={size}>{size}</option>
+                                            ))}
+                                        </select>
+                                        <label htmlFor="themeSelector"> Change Theme: </label>
+                                        <select id="themeSelector" onChange={changeTheme} value={theme}>
+                                            <option value="vs">Light</option>
+                                            <option value="vs-dark">Dark</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <button onClick={copyContentToClipboard}>Copy to Clipboard</button>
+                                        <button onClick={toggleFullscreen}>Fullscreen</button>
                                     </div>
                                 </>
                             </TextContainer>

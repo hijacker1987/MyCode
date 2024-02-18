@@ -15,6 +15,8 @@ const Homepage = () => {
     const { role, userid } = userData;
     const [visibleCodes, setVisibleCodes] = useState([]);
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
+    const [fontSize, setFontSize] = useState(16);
+    const [theme, setTheme] = useState("vs-dark");
     const [errorMessage, setError] = useState("");
 
     useEffect(() => {
@@ -83,6 +85,14 @@ const Homepage = () => {
         }
     }
 
+    function changeFontSize(e) {
+        setFontSize(parseInt(e.target.value));
+    }
+
+    function changeTheme(e) {
+        setTheme(e.target.value);
+    }
+
     return (
         <div>
             {errorMessage === "" ? (
@@ -106,9 +116,22 @@ const Homepage = () => {
                                 defaultLanguage={visibleCodes[randomCodeIndex].whatKindofCode}
                                 defaultValue={visibleCodes[randomCodeIndex].myCode}
                                 onMount={handleEditorDidMount}
-                                options={{ readOnly: true, fontSize: 14 }}
-                                theme="vs-dark"
+                                options={{ readOnly: true, fontSize: fontSize }}
+                                theme={theme}
                             />
+                            <div>
+                                <label htmlFor="fontSizeSelector"> Font Size: </label>
+                                <select id="fontSizeSelector" onChange={changeFontSize} value={fontSize}>
+                                    {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
+                                        <option key={size} value={size}>{size}</option>
+                                    ))}
+                                </select>
+                                <label htmlFor="themeSelector"> Change Theme: </label>
+                                <select id="themeSelector" onChange={changeTheme} value={theme}>
+                                    <option value="vs">Light</option>
+                                    <option value="vs-dark">Dark</option>
+                                </select>
+                            </div>
                             <div>
                                 <button onClick={copyContentToClipboard}>Copy to Clipboard</button>
                                 <button onClick={toggleFullscreen}>Fullscreen</button>
