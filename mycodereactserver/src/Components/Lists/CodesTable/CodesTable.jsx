@@ -1,22 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
-import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
+import Editor from "@monaco-editor/react";
+import Modal from "react-bootstrap/Modal";
+
 import { useUser } from "../../../Services/UserContext";
 import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
+import { Notify, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
+import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
+import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
+import ConstructPagination from "../../Forms/PaginationForm/index";
+import DeleteActions from "../../Delete/index";
+
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import { Notify, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
-import ConstructPagination from "../../Forms/PaginationForm/index";
-import DeleteActions from "../../Delete/DeleteActions";
-import Editor from "@monaco-editor/react";
-import Modal from "react-bootstrap/Modal";
 
-const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
+export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const navigate = useNavigate();
     const editorRef = useRef(null);
     const originalEditorMeasure = ["50vh", "150vh"];
@@ -110,6 +112,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 />
                             </StyledTh>                       
                         )}
+
                         {!isAllowed && auth === "byVis" && kind === "visible Codes" && (
                             <StyledTh className="search-1">
                                 <input
@@ -121,6 +124,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 />
                             </StyledTh>
                         )}
+
                         <StyledTh className="search-2">
                             <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)} style={{ cursor: "pointer" }}>
                                 <option value="">All Code Types</option>
@@ -129,6 +133,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 ))}
                             </select>
                         </StyledTh>
+
                         {isAllowed && auth === "byVis" && (
                             <StyledTh className="search-3">
                             <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }}>
@@ -138,6 +143,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 </select>
                             </StyledTh>
                         )}
+
                         {!isAllowed && kind !== "visible Codes" && (
                         <StyledTh className="search-3">
                             <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }}>
@@ -147,6 +153,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                             </select>
                         </StyledTh>
                         )}
+
                         <StyledTh className="search-4" onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
                         </StyledTh>                      
@@ -182,6 +189,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                     {!isAllowed && kind === "visible Codes" && (
                                         <StyledTd>{code.displayName}</StyledTd>
                                     )}
+
                                     <StyledTd>{code.codeTitle}</StyledTd>
                                     <StyledTd
                                         onClick={() => handleCodePreview(code)}
@@ -189,14 +197,17 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                     >
                                         {code.myCode.length <= 20 ? code.myCode : code.myCode.slice(0, 17) + "..."}
                                     </StyledTd>
+
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
                                     {isAllowed && kind === "visible Codes" || role === "Admin" && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
+
                                     {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
+
                                     {!isAllowed && auth !== "byVis" || role === "Admin" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
@@ -207,6 +218,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                             </ButtonContainer>
                                         </StyledTd>
                                     )}
+
                                     {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
@@ -319,5 +331,3 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
         </TableContainer>
     );
 };
-
-export default CodesTable;

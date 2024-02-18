@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { formatElapsedTime } from "../../../Services/elapsedTime";
-import { uList, uUpdate } from "../../../Services/Frontend.endpoints";
+import Modal from "react-bootstrap/Modal";
+
+import { Notify } from "./../../../Pages/Services";
+import { formatElapsedTime } from "../../../Services/ElapsedTime";
+import { uList, uUpdate } from "../../../Services/Frontend.Endpoints";
 import { deleteSuperUser } from "../../../Services/Backend.Endpoints";
+import ConstructPagination from "../../Forms/PaginationForm/index";
+import DeleteActions from "../../Delete/index";
+
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
-import ConstructPagination from "../../Forms/PaginationForm/index";
-import DeleteActions from "../../Delete/DeleteActions";
-import Modal from "react-bootstrap/Modal";
-import Notify from "./../../../Pages/Services/ToastNotifications";
 
-const UsersTable = ({ users, headers, role, page }) => {
+export const UsersTable = ({ users, headers, role, page }) => {
     const [updatedUsers, setUpdatedUsers] = useState(users);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDeleteId, setUserToDeleteId] = useState(null);
@@ -89,6 +91,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
+
                         <StyledTh className="search-2">
                             <input
                                 type="text"
@@ -98,6 +101,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
+
                         <StyledTh className="search-3">
                             <input
                                 type="text"
@@ -107,6 +111,7 @@ const UsersTable = ({ users, headers, role, page }) => {
                                 style={{ cursor: "pointer" }}
                             />
                         </StyledTh>
+
                         <StyledTh className="search-4" onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
                         </StyledTh>
@@ -194,5 +199,3 @@ const UsersTable = ({ users, headers, role, page }) => {
         </TableContainer>
     );
 };
-
-export default UsersTable;

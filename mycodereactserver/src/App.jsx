@@ -1,28 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { UserProvider } from "./Services/UserContext";
-import reportWebVitals from "./reportWebVitals";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-import { uLogin, errorOccured,
-         uReg, uUpdateOwn, uUpdate, uPwChange,
-         cReg, cUpdateOwn, cUpdate, cOwn, cOthers,
-         uList, cList, homePage
-       } from "../src/Services/Frontend.Endpoints";
-
-import Layout from "./Pages/Layout/Layout";
+import { ErrorPage } from "./Pages/Services";
+import reportWebVitals from "./reportWebVitals";
+import { UserProvider } from "./Services/UserContext";
+import { uLogin, uReg, uUpdateOwn, uUpdate, uPwChange,
+         cReg, cUpdateOwn, cUpdate, cOwn, cOthers, uList, cList,
+         errorOccured, homePage } from "../src/Services/Frontend.Endpoints";
+import { UsersList, CodesList } from "./Pages/Lists/index";
+import Layout from "./Pages/Layout/index";
+import Homepage from "./Components/Homepage";
 import UserLogin from "./Pages/Login";
 import UserRegister from "./Pages/Register";
 import UserUpdate from "./Pages/UserUpdate";
 import PwChange from "./Pages/PasswordChange";
 import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
-import UsersList from "./Pages/Lists/UsersList";
-import CodesList from "./Pages/Lists/CodesList";
-import ErrorPage from "./Pages/Services/ErrorPage";
-import Homepage from "./Components/Homepage";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);

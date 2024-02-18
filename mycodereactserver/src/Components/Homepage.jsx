@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCodesByVisibility } from "../Services/Backend.Endpoints";
-import { getApi, handleResponse } from "../Services/Api";
-import { useUser } from "../Services/UserContext";
-import { ErrorPage, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "../Pages/Services";
-import { MidContainer } from "./Styles/TextContainer.styled";
 import Editor from "@monaco-editor/react";
+
+import { useUser } from "../Services/UserContext";
+import { getApi, handleResponse } from "../Services/Api";
+import { ErrorPage, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "../Pages/Services";
+import { getCodesByVisibility } from "../Services/Backend.Endpoints";
+
+import { MidContainer } from "./Styles/TextContainer.styled";
 
 const Homepage = () => {
     const navigate = useNavigate();
@@ -74,10 +76,11 @@ const Homepage = () => {
                     randomCodeIndex !== null && visibleCodes.length > 0 && (
                         <MidContainer className="random-code">
                             <div>
-                            Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
-                            <h4>Title:</h4>
-                            <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
+                                Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
+                                <h4>Title:</h4>
+                                <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
                             </div>
+
                             <Editor
                                 height={editorMeasure[0]}
                                 width={editorMeasure[1]}
@@ -91,6 +94,7 @@ const Homepage = () => {
                                 options={{ readOnly: false, fontSize: fontSize }}
                                 theme={theme}
                             />
+
                             <div>
                                 <label htmlFor="fontSizeSelector"> Font Size: </label>
                                 <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
@@ -104,6 +108,7 @@ const Homepage = () => {
                                     <option value="vs-dark">Dark</option>
                                 </select>
                             </div>
+
                             <div>
                                 <button onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</button>
                                 <button onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</button>

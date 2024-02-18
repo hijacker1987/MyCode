@@ -1,3 +1,3 @@
-import CodesTable from "./CodesTable";
+import { CodesTable } from "./CodesTable";
 
 export default CodesTable;

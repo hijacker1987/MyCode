@@ -1,8 +1,8 @@
 import { useUser } from "../../Services/UserContext";
 import { getAllUsers } from "../../Services/Backend.Endpoints";
-import GenericList from "./GenericList";
+import { GenericList } from "./index";
 
-const UsersList = () => {
+export const UsersList = () => {
     const headers = ["Counter", "Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number", "Modify"];
     const { userData } = useUser();
     const { role } = userData;
@@ -15,5 +15,3 @@ const UsersList = () => {
         kind="Users"
     />;
 };
-
-export default UsersList;

@@ -1,3 +1,3 @@
-import PaginationForm from "./PaginationForm";
+import ConstructPagination from "./PaginationForm";
 
-export default PaginationForm;
+export default ConstructPagination;

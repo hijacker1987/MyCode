@@ -1,10 +1,12 @@
 import { useState } from "react";
+
+import Loading from "../Loading/index";
+
 import { ButtonContainer } from "../Styles/ButtonContainer.styled";
 import { InputForm, InputWrapper } from "../Styles/Input.styled";
 import { ButtonRowContainer } from "../Styles/ButtonRow.styled";
 import { TextContainer } from "../Styles/TextContainer.styled";
 import { Form, FormRow } from "../Styles/Form.styled";
-import Loading from "../Loading/Loading";
 
 const Login = ({ onLogin, user, onCancel }) => {
 

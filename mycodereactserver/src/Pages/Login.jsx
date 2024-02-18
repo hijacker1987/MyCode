@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { postApi } from "../Services/Api";
+import { useUser } from "../Services/UserContext";
+import { ErrorPage, Notify } from "../Pages/Services";
 import { homePage } from "../Services/Frontend.Endpoints";
 import { userLogin } from "../Services/Backend.Endpoints";
-import { useUser } from "../Services/UserContext";
-import Login from "../Components/Login/Login";
-import Loading from "../Components/Loading/Loading";
-import Notify from "../Pages/Services/ToastNotifications";
-import ErrorPage from "./Services/ErrorPage";
+import Login from "../Components/Login/index";
+import Loading from "../Components/Loading/index";
 
 const UserLogin = () => {
     const navigate = useNavigate();

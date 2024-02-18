@@ -1,3 +1,3 @@
-import DeleteActions from "./Delete";
+import DeleteActions from "./DeleteActions";
 
 export default DeleteActions;

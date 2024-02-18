@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { homePage } from "../../Services/Frontend.Endpoints";
+
 import { Form, FormRow } from "../../Components/Styles/Form.styled";
 import { ErrorTextContainerRed, ErrorTextContainerWhite, ColumnTextWrapper } from "../../Components/Styles/TextContainer.styled";
 

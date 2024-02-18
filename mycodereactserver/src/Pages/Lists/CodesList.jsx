@@ -1,9 +1,10 @@
 import React from "react";
+
 import { useUser } from "../../Services/UserContext";
 import { getCodesByUser, getAllCodes, getCodesByVisibility } from "../../Services/Backend.Endpoints";
-import GenericList from "./GenericList";
+import { GenericList } from "./index";
 
-const CodesList = ({ type }) => {
+export const CodesList = ({ type }) => {
     const { userData } = useUser();
     const { role } = userData;
     const auth = role === "Admin" ? "byAuth" : "byVis";
@@ -31,5 +32,3 @@ const CodesList = ({ type }) => {
         kind={kind}
     />;
 };
-
-export default CodesList;

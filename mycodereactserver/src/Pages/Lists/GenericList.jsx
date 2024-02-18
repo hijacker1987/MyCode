@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getApi, handleResponse } from "../../Services/Api";
-import { useUser } from "../../Services/UserContext";
-import UsersTable from "../../Components/Lists/UsersTable/UsersTable";
-import CodesTable from "../../Components/Lists/CodesTable/CodesTable";
-import Loading from "../../Components/Loading/Loading";
-import Notify from "../Services/ToastNotifications";
 
-const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
+import { Notify } from "../Services";
+import { useUser } from "../../Services/UserContext";
+import { getApi, handleResponse } from "../../Services/Api";
+import UsersTable from "../../Components/Lists/UsersTable/index";
+import CodesTable from "../../Components/Lists/CodesTable/index";
+import Loading from "../../Components/Loading/index";
+
+export const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
     const navigate = useNavigate();
     const { page } = useParams();
     const { setUserData } = useUser();
@@ -59,5 +60,3 @@ const GenericList = ({ endpoint, headers, role, type, auth, kind }) => {
         </div>
     );
 };
-
-export default GenericList;

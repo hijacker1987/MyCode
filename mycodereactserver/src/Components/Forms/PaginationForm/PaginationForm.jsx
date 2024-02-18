@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { StyledUl, StyledLi } from "../../Styles/Pagination.styled";
 
 const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPage, paginationSlice, setPaginationSlice }) => {
@@ -54,6 +55,7 @@ const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPa
                         Previous
                     </button>
                 </li>
+
                 {availablePages.map((pageNumber, index) => {
                     const isCurrentPage = pageNumber === Number(page);
 
@@ -89,6 +91,7 @@ const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPa
                         Last
                     </button>
                 </li>
+
                 <StyledLi>
                     <select className="btn btn-primary" style={{ marginRight: "1vw" }} onChange={(event) => handleRecordPerPageButton(event.target.value)} value={recordPerPage}>
                         <option>5</option>

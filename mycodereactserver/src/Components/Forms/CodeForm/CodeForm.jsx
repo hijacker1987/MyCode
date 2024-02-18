@@ -1,12 +1,14 @@
 import { useState, useRef } from "react";
+import Editor from "@monaco-editor/react";
+
 import { ErrorPage, codeTypeOptions, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
+import Loading from "../../Loading/index";
+
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowButtonContainer, ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormColumn } from "../../Styles/Form.styled";
-import Editor from "@monaco-editor/react";
-import Loading from "../../Loading/Loading";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
