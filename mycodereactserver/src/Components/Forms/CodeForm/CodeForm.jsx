@@ -1,14 +1,12 @@
 import { useState, useRef } from "react";
-import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
+import { ErrorPage, codeTypeOptions, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowButtonContainer, ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormColumn } from "../../Styles/Form.styled";
 import Editor from "@monaco-editor/react";
-import Notify from "../../../Pages/Services/ToastNotifications";
 import Loading from "../../Loading/Loading";
-import ErrorPage from "./../../../Pages/Services/ErrorPage";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
@@ -60,44 +58,15 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
         }
     };
 
-    function handleEditorDidMount(editor, monaco) {
-        if (editor) {
-            editorRef.current = editor;
-        }
-    }
-
-    function copyContentToClipboard(e) {
+    const handleCopyToClipboard = (e) => {
         e.preventDefault();
+        copyContentToClipboard(editorRef);
+    };
 
-        const editor = editorRef.current;
-        if (editor) {
-            const code = editor.getValue();
-            navigator.clipboard.writeText(code)
-                .then(() => Notify("Success", "Code copied to clipboard"))
-                .catch(error => console.error("Error copying code to clipboard:", error));
-        }
-    }
-
-    function toggleFullscreen(e) {
+    const handleToggleFullscreen = (e) => {
         e.preventDefault();
-
-        const editor = editorRef.current;
-        if (editor) {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                editor.getDomNode().requestFullscreen();
-            }
-        }
-    }
-
-    function changeFontSize(e) {
-        setFontSize(parseInt(e.target.value));
-    }
-
-    function changeTheme(e) {
-        setTheme(e.target.value);
-    }
+        toggleFullscreen(editorRef);
+    };
 
     if (loading) {
         return <Loading />;
@@ -159,26 +128,26 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                         name="mycode"
                                         id="mycode"
                                         autoComplete="off"
-                                        onMount={handleEditorDidMount}
+                                        onMount={(editor, monaco) => handleEditorDidMount(editor, monaco, editorRef)}
                                         options={{ readOnly: false, fontSize: fontSize }}
                                         theme={theme}
                                     />
                                     <div>
                                         <label htmlFor="fontSizeSelector"> Font Size: </label>
-                                        <select id="fontSizeSelector" onChange={changeFontSize} value={fontSize}>
+                                        <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
                                             {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                                 <option key={size} value={size}>{size}</option>
                                             ))}
                                         </select>
                                         <label htmlFor="themeSelector"> Change Theme: </label>
-                                        <select id="themeSelector" onChange={changeTheme} value={theme}>
+                                        <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
                                             <option value="vs">Light</option>
                                             <option value="vs-dark">Dark</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <button onClick={copyContentToClipboard}>Copy to Clipboard</button>
-                                        <button onClick={toggleFullscreen}>Fullscreen</button>
+                                        <button onClick={handleCopyToClipboard}>Copy to Clipboard</button>
+                                        <button onClick={handleToggleFullscreen}>Fullscreen</button>
                                     </div>
                                 </>
                             </TextContainer>
