@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import Modal from 'react-bootstrap/Modal';
+
+import { ErrorPage, Notify } from "../Services";
+import { useUser, logoutUser } from "../../Services/UserContext";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
+import { recentChuckNorris } from "../../Services/Backend.Endpoints";
+
 import { ButtonRowContainer, ButtonRowButtonContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
 import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
-import { recentChuckNorris } from "../../Services/Backend.Endpoints";
-import { useUser, logoutUser } from "../../Services/UserContext";
-import Notify from "../Services/ToastNotifications";
-import Modal from 'react-bootstrap/Modal';
-import ErrorPage from "../Services/ErrorPage";
 import "../../index.css";
 
 const Layout = () => {
@@ -133,6 +134,7 @@ const Layout = () => {
                 <ErrorPage errorMessage={errorMessage} />
             )}
             <Outlet />
+
             {showLogoutModal && (
                 <BlurredOverlay>
                     <ModalContainer>

@@ -1,17 +1,18 @@
-import { useState, useEffect, useRef } from "react";
-import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
+import { useState, useRef } from "react";
+import Editor from "@monaco-editor/react";
+
+import { ErrorPage, codeTypeOptions, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
+import Loading from "../../Loading/index";
+
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowButtonContainer, ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormColumn } from "../../Styles/Form.styled";
-import Editor from "@monaco-editor/react";
-import Notify from "../../../Pages/Services/ToastNotifications";
-import Loading from "../../Loading/Loading";
-import ErrorPage from "./../../../Pages/Services/ErrorPage";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
+    const originalEditorMeasure = ["25vh", "90vh"];
     const [loading, setLoading] = useState(false);
     const [codeTitle, setCodeTitle] = useState(code?.codeTitle ?? "");
     const [myCode, setMyCode] = useState(code?.myCode ?? "");
@@ -19,6 +20,9 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [isBackend, setIsBackend] = useState(code?.isBackend ?? false);
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
     const [otherCodeType, setOtherCodeType] = useState("");
+    const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
+    const [fontSize, setFontSize] = useState(16);
+    const [theme, setTheme] = useState("vs-dark");
     const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
@@ -58,23 +62,15 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
         }
     };
 
-    function handleEditorDidMount(editor, monaco) {
-        if (editor) {
-            editorRef.current = editor;
-        }
-    }
-
-    function copyContentToClipboard(e) {
+    const handleCopyToClipboard = (e) => {
         e.preventDefault();
+        copyContentToClipboard(editorRef);
+    };
 
-        const editor = editorRef.current;
-        if (editor) {
-            const code = editor.getValue();
-            navigator.clipboard.writeText(code)
-                .then(() => Notify("Success", "Code copied to clipboard"))
-                .catch(error => console.error("Error copying code to clipboard:", error));
-        }
-    }
+    const handleToggleFullscreen = (e) => {
+        e.preventDefault();
+        toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure);
+    };
 
     if (loading) {
         return <Loading />;
@@ -125,23 +121,37 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                         </ButtonRowButtonContainer>
 
                         <FormColumn>
-                            <TextContainer>The Code Itself:
+                            <TextContainer>The Code Itself
                                 <>
                                     <Editor
-                                        height="30vh"
-                                        width="90vh"
+                                        height={editorMeasure[0]}
+                                        width={editorMeasure[1]}
                                         defaultLanguage={whatKindOfCode.toLowerCase().replace(/#/g, "sharp")}
                                         defaultValue={myCode}
                                         onChange={(newValue, e) => setMyCode(newValue)}
                                         name="mycode"
                                         id="mycode"
                                         autoComplete="off"
-                                        onMount={handleEditorDidMount}
-                                        options={{ readOnly: false, fontSize: 16 }}
-                                        theme="vs-dark"
+                                        onMount={(editor, monaco) => handleEditorDidMount(editor, monaco, editorRef)}
+                                        options={{ readOnly: false, fontSize: fontSize }}
+                                        theme={theme}
                                     />
                                     <div>
-                                        <button onClick={copyContentToClipboard}>Copy to Clipboard</button>
+                                        <label htmlFor="fontSizeSelector"> Font Size: </label>
+                                        <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
+                                            {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
+                                                <option key={size} value={size}>{size}</option>
+                                            ))}
+                                        </select>
+                                        <label htmlFor="themeSelector"> Change Theme: </label>
+                                        <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
+                                            <option value="vs">Light</option>
+                                            <option value="vs-dark">Dark</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <button onClick={handleCopyToClipboard}>Copy to Clipboard</button>
+                                        <button onClick={handleToggleFullscreen}>Fullscreen</button>
                                     </div>
                                 </>
                             </TextContainer>

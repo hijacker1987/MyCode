@@ -1,24 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
+
 import { useUser } from "../../../Services/UserContext";
+import { ErrorPage, Notify } from "./../../../Pages/Services";
 import { homePage, uPwChange } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
+import DeleteActions from "../../../Components/Delete/index";
+import Loading from "../../Loading/index";
+
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormRow } from "../../Styles/Form.styled";
-import Notify from "./../../../Pages/Services/ToastNotifications";
-import DeleteActions from "../../../Components/Delete/DeleteActions";
-import Loading from "../../Loading/Loading";
-import Modal from 'react-bootstrap/Modal';
-import ErrorPage from "./../../../Pages/Services/ErrorPage";
 
 const UserForm = ({ onSave, user, onCancel }) => {
     const navigate = useNavigate();
     const { userData, setUserData } = useUser();
-    const { role, userid } = userData;
+    const { role } = userData;
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState(user?.email ?? "");
     const [username, setUsername] = useState(user?.userName ?? "");
@@ -26,7 +27,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
     const [isRegistration, setIsRegistration] = useState(!user);
-    const [updateUrl, setUpdateUrl] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [errorMessage, setError] = useState("");
@@ -62,14 +62,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
         }
     };
 
-    useEffect(() => {
-        try {
-            setUpdateUrl(userid);
-        } catch (error) {
-            setError(`Token error: ${error}`);
-        }
-    }, [location]);
-
     const handleDelete = (userid) => {
         setUserToDeleteId(userid);
         setShowDeleteModal(true);
@@ -94,7 +86,6 @@ const UserForm = ({ onSave, user, onCancel }) => {
     };
 
     const confirmLogout = () => {
-        setUpdateUrl([]);
         setUserData(null);
         navigate(homePage);
     };
@@ -197,6 +188,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
             ) : (
             <ErrorPage errorMessage={errorMessage} />
             )}
+
             {loading && <Loading />}
             {showDeleteModal && (
                 <BlurredOverlay>

@@ -1,3 +1,3 @@
-import PasswordChange from "../../Pages/PasswordChange";
+import { PassChange } from "../../Components/PassChange/PassChange";
 
-export default PasswordChange;
+export default PassChange;

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { postApi } from "../Services/Api";
-import { homePage } from "../Services/Frontend.Endpoints";
+import { ErrorPage, Notify } from "./Services";
 import { userRegistration } from "../Services/Backend.Endpoints";
-import UserForm from "../Components/Forms/UserForm";
-import Loading from "../Components/Loading/Loading";
-import Notify from "./Services/ToastNotifications";
-import ErrorPage from "./Services/ErrorPage";
+import UserForm from "../Components/Forms/UserForm/index";
+import Loading from "../Components/Loading/index";
 
 const UserRegister = () => {
     const navigate = useNavigate();
@@ -18,7 +17,7 @@ const UserRegister = () => {
         postApi(userRegistration, user)
             .then((res) => {
                 setLoading(false);
-                navigate(homePage);
+                navigate("/");
                 if (res.status != 400) {
                     Notify("Success", "Successful Registration!");
                 } else {

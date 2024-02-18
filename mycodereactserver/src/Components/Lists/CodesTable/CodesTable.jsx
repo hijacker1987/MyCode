@@ -1,22 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
-import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
+import Editor from "@monaco-editor/react";
+import Modal from "react-bootstrap/Modal";
+
 import { useUser } from "../../../Services/UserContext";
 import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
+import { Notify, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
+import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
+import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
+import ConstructPagination from "../../Forms/PaginationForm/index";
+import DeleteActions from "../../Delete/index";
+
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { TableContainer } from "../../Styles/TableContainer.styled";
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
 import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import ConstructPagination from "../../Forms/PaginationForm/index";
-import DeleteActions from "../../Delete/DeleteActions";
-import Modal from "react-bootstrap/Modal";
-import Notify from "./../../../Pages/Services/ToastNotifications";
 
-const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
+export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const navigate = useNavigate();
+    const editorRef = useRef(null);
+    const originalEditorMeasure = ["50vh", "150vh"];
     const { setUserData } = useUser();
     const [updatedCodes, setUpdatedCodes] = useState(codes);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -28,6 +33,11 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [codeTypeFilter, setCodeTypeFilter] = useState("");
     const [visibilityFilter, setVisibilityFilter] = useState("all"); //"all", "visible", or "hidden"
     const [sortOrder, setSortOrder] = useState("A-Z");
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
+    const [previewCode, setPreviewCode] = useState(null);
+    const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
+    const [fontSize, setFontSize] = useState(16);
+    const [theme, setTheme] = useState("vs-dark");
     const isAllowed = auth === "byAuth";
 
     useEffect(() => {
@@ -55,6 +65,11 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
             }
         });
         setUpdatedCodes(sortedCodes);
+    };
+
+    const handleCodePreview = (code) => {
+        setPreviewCode(code);
+        setShowPreviewModal(true);
     };
 
     const handleDelete = (codeId) => {
@@ -97,6 +112,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 />
                             </StyledTh>                       
                         )}
+
                         {!isAllowed && auth === "byVis" && kind === "visible Codes" && (
                             <StyledTh className="search-1">
                                 <input
@@ -108,6 +124,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 />
                             </StyledTh>
                         )}
+
                         <StyledTh className="search-2">
                             <select value={codeTypeFilter} onChange={(e) => setCodeTypeFilter(e.target.value)} style={{ cursor: "pointer" }}>
                                 <option value="">All Code Types</option>
@@ -116,6 +133,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 ))}
                             </select>
                         </StyledTh>
+
                         {isAllowed && auth === "byVis" && (
                             <StyledTh className="search-3">
                             <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }}>
@@ -125,6 +143,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                 </select>
                             </StyledTh>
                         )}
+
                         {!isAllowed && kind !== "visible Codes" && (
                         <StyledTh className="search-3">
                             <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)} style={{ cursor: "pointer" }}>
@@ -134,6 +153,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                             </select>
                         </StyledTh>
                         )}
+
                         <StyledTh className="search-4" onClick={handleSort} style={{ cursor: "pointer" }}>
                             {sortOrder}
                         </StyledTh>                      
@@ -169,17 +189,25 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                     {!isAllowed && kind === "visible Codes" && (
                                         <StyledTd>{code.displayName}</StyledTd>
                                     )}
+
                                     <StyledTd>{code.codeTitle}</StyledTd>
-                                    {code.myCode.length <= 20 ? (<StyledTd>{code.myCode}</StyledTd>)
-                                                              : (<StyledTd>{code.myCode.slice(0, 17) + "..."}</StyledTd>)}
+                                    <StyledTd
+                                        onClick={() => handleCodePreview(code)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        {code.myCode.length <= 20 ? code.myCode : code.myCode.slice(0, 17) + "..."}
+                                    </StyledTd>
+
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
                                     {isAllowed && kind === "visible Codes" || role === "Admin" && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
+
                                     {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
+
                                     {!isAllowed && auth !== "byVis" || role === "Admin" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
@@ -190,6 +218,7 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                             </ButtonContainer>
                                         </StyledTd>
                                     )}
+
                                     {!isAllowed && kind !== "visible Codes" && (
                                         <StyledTd>
                                             <Link to={`${cUpdate}${code.id}`}>
@@ -248,8 +277,57 @@ const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                     </ModalContainer>
                 </BlurredOverlay>
             )}
+            {showPreviewModal && (
+                <BlurredOverlay>
+                    <ModalContainer>
+                        <StyledModal>
+                            <TextContainer>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Code Preview</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Editor
+                                        height={editorMeasure[0]}
+                                        width={editorMeasure[1]}
+                                        defaultLanguage={previewCode.whatKindOfCode.toLowerCase().replace(/#/g, "sharp")}
+                                        defaultValue={previewCode.myCode}
+                                        name="mycode"
+                                        id="mycode"
+                                        autoComplete="off"
+                                        onMount={(editor, monaco) => handleEditorDidMount(editor, monaco, editorRef)}
+                                        options={{ readOnly: false, fontSize: fontSize }}
+                                        theme={theme}
+                                    />
+                                    <div>
+                                        <label htmlFor="fontSizeSelector"> Font Size: </label>
+                                        <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
+                                            {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
+                                                <option key={size} value={size}>{size}</option>
+                                            ))}
+                                        </select>
+                                        <label htmlFor="themeSelector"> Change Theme: </label>
+                                        <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
+                                            <option value="vs">Light</option>
+                                            <option value="vs-dark">Dark</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <button onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</button>
+                                        <button onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</button>
+                                    </div>
+                                </Modal.Body>
+                            </TextContainer>
+                            <Modal.Footer>
+                                <ButtonRowContainer>
+                                    <ButtonContainer onClick={() => setShowPreviewModal(false)}>
+                                        Close
+                                    </ButtonContainer>
+                                </ButtonRowContainer>
+                            </Modal.Footer>
+                        </StyledModal>
+                    </ModalContainer>
+                </BlurredOverlay>
+            )}
         </TableContainer>
     );
 };
-
-export default CodesTable;

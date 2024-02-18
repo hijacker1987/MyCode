@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { ErrorPage, Notify } from "./Services";
 import { useUser } from "../Services/UserContext";
 import { postApi, handleResponse } from "../Services/Api";
 import { codeRegistration } from "../Services/Backend.Endpoints";
-import CodeForm from "../Components/Forms/CodeForm";
-import Loading from "../Components/Loading/Loading";
-import Notify from "./Services/ToastNotifications";
-import ErrorPage from "./Services/ErrorPage";
+import CodeForm from "../Components/Forms/CodeForm/index";
+import Loading from "../Components/Loading/index";
 
 const CodeRegister = () => {
     const navigate = useNavigate();

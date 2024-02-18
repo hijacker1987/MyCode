@@ -1,6 +1,6 @@
 import { backendUrl } from "../Services/Config";
 import { homePage } from "../Services/Frontend.Endpoints";
-import Notify from "../Pages/Services/ToastNotifications";
+import { Notify } from "../Pages/Services";
 
 export const getApi = async (endpoint) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {

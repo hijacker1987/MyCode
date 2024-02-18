@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
+
+import Loading from "../Loading/index";
+
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../Styles/Input.styled";
 import { TextContainer } from "../Styles/TextContainer.styled";
 import { Form, FormRow } from "../Styles/Form.styled";
-import Loading from "../Loading/Loading";
 
-const PassChange = ({ onPassChange, user, onCancel }) => {
+export const PassChange = ({ onPassChange, user, onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState(user?.email || "");
     const [currentPassword, setCurrentPassword] = useState(user?.currentPassword || "");
@@ -96,5 +98,3 @@ const PassChange = ({ onPassChange, user, onCancel }) => {
         </div>
     );
 };
-
-export default PassChange;

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { Notify, ErrorPage } from "./Services";
 import { useUser } from "../Services/UserContext";
 import { getApi, patchApi, handleResponse } from "../Services/Api";
 import { homePage } from "../Services/Frontend.Endpoints";
 import { getUser, changePassword } from "../Services/Backend.Endpoints";
-import PassChange from "../Components/PassChange/PassChange";
-import Loading from "../Components/Loading/Loading";
-import Notify from "./Services/ToastNotifications";
-import ErrorPage from "./Services/ErrorPage";
+import PassChange from "../Components/PassChange/index";
+import Loading from "../Components/Loading/index";
 
 const PasswordChange = () => {
     const navigate = useNavigate();
