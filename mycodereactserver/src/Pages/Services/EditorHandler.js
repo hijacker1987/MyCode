@@ -16,13 +16,25 @@ export const copyContentToClipboard = (editorRef) => {
     }
 };
 
-export const toggleFullscreen = (editorRef) => {
+export const toggleFullscreen = (editorRef, originalMeasure, setEditorMeasure) => {
     const editor = editorRef.current;
     if (editor) {
+        const handleFullscreenChange = () => {
+            if (!document.fullscreenElement) {
+                setEditorMeasure([originalMeasure[0], originalMeasure[1]]);
+                document.removeEventListener("fullscreenchange", handleFullscreenChange);
+            }
+        };
+
         if (document.fullscreenElement) {
-            document.exitFullscreen();
+            document.exitFullscreen().then(() => {
+                setEditorMeasure([originalMeasure[0], originalMeasure[1]]);
+            }).catch(error => console.error("Error exiting fullscreen:", error));
         } else {
-            editor.getDomNode().requestFullscreen();
+            document.addEventListener("fullscreenchange", handleFullscreenChange);
+            editor.getDomNode().requestFullscreen().then(() => {
+                setEditorMeasure(["100vh", "100vw"]);
+            }).catch(error => console.error("Error entering fullscreen:", error));
         }
     }
 };

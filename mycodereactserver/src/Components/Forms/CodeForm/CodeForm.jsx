@@ -10,6 +10,7 @@ import Loading from "../../Loading/Loading";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
+    const originalEditorMeasure = ["25vh", "90vh"];
     const [loading, setLoading] = useState(false);
     const [codeTitle, setCodeTitle] = useState(code?.codeTitle ?? "");
     const [myCode, setMyCode] = useState(code?.myCode ?? "");
@@ -17,6 +18,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [isBackend, setIsBackend] = useState(code?.isBackend ?? false);
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
     const [otherCodeType, setOtherCodeType] = useState("");
+    const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
     const [fontSize, setFontSize] = useState(16);
     const [theme, setTheme] = useState("vs-dark");
     const [errorMessage, setError] = useState("");
@@ -65,7 +67,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
 
     const handleToggleFullscreen = (e) => {
         e.preventDefault();
-        toggleFullscreen(editorRef);
+        toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure);
     };
 
     if (loading) {
@@ -120,8 +122,8 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                             <TextContainer>The Code Itself
                                 <>
                                     <Editor
-                                        height="30vh"
-                                        width="90vh"
+                                        height={editorMeasure[0]}
+                                        width={editorMeasure[1]}
                                         defaultLanguage={whatKindOfCode.toLowerCase().replace(/#/g, "sharp")}
                                         defaultValue={myCode}
                                         onChange={(newValue, e) => setMyCode(newValue)}

@@ -10,10 +10,12 @@ import Editor from "@monaco-editor/react";
 const Homepage = () => {
     const navigate = useNavigate();
     const editorRef = useRef(null);
+    const originalEditorMeasure = ["30vh", "90vh"];
     const { userData, setUserData } = useUser();
     const { role, userid } = userData;
     const [visibleCodes, setVisibleCodes] = useState([]);
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
+    const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
     const [fontSize, setFontSize] = useState(16);
     const [theme, setTheme] = useState("vs-dark");
     const [errorMessage, setError] = useState("");
@@ -77,8 +79,8 @@ const Homepage = () => {
                             <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
                             </div>
                             <Editor
-                                height="30vh"
-                                width="90vh"
+                                height={editorMeasure[0]}
+                                width={editorMeasure[1]}
                                 defaultLanguage={visibleCodes[randomCodeIndex].whatKindOfCode.toLowerCase().replace(/#/g, "sharp")}
                                 defaultValue={visibleCodes[randomCodeIndex].myCode}
                                 onChange={(newValue, e) => setMyCode(newValue)}
@@ -102,9 +104,9 @@ const Homepage = () => {
                                     <option value="vs-dark">Dark</option>
                                 </select>
                             </div>
-                                <div>
+                            <div>
                                 <button onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</button>
-                                <button onClick={() => toggleFullscreen(editorRef)}>Fullscreen</button>
+                                <button onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</button>
                             </div>
                         </MidContainer>
                     )
