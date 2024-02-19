@@ -25,7 +25,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             {
                 Email = "nonexistent@email.com",
                 CurrentPassword = "invalidpassword",
-                NewPassword = "newpassword"
+                NewPassword = "newpassword",
+                ConfirmPassword = "newpassword"
             };
 
             // Act
@@ -84,7 +85,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var invalidLoginRequest = new
             {
                 Email = "nonexistent@email.com",
-                Password = "invalidpassword"
+                Password = "invalidpassword",
+                ConfirmPassword = "invalidpassword"
             };
 
             // Act
