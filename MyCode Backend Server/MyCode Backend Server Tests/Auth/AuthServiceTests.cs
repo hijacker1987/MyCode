@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -32,7 +34,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                                                          .ReturnsAsync(IdentityResult.Success);
 
-            var authService = new AuthService(userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
             var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
@@ -65,7 +67,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                                                          .ReturnsAsync(IdentityResult.Failed([.. errors]));
 
-            var authService = new AuthService(userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
             var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
@@ -93,10 +95,14 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
                 new Mock<IServiceProvider>().Object,
                 new Mock<ILogger<UserManager<User>>>().Object);
 
-            var authService = new AuthService(userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+
+            var httpContext = new DefaultHttpContext();
+            var httpRequest = httpContext.Request;
+            var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("nonexistent@example.com", "password");
+            var result = await authService.LoginAsync("nonexistent@example.com", "password", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);
@@ -119,10 +125,14 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
                 new Mock<IServiceProvider>().Object,
                 new Mock<ILogger<UserManager<User>>>().Object);
 
-            var authService = new AuthService(userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+
+            var httpContext = new DefaultHttpContext();
+            var httpRequest = httpContext.Request;
+            var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("testexample.com", "password");
+            var result = await authService.LoginAsync("testexample.com", "password", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);

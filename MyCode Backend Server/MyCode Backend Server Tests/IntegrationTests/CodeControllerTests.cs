@@ -44,7 +44,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/codes/ci-some-id");
+            var response = await client.GetAsync("/codes/code-some-id");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -72,7 +72,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var updatedCode = new CodeRegRequest("", "", "", false, false);
 
             // Act
-            var response = await client.PutAsJsonAsync("/codes/cu-some-id", updatedCode);
+            var response = await client.PutAsJsonAsync("/codes/cupdate-some-id", updatedCode);
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -85,7 +85,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.DeleteAsync("/codes/cd-some-id");
+            var response = await client.DeleteAsync("/codes/cdelete-some-id");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

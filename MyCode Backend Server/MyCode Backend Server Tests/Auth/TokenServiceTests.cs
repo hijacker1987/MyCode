@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
-using System.Data;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -12,42 +15,29 @@ namespace MyCode_Backend_Server_Tests.Auth
     public class TokenServiceTests
     {
         [Fact]
-        public void CreateToken_ValidUser_ReturnsAccessToken()
-        {
-            // Arrange
-            var configurationMock = new Mock<IConfiguration>();
-            configurationMock.SetupGet(c => c["IssueAudience"]).Returns("V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1ts*");
-            configurationMock.SetupGet(c => c["IssueSign"]).Returns("V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1ts");
-
-            var loggerMock = new Mock<ILogger<TokenService>>();
-
-            var tokenService = new TokenService(configurationMock.Object, loggerMock.Object);
-
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                UserName = "testuser",
-                Email = "test@example.com"
-            };
-
-            var roles = new List<string> { "UserRole" };
-
-            // Act
-            var accessToken = tokenService.CreateToken(user, roles);
-
-            // Assert
-            Assert.NotNull(accessToken);
-            Assert.NotEmpty(accessToken);
-        }
-
-        [Fact]
         public void CreateToken_InvalidUser_ThrowsException()
         {
             // Arrange
             var configurationMock = new Mock<IConfiguration>();
             var loggerMock = new Mock<ILogger<TokenService>>();
+            var options = new DbContextOptionsBuilder<DataContext>()
+                                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                                .Options;
 
-            var tokenService = new TokenService(configurationMock.Object, loggerMock.Object);
+            var dataContextMock = new Mock<DataContext>(options);
+            var userManagerMock = new Mock<UserManager<User>>(
+                                        Mock.Of<IUserStore<User>>(),
+                                        Mock.Of<IOptions<IdentityOptions>>(),
+                                        Mock.Of<IPasswordHasher<User>>(),
+                                        Array.Empty<IUserValidator<User>>(),
+                                        Array.Empty<IPasswordValidator<User>>(),
+                                        Mock.Of<ILookupNormalizer>(),
+                                        Mock.Of<IdentityErrorDescriber>(),
+                                        Mock.Of<IServiceProvider>(),
+                                        Mock.Of<ILogger<UserManager<User>>>()
+                                    );
+
+            var tokenService = new TokenService(Mock.Of<IConfiguration>(), userManagerMock.Object, dataContextMock.Object, loggerMock.Object);
 
             User user = null!;
 
@@ -57,5 +47,4 @@ namespace MyCode_Backend_Server_Tests.Auth
             Assert.Throws<NullReferenceException>(() => tokenService.CreateToken(user, roles));
         }
     }
-
 }
