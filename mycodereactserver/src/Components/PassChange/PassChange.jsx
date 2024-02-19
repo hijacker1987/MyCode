@@ -13,6 +13,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
     const [email, setEmail] = useState(user?.email || "");
     const [currentPassword, setCurrentPassword] = useState(user?.currentPassword || "");
     const [newPassword, setNewPassword] = useState(user?.newPassword || "");
+    const [confirmPassword, setConfirmPassword] = useState(user?.confirmPassword || "");
 
     useEffect(() => {
         setEmail(user?.email || "");
@@ -27,7 +28,8 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                 ...user,
                 email,
                 currentPassword,
-                newPassword
+                newPassword,
+                confirmPassword
             });
         } catch (error) {
             console.error("Error occurred during password change: ", error);
@@ -78,6 +80,18 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             name="newPassword"
                             id="newPassword"
                             placeholder="New Password"
+                            autoComplete="off"
+                            type="password"
+                        />
+                    </InputWrapper>
+                    <TextContainer>Confirm Password:</TextContainer>
+                    <InputWrapper>
+                        <InputForm
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            name="confirmPassword"
+                            id="confirmPassword"
+                            placeholder="Confirm Password"
                             autoComplete="off"
                             type="password"
                         />

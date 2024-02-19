@@ -151,6 +151,67 @@ namespace MyCode_Backend_Server_Tests.Contracts.Requests
             Assert.False(isValid);
         }
 
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_MyCode_Is_Null()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest
+            (
+                "Test Title",
+                null!,
+                "Test",
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_WhatKindOfCode_Is_Null()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest
+            (
+                "Test Title",
+                "console.log('Hello, World!');",
+                null!,
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void CodeRegRequest_Validation_Fail_When_WhatKindOfCode_Is_Too_Long()
+        {
+            // Arrange
+            var codeRegRequest = new CodeRegRequest
+            (
+                "Test Title",
+                "console.log('Hello, World!');",
+                new string('A', CodeRegRequest.MaxKindOfCodeLength + 1),
+                true,
+                true
+            );
+
+            // Act
+            var isValid = IsValid(codeRegRequest);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+
         private static bool IsValid(object instance, string propertyName = null!)
         {
             var validationContext = new ValidationContext(instance, null, null);

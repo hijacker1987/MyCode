@@ -13,6 +13,7 @@ const Login = ({ onLogin, user, onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState(user?.email ?? "");
     const [password, setPassword] = useState(user?.password ?? "");
+    const [confirmPassword, setConfirmPassword] = useState(user?.confirmPassword ?? "");
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -22,7 +23,8 @@ const Login = ({ onLogin, user, onCancel }) => {
             
             await onLogin({
                 email,
-                password
+                password,
+                confirmPassword
             });         
         } catch (error) {
             console.error("Error occurred during login: ", error);
@@ -55,7 +57,9 @@ const Login = ({ onLogin, user, onCancel }) => {
                     <InputWrapper>
                         <InputForm
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => { setPassword(e.target.value);
+                                               setConfirmPassword(e.target.value);
+                                             }}
                             name="password"
                             id="password"
                             placeholder="Password"

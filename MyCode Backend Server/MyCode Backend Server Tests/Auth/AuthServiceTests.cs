@@ -102,7 +102,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("nonexistent@example.com", "password", httpRequest, httpResponse);
+            var result = await authService.LoginAsync("nonexistent@example.com", "password", "confirmPassword", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);
@@ -132,7 +132,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("testexample.com", "password", httpRequest, httpResponse);
+            var result = await authService.LoginAsync("testexample.com", "password", "confirmPassword", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);

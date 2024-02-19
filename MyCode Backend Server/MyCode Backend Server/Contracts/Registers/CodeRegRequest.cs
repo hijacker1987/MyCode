@@ -5,6 +5,7 @@ namespace MyCode_Backend_Server.Contracts.Registers
     public record CodeRegRequest
     {
         public static readonly int MaxCodeTitleLength = 255;
+        public static readonly int MaxKindOfCodeLength = 50;
 
         [Required]
         [MaxLength(255)]
@@ -14,6 +15,7 @@ namespace MyCode_Backend_Server.Contracts.Registers
         public string MyCode { get; init; }
 
         [Required]
+        [MaxLength(50)]
         public string WhatKindOfCode { get; init; }
 
         [Required]

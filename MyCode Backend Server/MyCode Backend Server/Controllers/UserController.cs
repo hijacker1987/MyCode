@@ -118,7 +118,7 @@ namespace MyCode_Backend_Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authenticationService.LoginAsync(request.Email, request.Password, Request, Response);
+            var result = await _authenticationService.LoginAsync(request.Email, request.Password, request.ConfirmPassword, Request, Response);
 
             if (!result.Success)
             {
