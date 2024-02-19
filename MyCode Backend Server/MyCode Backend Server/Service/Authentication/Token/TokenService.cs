@@ -36,9 +36,13 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
         public string CreateToken(User user, IList<string> roles)
         {
-            var token = CreateJwtToken(CreateClaims(user, roles, _logger),
+            JwtSecurityToken token = CreateJwtToken(CreateClaims(user, roles, _logger),
                                        CreateSigningCredentials(),
                                        DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["AccessTokenExp"])));
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -86,6 +90,11 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
         {
             string issueSignKey = _configuration["IssueSign"]!;
 
+            if (string.IsNullOrEmpty(issueSignKey) )
+            {
+                throw new ArgumentNullException(nameof(issueSignKey));
+            }
+
             if (issueSignKey.Length < 32)
             {
                 throw new InvalidOperationException("The 'IssueSign' key must be at least 256 bits long.");
@@ -128,7 +137,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
             var user = _userManager.FindByNameAsync(principal.Identity.Name).Result;
 
-            if (user == null || user.RefreshToken != refCookie || user.RefreshTokenExpiry < DateTime.UtcNow)
+            if (user == null || user.RefreshToken != refCookie)
             {
                 if (user!.RefreshTokenExpiry < DateTime.UtcNow)
                 {

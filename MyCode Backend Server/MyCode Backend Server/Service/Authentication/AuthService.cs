@@ -71,8 +71,19 @@ namespace MyCode_Backend_Server.Service.Authentication
             managedUser.RefreshToken = refreshToken;
             managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
 
-            response.Cookies.Append("Authorization", accessToken, _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp)));
-            response.Cookies.Append("RefreshAuthorization", refreshToken, _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddHours(refreshTokenExp)));
+            var cookieOptions1 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
+            var cookieOptions2 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddHours(refreshTokenExp));
+
+            if (cookieOptions1 != null && cookieOptions2 != null)
+            {
+                response.Cookies.Append("Authorization", accessToken, cookieOptions1);
+                response.Cookies.Append("RefreshAuthorization", refreshToken, cookieOptions2);
+            }
+            else
+            {
+                _logger.LogError("Cookie options are null");
+                return new AuthResult("", false, "", "", "", "", "");
+            }
 
             return new AuthResult(managedUser.Id.ToString(),
                                   true, managedUser.Email,
