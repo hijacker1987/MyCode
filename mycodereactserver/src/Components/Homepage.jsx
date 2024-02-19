@@ -91,7 +91,7 @@ const Homepage = () => {
                                 id="mycode"
                                 autoComplete="off"
                                 onMount={(editor, monaco) => handleEditorDidMount(editor, monaco, editorRef)}
-                                options={{ readOnly: false, fontSize: fontSize }}
+                                options={{ readOnly: true, fontSize: fontSize }}
                                 theme={theme}
                             />
 
