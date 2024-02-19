@@ -46,13 +46,19 @@ namespace MyCode_Backend_Server.Service.Authentication
             return authenticationResult;
         }
 
-        public async Task<AuthResult> LoginAsync(string email, string password, HttpRequest request, HttpResponse response)
+        public async Task<AuthResult> LoginAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
+
             var managedUser = await _userManager.FindByEmailAsync(email);
 
             if (managedUser == null)
             {
                 return InvalidEmail(email);
+            }
+
+            if (password == null || confirmPassword == null || password != confirmPassword)
+            {
+                return InvalidPassword(email, managedUser.UserName!);
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, password);
