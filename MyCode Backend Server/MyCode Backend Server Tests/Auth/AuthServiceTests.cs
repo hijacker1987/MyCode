@@ -139,5 +139,40 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             Assert.Equal("Bad credentials", result.ErrorMessages.First().Key);
             Assert.Equal("Invalid email", result.ErrorMessages.First().Value);
         }
+
+        [Fact]
+        public async Task RegisterAsync_UserAlreadyExists_ReturnsAuthResultWithErrorMessage()
+        {
+            // Arrange
+            var userManagerMock = new Mock<UserManager<User>>(
+                new Mock<IUserStore<User>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<User>>().Object,
+                Array.Empty<IUserValidator<User>>(),
+                Array.Empty<IPasswordValidator<User>>(),
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<User>>>().Object);
+
+            var tokenServiceMock = new Mock<ITokenService>();
+
+            var errors = new List<IdentityError> { new() { Code = "DuplicateUserName", Description = "Username 'test' is already taken." } };
+
+            userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+                                                           .ReturnsAsync(IdentityResult.Failed(errors.ToArray()));
+
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
+
+            // Act
+            var result = await authService.RegisterAsync("test@example.com", "test", "password", "displayname", "123456789");
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("test@example.com", result.Email);
+            Assert.Single(result.ErrorMessages);
+            Assert.Contains("DuplicateUserName", result.ErrorMessages.Keys);
+            Assert.Equal("Username 'test' is already taken.", result.ErrorMessages["DuplicateUserName"]);
+        }
     }
 }
