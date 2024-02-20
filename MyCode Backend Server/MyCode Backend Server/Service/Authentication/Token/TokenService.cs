@@ -37,8 +37,9 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
         public string CreateToken(User user, IList<string> roles)
         {
             JwtSecurityToken token = CreateJwtToken(CreateClaims(user, roles, _logger),
-                                       CreateSigningCredentials(),
-                                       DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["AccessTokenExp"])));
+                                     CreateSigningCredentials(),
+                                     DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["AccessTokenExp"])));
+
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
