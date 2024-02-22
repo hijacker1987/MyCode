@@ -31,10 +31,9 @@ The frontend is powered by React using VITE to provide a fast and an interactive
   - Monaco Editor
   
 ## Security
-The application implements secure practices such as JWT token usage and secure password storage, currently running dockerized MSSQL database.
+The application implements secure practices such as JWT token, refresh token and hashed password storage, currently running dockerized MSSQL database, sensitive data is stored in the `secrets.json` file.
 
 ## Configuration
-
 On the frontend side, sensitive data is stored in the `.env` file. To set up the application, create a `.env` file in the root directory and populate it with the following keys and values:
 
 ```env
