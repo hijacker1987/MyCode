@@ -222,7 +222,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (existingUser == null)
                 {
-                    return BadRequest(existingUser);
+                    return NotFound($"User with email {request.Email} not found.");
                 }
 
                 var result = await _userManager.ChangePasswordAsync(existingUser, request.CurrentPassword, request.NewPassword);
@@ -240,7 +240,7 @@ namespace MyCode_Backend_Server.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Error: {e.Message}", e);
-                return NotFound("Error occurred!");
+                return StatusCode(500, new { ErrorMessage = "Error occurred while changing password!", ExceptionDetails = e.ToString() });
             }
         }
 
