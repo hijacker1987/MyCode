@@ -1,14 +1,9 @@
-﻿using Azure.Core;
-using MyCode_Backend_Server.Contracts.Registers;
+﻿using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Contracts.Services;
-using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server_Tests.Services;
-using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 using Xunit;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using Assert = Xunit.Assert;
 using User = MyCode_Backend_Server.Models.User;
 
