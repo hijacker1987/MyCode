@@ -1,4 +1,6 @@
-﻿namespace MyCode_Backend_Server.Service.Authentication
+﻿using System.Net;
+
+namespace MyCode_Backend_Server.Service.Authentication
 {
     public record AuthResult(
         string? Id,
@@ -11,5 +13,6 @@
     )
     {
         public readonly Dictionary<string, string> ErrorMessages = [];
+        internal HttpStatusCode StatusCode;
     }
 }

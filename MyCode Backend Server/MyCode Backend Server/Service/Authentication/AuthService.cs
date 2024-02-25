@@ -48,6 +48,10 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task<AuthResult> LoginAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
+            if (request.HttpContext.User.Identity!.IsAuthenticated)
+            {
+                return AlreadyLoggedIn(request.HttpContext.User.Identity.Name!);
+            }
 
             var managedUser = await _userManager.FindByEmailAsync(email);
 
@@ -100,17 +104,25 @@ namespace MyCode_Backend_Server.Service.Authentication
         }
 
         private static AuthResult InvalidEmail(string email)
-            {
-                var result = new AuthResult("", false, email, "", "", "", "");
-                result.ErrorMessages.Add("Bad credentials", "Invalid email");
+        {
+            var result = new AuthResult("", false, email, "", "", "", "");
+            result.ErrorMessages.Add("Bad credentials", "Invalid email");
 
-                return result;
-            }
+            return result;
+        }
 
         public static AuthResult InvalidPassword(string email, string userName)
         {
             var result = new AuthResult("", false, email, userName, "", "", "");
             result.ErrorMessages.Add("Bad credentials", "Invalid password");
+
+            return result;
+        }
+
+        private static AuthResult AlreadyLoggedIn(string username)
+        {
+            var result = new AuthResult("", false, "", "", "", "", "");
+            result.ErrorMessages.Add("AlreadyLoggedIn", $"The user '{username}' is already logged in.");
 
             return result;
         }
