@@ -18,12 +18,9 @@ namespace MyCode_Backend_Server_Tests
 
                 services.Remove(dbContextDescriptor!);
 
-                services.AddDbContext<DataContext>((options) =>
-                {
-                    options.UseInMemoryDatabase("testDatabase");
-                });
+                var connectionString = "Server=localhost,1433;Database=mycodes-sql-server;User Id=sa;Password=mycodespassStrong(!)Password;Encrypt=False;";
+                services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
             });
-            builder.UseEnvironment("Development");
         }
     }
 }
