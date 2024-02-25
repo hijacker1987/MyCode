@@ -77,5 +77,31 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
         }
+
+        [Fact]
+        public async Task Get_GetUserByIdEndpoint_NoAuth_ReturnsError()
+        {
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var response = await client.GetAsync("/admin/user-by-123");
+
+            Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task Get_GetCodeByIdEndpoint_NoAuth_ReturnsError()
+        {
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var response = await client.GetAsync("/admin/code-by-123");
+
+            Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
+        }
     }
 }
