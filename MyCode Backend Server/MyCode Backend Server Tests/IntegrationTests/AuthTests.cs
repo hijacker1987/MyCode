@@ -13,6 +13,19 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
         [Fact]
+        public async Task Swagger_EndpointIsAccessible()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/swagger");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
         public async Task ChangePasswordAsync_NonExistent_ReturnsNotFound()
         {
             // Arrange
