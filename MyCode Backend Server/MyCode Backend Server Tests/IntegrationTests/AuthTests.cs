@@ -4,6 +4,7 @@ using System.Net;
 using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Assert = Xunit.Assert;
+using System.Net.Http.Headers;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
@@ -13,7 +14,20 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
         [Fact]
-        public async Task ChangePasswordAsync_NonExistent_ReturnsNotFound()
+        public async Task Swagger_EndpointIsAccessible()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/swagger");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_NotLoggedIn_ReturnsUnauthorized()
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -23,17 +37,17 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var request = new
             {
-                Email = "nonexistent@email.com",
-                CurrentPassword = "invalidpassword",
+                Email = "notLoggedIn@email.com",
+                CurrentPassword = "invalidLogin",
                 NewPassword = "newpassword",
                 ConfirmPassword = "newpassword"
             };
 
             // Act
-            var response = await client.PatchAsync("/changePassword", JsonContent.Create(request));
+            var response = await client.PatchAsync("/users/changePassword", JsonContent.Create(request));
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -48,7 +62,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var emailToDelete = "unauthorized@user.com";
 
             // Act
-            var response = await client.DeleteAsync($"/deleteAccount?email={emailToDelete}");
+            var response = await client.DeleteAsync($"/users/deleteAccount?email={emailToDelete}");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -90,7 +104,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             };
 
             // Act
-            var response = await client.PostAsync("/login", JsonContent.Create(invalidLoginRequest));
+            var response = await client.PostAsync("/users/login", JsonContent.Create(invalidLoginRequest));
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
