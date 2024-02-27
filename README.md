@@ -58,9 +58,6 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
   // Database Connection
   "ConnectionString": "YourDatabaseConnectionString",
   
-  // Frontend Connection
-  "FEAddress": "YourFrontendAddress",
-  
   //Token Expiration (Access in minutes, Refresh in hours), Claims and Signature
   "AccessTokenExp": 15,
   "RefreshTokenExp": 18,
@@ -73,6 +70,26 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
   "ACall": "123-456-7890",
   "UName": "AdminUserName",
   "AName": "AdminDisplayName"
+}
+```
+
+The `appsettings.json` file should contain the address for the "live" test database, and the frontend address:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+
+  // Frontend Connection
+  "FEAddress": "Your Frontend Address",
+
+  // "Live" database for test purposes
+  "TestConnectionString": "YourTestDatabaseConnection"
 }
 ```
 
