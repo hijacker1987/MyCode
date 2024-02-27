@@ -11,9 +11,10 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server
 {
-    public class Startup(IConfiguration configuration)
+    public class Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         private readonly IConfiguration _configuration = configuration;
+        private readonly IWebHostEnvironment _environment = environment;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -53,7 +54,24 @@ namespace MyCode_Backend_Server
             services.AddScoped<IDbInitializer, DbInitializer>();
 
             var connection = _configuration["ConnectionString"];
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+            var testConnection = _configuration["TestConnectionString"];
+
+            if (_environment.IsDevelopment())
+            {
+                Console.WriteLine("Yes");
+            }
+
+            services.AddDbContext<DataContext>(options =>
+            {
+                if (_environment.IsEnvironment("Test"))
+                {
+                    options.UseSqlServer(testConnection);
+                }
+                else
+                {
+                    options.UseSqlServer(connection);
+                }
+            });
 
             var issuer = _configuration["IssueAudience"];
             var issueSign = _configuration["IssueSign"];
@@ -128,29 +146,23 @@ namespace MyCode_Backend_Server
 
             app.UseAuthorization();
 
-            if (env.IsEnvironment("Test"))
+            dataContext.Database.EnsureCreated();
+
+            using var scope = app.ApplicationServices.CreateScope();
+            var services = scope.ServiceProvider;
+
+            try
             {
-                dataContext.Database.EnsureCreated();
+                var context = services.GetRequiredService<DataContext>();
+                var userManager = services.GetRequiredService<UserManager<User>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+
+                dbInitializer.Initialize(context, userManager, roleManager).Wait();
             }
-
-            if (dbInitializer != null)
+            catch (Exception ex)
             {
-                using var scope = app.ApplicationServices.CreateScope();
-                var services = scope.ServiceProvider;
-
-                try
-                {
-                    var context = services.GetRequiredService<DataContext>();
-                    var userManager = services.GetRequiredService<UserManager<User>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-
-                    dbInitializer.Initialize(context, userManager, roleManager).Wait();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Startup>>();
-                    logger.LogError(ex, "Error when initializing the Database!");
-                }
+                var logger = services.GetRequiredService<ILogger<Startup>>();
+                logger.LogError(ex, "Error when initializing the Database!");
             }
 
             app.UseEndpoints(endpoints =>
