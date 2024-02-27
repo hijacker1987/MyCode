@@ -104,7 +104,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetAllCodesByUserEndpoint_Authorized()
         {
             // Arrange
-            var authRequest = new AuthRequest("user13@example.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester4@test.com", "Password", "Password");
             var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -124,7 +124,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Post_CreateCodeEndpoint_ValidRequest_ReturnsCreated()
         {
             // Arrange
-            var authRequest = new AuthRequest("user13@example.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
             var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -146,7 +146,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Post_CreateCodeEndpoint_InvalidRequest_ReturnsBadRequest()
         {
             // Arrange
-            var authRequest = new AuthRequest("user13@example.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester2@test.com", "Password", "Password");
             var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);

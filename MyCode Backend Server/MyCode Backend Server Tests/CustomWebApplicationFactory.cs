@@ -18,7 +18,7 @@ namespace MyCode_Backend_Server_Tests
 
                 services.Remove(dbContextDescriptor!);
 
-                var connectionString = "Server=localhost,1433;Database=mycodes-sql-server;User Id=sa;Password=mycodespassStrong(!)Password;Encrypt=False;";
+                var connectionString = "Server=localhost,1434;Database=mycode-testdatabase;User Id=sa;Password=anotherStrong(!)Password;Encrypt=False;";
                 services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
             });
         }

@@ -21,7 +21,6 @@ namespace MyCode_Backend_Server_Tests.Auth
             var configurationMock = new Mock<IConfiguration>();
             var loggerMock = new Mock<ILogger<TokenService>>();
             var options = new DbContextOptionsBuilder<DataContext>()
-                                .UseInMemoryDatabase(databaseName: "TestDatabase")
                                 .Options;
 
             var dataContextMock = new Mock<DataContext>(options);
