@@ -53,7 +53,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_UserEndpoint_AfterLogin_Returns_User()
         {
             // Arrange
-            var authRequest = new AuthRequest("user13@example.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
             var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -75,7 +75,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Post_RegisterUserEndpoint_AfterLogin_InvalidRequest_ReturnsBadRequest()
         {
             // Arrange
-            var authRequest = new AuthRequest("user13@example.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
             var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -85,7 +85,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             }
 
             // Act
-            var invalidUserRegRequest = new UserRegRequest("user13@example.com", "User13", "Password", "User 13", "123"); //already registered
+            var invalidUserRegRequest = new UserRegRequest("tester9@test.com", "Tester9", "Password", "User 13", "123"); //already registered
             var response = await _client.PostAsJsonAsync("/users/register", invalidUserRegRequest);
 
             // Assert
