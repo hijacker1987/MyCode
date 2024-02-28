@@ -119,5 +119,21 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.NotNull(user);
             Assert.Equal("regtest@test.com", user.Email);
         }
+
+        [Fact]
+        public async Task Post_LoginEndpoint_SuccessfulLogin_Returns200StatusCode()
+        {
+            // Arrange
+            var loginData = new AuthRequest("regtest@test.com", "Password", "Password");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/login", loginData);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+            Assert.NotNull(authResponse);
+            Assert.Equal("User", authResponse.Role);
+        }
     }
 }
