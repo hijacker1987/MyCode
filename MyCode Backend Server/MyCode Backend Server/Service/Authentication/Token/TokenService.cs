@@ -12,11 +12,13 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
     public class TokenService(IConfiguration configuration,
                               UserManager<User> userManager,
                               DataContext dataContext,
+                              IWebHostEnvironment environment,
                               ILogger<TokenService> logger) : ITokenService
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly UserManager<User> _userManager = userManager;
         private readonly DataContext _dataContext = dataContext;
+        private readonly IWebHostEnvironment _environment = environment;
         private readonly ILogger<TokenService> _logger = logger;
 
         public CookieOptions GetCookieOptions(HttpRequest request, DateTimeOffset time)
@@ -36,8 +38,20 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
         public string CreateToken(User user, IList<string> roles)
         {
+            var issueAud = "";
+
+            if (_environment.IsEnvironment("Test"))
+            {
+                issueAud = "api With Test Authentication comes and goes here";
+            }
+            else if (_environment.IsEnvironment("Development"))
+            {
+                issueAud = _configuration["IssueAudience"];
+            }
+
             JwtSecurityToken token = CreateJwtToken(CreateClaims(user, roles, _logger),
                                      CreateSigningCredentials(),
+                                     issueAud!,
                                      DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["AccessTokenExp"])));
 
             if (token == null)
@@ -50,10 +64,10 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             return tokenHandler.WriteToken(token);
         }
 
-        private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration) =>
+        private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, string issueAud, DateTime expiration) =>
             new(
-                _configuration["IssueAudience"],
-                _configuration["IssueAudience"],
+                issueAud,
+                issueAud,
                 claims,
                 notBefore: DateTime.UtcNow,
                 expires: expiration,
@@ -89,7 +103,16 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
         private SigningCredentials CreateSigningCredentials()
         {
-            string issueSignKey = _configuration["IssueSign"]!;
+            var issueSignKey = "";
+
+            if (_environment.IsEnvironment("Test"))
+            {
+                issueSignKey = "V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1tsF0rT3st1ng";
+            }
+            else if (_environment.IsEnvironment("Development"))
+            {
+                issueSignKey = _configuration["IssueSign"];
+            }
 
             if (string.IsNullOrEmpty(issueSignKey) )
             {
@@ -115,11 +138,25 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
         private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
         {
-            var validation = new TokenValidationParameters
+            var issueAud = "";
+            var issueSign = "";
+
+            if (_environment.IsEnvironment("Test"))
             {
-                ValidIssuer = _configuration["IssueAudience"],
-                ValidAudience = _configuration["IssueAudience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["IssueSign"]!)),
+                issueAud = "api With Test Authentication comes and goes here";
+                issueSign = "V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1tsF0rT3st1ng";
+            }
+            else if (_environment.IsEnvironment("Development"))
+            {
+                issueAud = _configuration["IssueAudience"];
+                issueSign = _configuration["IssueSign"];
+            }
+
+                var validation = new TokenValidationParameters
+            {
+                ValidIssuer = issueAud,
+                ValidAudience = issueAud,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign!)),
                 ValidateLifetime = false
             };
 
