@@ -21,6 +21,8 @@ namespace MyCode_Backend_Server_Tests
                 var connectionString = "Server=localhost,1434;Database=mycode-testdatabase;User Id=sa;Password=anotherStrong(!)Password;Encrypt=False;";
                 services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
             });
+
+            builder.UseEnvironment("Test");
         }
     }
 }

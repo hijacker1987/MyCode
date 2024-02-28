@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,18 +26,18 @@ namespace MyCode_Backend_Server_Tests.Auth
 
             var dataContextMock = new Mock<DataContext>(options);
             var userManagerMock = new Mock<UserManager<User>>(
-                                        Mock.Of<IUserStore<User>>(),
-                                        Mock.Of<IOptions<IdentityOptions>>(),
-                                        Mock.Of<IPasswordHasher<User>>(),
-                                        Array.Empty<IUserValidator<User>>(),
-                                        Array.Empty<IPasswordValidator<User>>(),
-                                        Mock.Of<ILookupNormalizer>(),
-                                        Mock.Of<IdentityErrorDescriber>(),
-                                        Mock.Of<IServiceProvider>(),
-                                        Mock.Of<ILogger<UserManager<User>>>()
-                                    );
+                Mock.Of<IUserStore<User>>(),
+                Mock.Of<IOptions<IdentityOptions>>(),
+                Mock.Of<IPasswordHasher<User>>(),
+                Array.Empty<IUserValidator<User>>(),
+                Array.Empty<IPasswordValidator<User>>(),
+                Mock.Of<ILookupNormalizer>(),
+                Mock.Of<IdentityErrorDescriber>(),
+                Mock.Of<IServiceProvider>(),
+                Mock.Of<ILogger<UserManager<User>>>()
+            );
 
-            var tokenService = new TokenService(Mock.Of<IConfiguration>(), userManagerMock.Object, dataContextMock.Object, loggerMock.Object);
+            var tokenService = new TokenService(Mock.Of<IConfiguration>(), userManagerMock.Object, dataContextMock.Object, Mock.Of<IWebHostEnvironment>(), loggerMock.Object);
 
             User user = null!;
 

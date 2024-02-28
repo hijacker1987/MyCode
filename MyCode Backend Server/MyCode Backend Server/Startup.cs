@@ -51,15 +51,18 @@ namespace MyCode_Backend_Server
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IDbInitializer, DbInitializer>();
+
+            if (_environment.IsEnvironment("Test"))
+            {
+                services.AddScoped<IDbInitializer, TestDbInitializer>();
+            }
+            else if (_environment.IsEnvironment("Development"))
+            {
+                services.AddScoped<IDbInitializer, DbInitializer>();
+            }
 
             var connection = _configuration["ConnectionString"];
             var testConnection = _configuration["TestConnectionString"];
-
-            if (_environment.IsDevelopment())
-            {
-                Console.WriteLine("Yes");
-            }
 
             services.AddDbContext<DataContext>(options =>
             {
@@ -67,19 +70,30 @@ namespace MyCode_Backend_Server
                 {
                     options.UseSqlServer(testConnection);
                 }
-                else
+                else if (_environment.IsEnvironment("Development"))
                 {
                     options.UseSqlServer(connection);
                 }
             });
 
-            var issuer = _configuration["IssueAudience"];
-            var issueSign = _configuration["IssueSign"];
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddCookie(c => { c.Cookie.Name = "Authorization"; })
                     .AddJwtBearer(options =>
                     {
+                        var issuer = "";
+                        var issueSign = "";
+
+                        if (_environment.IsEnvironment("Test"))
+                        {
+                            issuer = "api With Test Authentication comes and goes here";
+                            issueSign = "V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1tsF0rT3st1ng";
+                        }
+                        else if (_environment.IsEnvironment("Development"))
+                        {
+                            issuer = _configuration["IssueAudience"];
+                            issueSign = _configuration["IssueSign"];
+                        }
+
                         if (issueSign != null)
                         {
                             options.TokenValidationParameters = new TokenValidationParameters
@@ -119,7 +133,7 @@ namespace MyCode_Backend_Server
                     .AddEntityFrameworkStores<DataContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer, IDbInitializer testDbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -157,7 +171,14 @@ namespace MyCode_Backend_Server
                 var userManager = services.GetRequiredService<UserManager<User>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
-                dbInitializer.Initialize(context, userManager, roleManager).Wait();
+                if (_environment.IsEnvironment("Test"))
+                {
+                    testDbInitializer.Initialize(dataContext, userManager, roleManager).Wait();
+                }
+                else if (_environment.IsEnvironment("Development"))
+                {
+                    dbInitializer.Initialize(dataContext, userManager, roleManager).Wait();
+                }
             }
             catch (Exception ex)
             {
