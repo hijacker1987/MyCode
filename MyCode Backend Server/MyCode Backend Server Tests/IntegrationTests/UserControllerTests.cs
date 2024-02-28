@@ -1,5 +1,8 @@
-﻿using MyCode_Backend_Server.Contracts.Registers;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Contracts.Services;
+using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server_Tests.Services;
 using System.Net;
 using System.Net.Http.Json;
@@ -14,11 +17,13 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
     {
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
         private readonly HttpClient _client;
+        private readonly DataContext _dataContext;
 
         public UsersControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
+            _dataContext = _factory.Services.GetRequiredService<DataContext>();
         }
 
         [Theory]
@@ -90,6 +95,29 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_RegistrationEndpoint_SuccessfulRegistration()
+        {
+            // Arrange
+            var registeredUser = new UserRegRequest("regtest@test.com", "registeredthroughtest", "Password", "Test Via Reg", "123456789");
+
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == "regtest@test.com");
+            if (existingUser != null)
+            {
+                _dataContext.Users.Remove(existingUser);
+                await _dataContext.SaveChangesAsync();
+            }
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/register", registeredUser);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var user = await response.Content.ReadFromJsonAsync<UserRegResponse>();
+            Assert.NotNull(user);
+            Assert.Equal("regtest@test.com", user.Email);
         }
     }
 }

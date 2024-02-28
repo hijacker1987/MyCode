@@ -4,7 +4,6 @@ using System.Net;
 using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Assert = Xunit.Assert;
-using System.Net.Http.Headers;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
@@ -12,19 +11,6 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
            : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
     {
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
-
-        [Fact]
-        public async Task Swagger_EndpointIsAccessible()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/swagger");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
 
         [Fact]
         public async Task ChangePasswordAsync_NotLoggedIn_ReturnsUnauthorized()

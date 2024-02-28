@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using MyCode_Backend_Server.Contracts.Services;
+﻿using MyCode_Backend_Server.Contracts.Services;
 using Newtonsoft.Json;
 using System.Text;
 
