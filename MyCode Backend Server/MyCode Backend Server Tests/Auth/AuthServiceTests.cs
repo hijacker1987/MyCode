@@ -4,10 +4,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using MyCode_Backend_Server_Tests.Services;
+using System.Security.Claims;
 using Xunit;
+using static System.Net.WebRequestMethods;
 using Assert = Xunit.Assert;
 
 namespace MyCode_Backend_Server_Tests.Service.Auth
@@ -173,6 +177,40 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             Assert.Single(result.ErrorMessages);
             Assert.Contains("DuplicateUserName", result.ErrorMessages.Keys);
             Assert.Equal("Username 'test' is already taken.", result.ErrorMessages["DuplicateUserName"]);
+        }
+
+        [Fact]
+        public async Task LoginAsync_AlreadyAuthenticatedUser_ReturnsAuthResultWithErrorMessage()
+        {
+            // Arrange
+            var userManagerMock = new Mock<UserManager<User>>(
+                new Mock<IUserStore<User>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<User>>().Object,
+                Array.Empty<IUserValidator<User>>(),
+                Array.Empty<IPasswordValidator<User>>(),
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<User>>>().Object);
+
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+
+            var httpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new(ClaimTypes.Name, "Tester5") }))
+            };
+
+            var httpRequest = httpContext.Request;
+            var httpResponse = httpContext.Response;
+
+            // Act
+            var result = await authService.LoginAsync("tester5@test.com", "Password", "Password", httpRequest, httpResponse);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Bad credentials", result.ErrorMessages.First().Key);
+            Assert.Contains("Invalid email", result.ErrorMessages.First().Value);
         }
     }
 }
