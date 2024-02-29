@@ -135,5 +135,132 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.NotNull(authResponse);
             Assert.Equal("User", authResponse.Role);
         }
+
+        [Fact]
+        public async Task Get_UserEndpoint_WithoutAuthorization_ReturnsUnauthorized()
+        {
+            // Act
+            var response = await _client.GetAsync("/users/getUser");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_InvalidData_ReturnsUnauth()
+        {
+            // Arrange
+            var invalidUserData = new User { /* invalid or missing data */ };
+
+            // Act
+            var response = await _client.PutAsJsonAsync($"/users/user-{Guid.NewGuid()}", invalidUserData);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_InvalidData_ReturnsUnauth()
+        {
+            // Arrange
+            var invalidPasswordChangeRequest = new ChangePassRequest("", "cheese", "breeze", "breeze");
+
+            // Act
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", invalidPasswordChangeRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Delete_DeleteAccountEndpoint_InvalidData_ReturnsUnauth()
+        {
+            // Arrange
+            Guid invalidUserId = Guid.NewGuid();
+
+            // Act
+            var response = await _client.DeleteAsync($"/users/delete-{invalidUserId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Get_UserEndpoint_WithoutSufficientPermissions_ReturnsUnauth()
+        {
+            // Arrange - assuming user without necessary role
+
+            // Act
+            var response = await _client.GetAsync("/users/getUser");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_WithInvalidData_ReturnsBadRequest()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            var invalidUserData = new User { /* invalid or missing data */ };
+
+            // Act
+            var response = await _client.PutAsJsonAsync("/users/user-<valid_user_id>", invalidUserData);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_WithInvalidData_ReturnsBadRequest()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("regtest@test.com", "Password", "Password");
+            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            var invalidPasswordChangeRequest = new ChangePassRequest("", "", "", "");
+
+            // Act
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", invalidPasswordChangeRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Delete_DeleteAccountEndpoint_WithInvalidData_ReturnsBadRequest()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("regtest@test.com", "Password", "Password");
+            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            Guid invalidUserId = Guid.NewGuid();
+
+            // Act
+            var response = await _client.DeleteAsync($"/users/delete-{invalidUserId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }
