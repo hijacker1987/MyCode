@@ -1,5 +1,6 @@
 ﻿using MyCode_Backend_Server.Service.Authentication;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -15,7 +16,7 @@ namespace MyCode_Backend_Server_Tests.Auth
             (
                 Id: "123",
                 Success: true,
-                Email: "Test@example.hu",
+                Email: "Test@example.com",
                 UserName: "TestUser",
                 DisplayName: "Test User",
                 PhoneNumber: "1234567890",
@@ -62,7 +63,7 @@ namespace MyCode_Backend_Server_Tests.Auth
             (
                 Id: "123",
                 Success: true,
-                Email: "Test@example.hu",
+                Email: "Test@example.com",
                 UserName: "TestUser",
                 DisplayName: "Test User",
                 PhoneNumber: "1234567890",
@@ -98,6 +99,47 @@ namespace MyCode_Backend_Server_Tests.Auth
 
             // Assert
             Assert.True(isValid);
+        }
+
+        [Fact]
+        public void AuthResult_ErrorMessages_Test()
+        {
+            // Arrange
+            var authResult = new AuthResult(
+                Id: "123",
+                Success: true,
+                Email: null,
+                UserName: null,
+                DisplayName: null,
+                PhoneNumber: null,
+                Token: null
+            );
+
+            // Act
+
+            // Assert
+            Assert.NotNull(authResult.ErrorMessages);
+            Assert.Empty(authResult.ErrorMessages);
+        }
+
+        [Fact]
+        public void AuthResult_StatusCode_Test()
+        {
+            // Arrange
+            var authResult = new AuthResult(
+                Id: "123",
+                Success: true,
+                Email: "tester@statuscode.com",
+                UserName: "statusOk",
+                DisplayName: "Success",
+                PhoneNumber: "0660",
+                Token: "aFg"
+            );
+
+            // Act
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, authResult.StatusCode);
         }
 
         private static bool IsValid(object instance, string propertyName = null!)

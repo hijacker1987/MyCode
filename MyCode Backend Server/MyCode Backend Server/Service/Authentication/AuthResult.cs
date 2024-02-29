@@ -13,6 +13,6 @@ namespace MyCode_Backend_Server.Service.Authentication
     )
     {
         public readonly Dictionary<string, string> ErrorMessages = [];
-        internal HttpStatusCode StatusCode;
+        public HttpStatusCode StatusCode = HttpStatusCode.OK;
     }
 }

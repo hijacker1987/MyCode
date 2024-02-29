@@ -3,11 +3,8 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Data
 {
-    public class TestDbInitializer(IConfiguration configuration, IWebHostEnvironment environment) : IDbInitializer
+    public class TestDbInitializer : IDbInitializer
     {
-        private readonly IConfiguration _configuration = configuration;
-        private readonly IWebHostEnvironment _environment = environment;
-
         public async Task Initialize(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
         {
             context.Database.EnsureCreated();
