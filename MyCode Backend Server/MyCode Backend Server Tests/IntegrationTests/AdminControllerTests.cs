@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server_Tests.Services;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -101,6 +103,22 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var response = await client.GetAsync("/admin/code-by-123");
 
+            Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task Get_GetUsersEndpoint_Unauthorized_ReturnsError()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
             Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
         }
     }
