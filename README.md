@@ -6,17 +6,17 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
 
 **ONGOING Project!**
 
-## Installation Instructions
+## Backend Installation Instructions
   - Install the .NET SDK 8.0.1.
-  - Set up the database connection in the `secrets.json` file.
   - Install dependencies.
+  - Set up the database connections, and other needs through the `secrets.json`, and `appsettings.json` files.
      
 ## About the Application
-  - Register and log in to add your favorite code snippets.
-  - Edit and delete your codes as needed.
-  - Explore codes by visibility or user.
+  - Register than log in to add your favorite code snippets.
+  - Edit and delete your codes as You desire.
+  - Explore codes by visibility or user to extend Your knowledge.
 
-The backend is built on the ASP.NET 8 framework, with the main goals of being:
+The backend is built on the ASP.NET 8 framework, with the main goals of being/having:
   - Secure
   - Transparent
   - Easy to use
@@ -25,13 +25,14 @@ The backend is built on the ASP.NET 8 framework, with the main goals of being:
 
 The frontend is powered by React using VITE to provide a fast and an interactive user interface:
   - also Transparent
-  - .ENV
-  - Style Components
+  - Secure
+  - Styled Components
   - Easy to use: for example -> Centralized data structure in the Services folder
   - Monaco Editor
   
 ## Security
-The application implements secure practices such as JWT token, refresh token and hashed password storage, currently running dockerized MSSQL database, sensitive data is stored in the `secrets.json` file.
+The application implements secure practices such as JWT token, refresh token and hashed password storage, password confirmation, currently running dockerized MSSQL databases,
+and sensitive data is stored in the `secrets.json`, `appsettings.json` and `.env` files.
 
 ## Configuration
 On the frontend side, sensitive data is stored in the `.env` file. To set up the application, create a `.env` file in the root directory and populate it with the following keys and values:
@@ -48,19 +49,18 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
    - Linux: ~/. microsoft/usersecrets/<userSecretsId>/secrets.json
    - Mac: ~/. microsoft/usersecrets/<userSecretsId>/secrets.json
 
-  - Database can be initialized, the basic setup contains dummy data (30 users, and 100 codes being generated)
+  - Database can be initialized, the basic setup contains dummy data (1 admin, 30 users, and about 80 codes being generated)
+  - Test database will be initialized when You run tests, the basic setup contains dummy data (1 admin, 10 users, and about 80 codes being generated)
 
 ```json
 {
-  //Database Initialization
+  // Database Initialization
   "InitDb": true,
 
   // Database Connection
   "ConnectionString": "YourDatabaseConnectionString",
   
-  //Token Expiration (Access in minutes, Refresh in hours), Claims and Signature
-  "AccessTokenExp": 15,
-  "RefreshTokenExp": 18,
+  // Authentication Keys
   "IssueAudience": "YourIssueAudience",
   "IssueSign": "YourIssueSignature",
   
@@ -87,6 +87,10 @@ The `appsettings.json` file should contain the address for the "live" test datab
 
   // Frontend Connection
   "FEAddress": "Your Frontend Address",
+
+  // Token Expiration (Access in minutes, Refresh in hours)
+  "AccessTokenExp": 10,
+  "RefreshTokenExp": 2,
 
   // "Live" database for test purposes
   "TestConnectionString": "YourTestDatabaseConnection"
