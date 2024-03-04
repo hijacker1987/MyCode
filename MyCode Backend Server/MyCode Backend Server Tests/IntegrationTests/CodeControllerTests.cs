@@ -1,5 +1,7 @@
-﻿using MyCode_Backend_Server.Contracts.Registers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Contracts.Services;
+using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server_Tests.Services;
 using System.Net;
@@ -14,11 +16,13 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
     {
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
         private readonly HttpClient _client;
+        private readonly DataContext _dataContext;
 
         public CodeControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
+            _dataContext = _factory.Services.GetRequiredService<DataContext>();
         }
 
         [Fact]
@@ -127,8 +131,19 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             {
                 _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
             }
-
             var codeRequest = new CodeRegRequest("Sample Code", "console.log('Hello, World!');", "JavaScript", false, true);
+
+            var registerResponse = await _client.PostAsJsonAsync("/codes/register", codeRequest);
+            var codeResponse = await registerResponse.Content.ReadFromJsonAsync<CodeRegResponse>();
+            var codeId = codeResponse?.Id;
+
+            var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
+
+            if (existingCode != null)
+            {
+                _dataContext.CodesDb!.Remove(existingCode);
+                await _dataContext.SaveChangesAsync();
+            }
 
             // Act
             var response = await _client.PostAsJsonAsync("/codes/register", codeRequest);
@@ -282,6 +297,14 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
+
+            if (existingCode != null)
+            {
+                _dataContext.CodesDb!.Remove(existingCode);
+                await _dataContext.SaveChangesAsync();
+            }
         }
 
         [Fact]
@@ -334,6 +357,14 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
+
+            if (existingCode != null)
+            {
+                _dataContext.CodesDb!.Remove(existingCode);
+                await _dataContext.SaveChangesAsync();
+            }
         }
 
         [Fact]

@@ -331,5 +331,91 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
+
+        [Fact]
+        public async Task Get_UserEndpoint_ExistingUser_ReturnsUser()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            // Act
+            var response = await _client.GetAsync("/users/getUser");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var user = await response.Content.ReadFromJsonAsync<UserRegResponse>();
+            Assert.NotNull(user);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_SuccessfulRegistration_ReturnsOk()
+        {
+            // Arrange
+            var newUser = new UserRegRequest("newuser@example.com", "NewUser", "Password", "New User", "123456789");
+
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == "newuser@example.com");
+            if (existingUser != null)
+            {
+                _dataContext.Users.Remove(existingUser);
+                await _dataContext.SaveChangesAsync();
+            }
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/register", newUser);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var user = await response.Content.ReadFromJsonAsync<UserRegResponse>();
+            Assert.NotNull(user);
+            Assert.Equal("newuser@example.com", user.Email);
+        }
+
+        [Fact]
+        public async Task Post_LoginEndpoint_SuccessfulLogin_ReturnsOk()
+        {
+            // Arrange
+            var loginData = new AuthRequest("newuser@example.com", "Password", "Password");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/login", loginData);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+            Assert.NotNull(authResponse);
+            Assert.Equal("User", authResponse.Role);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_SuccessfulChange_ReturnsOk()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("newuser@example.com", "Password", "Password");
+            var (authToken, cookies, result) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == result.Id);
+            var newPasswordRequest = new ChangePassRequest(existingUser!.Email!, "Password", "NewPassword", "NewPassword");
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            // Act
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", newPasswordRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var newPasswordReq = new ChangePassRequest(existingUser!.Email!, "NewPassword", "Password", "Password");
+            await _client.PatchAsJsonAsync("/users/changePassword", newPasswordReq);
+        }
     }
 }
