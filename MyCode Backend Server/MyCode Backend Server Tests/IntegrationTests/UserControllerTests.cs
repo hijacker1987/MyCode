@@ -59,7 +59,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, result) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -72,8 +72,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var returnedUser = await response.Content.ReadFromJsonAsync<User>();
-            Assert.NotNull(returnedUser);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -81,7 +80,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -202,7 +201,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -224,7 +223,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("regtest@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -246,7 +245,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("regtest@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -258,6 +257,76 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Act
             var response = await _client.DeleteAsync($"/users/delete-{invalidUserId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Get_UserEndpoint_NonExistingUser_ReturnsNotFound()
+        {
+            // Arrange
+            Guid nonExistingUserId = Guid.NewGuid();
+
+            // Act
+            var response = await _client.GetAsync($"/users/getUser/{nonExistingUserId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_ValidData_ReturnsOk()
+        {
+            // Arrange
+            Random rdm = new();
+
+            var authRequest = new AuthRequest("tester8@test.com", "Password", "Password");
+            var (authToken, cookies, result) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == result.Id);
+            var updatedUser = new User { DisplayName = existingUser!.DisplayName,
+                                         UserName = existingUser.UserName,
+                                         NormalizedUserName = existingUser.UserName,
+                                         Email = existingUser.Email,
+                                         NormalizedEmail = existingUser.UserName,
+                                         PhoneNumber = rdm.Next(100, 10000).ToString() };
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            // Act
+            var response = await _client.PutAsJsonAsync($"/users/user-{result.Id}", updatedUser);
+            await _dataContext.SaveChangesAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_LoginEndpoint_InvalidEmail_ReturnsNotFound()
+        {
+            // Arrange
+            var invalidAuthRequest = new AuthRequest("invalidemail@test.com", "Password", "Password");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/login", invalidAuthRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_ExistingEmail_ReturnsBadRequest()
+        {
+            // Arrange
+            var existingUserEmail = "tester9@test.com";
+            var existingUserRegRequest = new UserRegRequest(existingUserEmail, "ExistingTester", "Password", "Existing User", "123456789");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/register", existingUserRegRequest);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
