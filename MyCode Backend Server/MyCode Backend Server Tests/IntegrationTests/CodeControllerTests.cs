@@ -25,10 +25,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetAllCodesByUserEndpoint_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/codes/by-user");
+            var response = await _client.GetAsync("/codes/by-user");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -38,10 +37,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetAllCodesByVisibilityEndpoint_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/codes/by-visibility");
+            var response = await _client.GetAsync("/codes/by-visibility");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -51,10 +49,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetCodeByIdEndpoint_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/codes/code-some-id");
+            var response = await _client.GetAsync("/codes/code-some-id");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -64,11 +61,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Post_CreateCodeEndpoint_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
             var codeRequest = new CodeRegRequest("", "", "", false, false);
 
             // Act
-            var response = await client.PostAsJsonAsync("/codes/register", codeRequest);
+            var response = await _client.PostAsJsonAsync("/codes/register", codeRequest);
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -78,11 +74,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Put_UpdateCodeEndpoint_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
             var updatedCode = new CodeRegRequest("", "", "", false, false);
 
             // Act
-            var response = await client.PutAsJsonAsync("/codes/cupdate-some-id", updatedCode);
+            var response = await _client.PutAsJsonAsync("/codes/cupdate-some-id", updatedCode);
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -92,10 +87,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Delete_DeleteCodeByUserEndpoint_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
 
             // Act
-            var response = await client.DeleteAsync("/codes/cdelete-some-id");
+            var response = await _client.DeleteAsync("/codes/cdelete-some-id");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -106,7 +100,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester4@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -126,7 +120,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -148,7 +142,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester2@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -170,19 +164,18 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _factory.CreateClient());
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _factory.CreateClient());
 
-            var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Add("Authorization", authToken);
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
             {
-                client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
             }
 
             var invalidUpdatedCode = new CodeRegRequest("", "", "", false, true);
 
             // Act
-            var response = await client.PutAsJsonAsync("/codes/cupdate-valid_code_id", invalidUpdatedCode);
+            var response = await _client.PutAsJsonAsync("/codes/cupdate-valid_code_id", invalidUpdatedCode);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -193,24 +186,23 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester10@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _factory.CreateClient());
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _factory.CreateClient());
 
-            var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Add("Authorization", authToken);
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
             {
-                client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
             }
 
             var codeRequest = new CodeRegRequest("Sample Code", "console.log('Hello, World!');", "JavaScript", false, true);
-            var registerResponse = await client.PostAsJsonAsync("/codes/register", codeRequest);
+            var registerResponse = await _client.PostAsJsonAsync("/codes/register", codeRequest);
             var codeId = (await registerResponse.Content.ReadFromJsonAsync<CodeRegResponse>())?.Id;
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, registerResponse.StatusCode);
             Assert.NotNull(codeId);
 
-            var getCodeResponse = await client.GetAsync($"/codes/code-{codeId}");
+            var getCodeResponse = await _client.GetAsync($"/codes/code-{codeId}");
             var code = await getCodeResponse.Content.ReadFromJsonAsync<Code>();
 
             // Assert
@@ -218,7 +210,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.NotNull(code);
 
             // Act
-            var deleteResponse = await client.DeleteAsync($"/codes/cdelete-{codeId}");
+            var deleteResponse = await _client.DeleteAsync($"/codes/cdelete-{codeId}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
@@ -229,7 +221,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -249,7 +241,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester1@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -269,7 +261,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -297,7 +289,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -319,7 +311,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -349,7 +341,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
@@ -393,7 +385,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
             foreach (var cookie in cookies)
