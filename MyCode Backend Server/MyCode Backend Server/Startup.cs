@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MyCode_Backend_Server.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MyCode_Backend_Server.Service.Email_Sender;
+using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 
 namespace MyCode_Backend_Server
 {
@@ -51,6 +54,7 @@ namespace MyCode_Backend_Server
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddTransient<IEmailSender, EmailSender>();
 
             if (_environment.IsEnvironment("Test"))
             {

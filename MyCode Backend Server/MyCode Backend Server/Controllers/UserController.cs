@@ -8,6 +8,7 @@ using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using MyCode_Backend_Server.Service.Email_Sender;
 using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
@@ -19,6 +20,7 @@ namespace MyCode_Backend_Server.Controllers
         ILogger<UserController> logger,
         IAuthService authenticationService,
         ITokenService tokenService,
+        IEmailSender emailSender,
         DataContext dataContext,
         UserManager<User> userManager) : ControllerBase
     {
@@ -26,6 +28,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly ILogger<UserController> _logger = logger;
         private readonly IAuthService _authenticationService = authenticationService;
         private readonly ITokenService _tokenService = tokenService;
+        private readonly IEmailSender _emailSender = emailSender;
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
@@ -102,6 +105,12 @@ namespace MyCode_Backend_Server.Controllers
                     AddErrors(result);
                     return BadRequest(ModelState);
                 }
+
+                var subject = "Welcome to My Code!!!";
+
+                var message = $"{request.DisplayName} Thank You very much to use my application, ENJOY IT!";
+
+                await _emailSender.SendEmailAsync(request.Email, subject, message);
 
                 return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!, result.DisplayName!, result.PhoneNumber!));
             }
