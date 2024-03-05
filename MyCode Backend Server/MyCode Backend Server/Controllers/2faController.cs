@@ -14,7 +14,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly IEmailSender _emailSender = emailSender;
         private readonly ILogger<TokenController> _logger = logger;
 
-        [HttpPost("enableTwoFactor"), Authorize("Admin, Useer")]
+        [HttpPost("enableTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> EnableTwoFactor(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -30,7 +30,7 @@ namespace MyCode_Backend_Server.Controllers
             return Ok();
         }
 
-        [HttpPost("verifyTwoFactor")]
+        [HttpPost("verifyTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> VerifyTwoFactor(string userId, string code)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -46,7 +46,7 @@ namespace MyCode_Backend_Server.Controllers
             return Ok();
         }
 
-        [HttpPost("disableTwoFactor"), Authorize("Admin, User")]
+        [HttpPost("disableTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> DisableTwoFactor(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
