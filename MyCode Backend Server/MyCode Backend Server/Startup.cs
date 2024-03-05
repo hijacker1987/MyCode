@@ -134,7 +134,8 @@ namespace MyCode_Backend_Server
                         options.Password.RequireLowercase = false;
                     })
                     .AddRoles<IdentityRole<Guid>>()
-                    .AddEntityFrameworkStores<DataContext>();
+                    .AddEntityFrameworkStores<DataContext>()
+                    .AddDefaultTokenProviders();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer, IDbInitializer testDbInitializer)
