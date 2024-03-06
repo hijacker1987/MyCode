@@ -136,6 +136,19 @@ namespace MyCode_Backend_Server
                     .AddRoles<IdentityRole<Guid>>()
                     .AddEntityFrameworkStores<DataContext>()
                     .AddDefaultTokenProviders();
+
+            var frontConnection = _configuration["FEAddress"];
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(frontConnection!)
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer, IDbInitializer testDbInitializer)
@@ -151,15 +164,7 @@ namespace MyCode_Backend_Server
 
             app.UseRouting();
 
-            var connection = _configuration["FEAddress"];
-
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins(connection!)
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod()
-                                            .AllowCredentials();
-            });
+            app.UseCors();
 
             app.UseAuthentication();
 
