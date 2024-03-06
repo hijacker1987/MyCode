@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 
 import { useUser } from "../../../Services/UserContext";
 import { ErrorPage, Notify } from "./../../../Pages/Services";
-import { homePage, uPwChange } from "../../../Services/Frontend.Endpoints";
+import { homePage, uPwChange, u2fa } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
@@ -169,6 +169,9 @@ const UserForm = ({ onSave, user, onCancel }) => {
                         <ButtonRowContainer>
                             <Link to={uPwChange} className="link">
                                 <ButtonContainer type="button">Password Change</ButtonContainer>
+                            </Link>
+                            <Link to={`${u2fa}${user.id}`} className="link">
+                                <ButtonContainer type="button">Two factor verification</ButtonContainer>
                             </Link>
                             <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>
                                 Delete Account

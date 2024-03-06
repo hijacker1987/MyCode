@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MyCode_Backend_Server.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MyCode_Backend_Server.Service.Email_Sender;
+using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 
 namespace MyCode_Backend_Server
 {
@@ -51,6 +54,7 @@ namespace MyCode_Backend_Server
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddTransient<IEmailSender, EmailSender>();
 
             if (_environment.IsEnvironment("Test"))
             {
@@ -130,7 +134,21 @@ namespace MyCode_Backend_Server
                         options.Password.RequireLowercase = false;
                     })
                     .AddRoles<IdentityRole<Guid>>()
-                    .AddEntityFrameworkStores<DataContext>();
+                    .AddEntityFrameworkStores<DataContext>()
+                    .AddDefaultTokenProviders();
+
+            var frontConnection = _configuration["FEAddress"];
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(frontConnection!)
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer, IDbInitializer testDbInitializer)
@@ -146,15 +164,7 @@ namespace MyCode_Backend_Server
 
             app.UseRouting();
 
-            var connection = _configuration["FEAddress"];
-
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins(connection!)
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod()
-                                            .AllowCredentials();
-            });
+            app.UseCors();
 
             app.UseAuthentication();
 

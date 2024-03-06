@@ -7,7 +7,7 @@ import "./App.css";
 import { ErrorPage } from "./Pages/Services";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./Services/UserContext";
-import { uLogin, uReg, uUpdateOwn, uUpdate, uPwChange,
+import { uLogin, uReg, uUpdateOwn, uUpdate, uPwChange, u2fa,
          cReg, cUpdateOwn, cUpdate, cOwn, cOthers, uList, cList,
          errorOccured, homePage } from "../src/Services/Frontend.Endpoints";
 import { UsersList, CodesList } from "./Pages/Lists/index";
@@ -16,6 +16,7 @@ import Homepage from "./Components/Homepage";
 import UserLogin from "./Pages/Login";
 import UserRegister from "./Pages/Register";
 import UserUpdate from "./Pages/UserUpdate";
+import TwoFactorAuthentication from "./Pages/TwoFa";
 import PwChange from "./Pages/PasswordChange";
 import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
@@ -75,6 +76,10 @@ function App() {
                 {
                     path: `${uUpdate}:userIdParam`,
                     element: isAuthenticated ? <UserUpdate /> : <Navigate to={homePage} />
+                },
+                {
+                    path: `${u2fa}:userIdParam`,
+                    element: isAuthenticated ? <TwoFactorAuthentication /> : <Navigate to={homePage} />
                 },
                 {
                     path: `${cUpdate}:codeId`,

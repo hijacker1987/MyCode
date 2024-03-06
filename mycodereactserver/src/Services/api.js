@@ -35,6 +35,38 @@ export const postApi = async (endpoint, user) => {
     }
 };
 
+export const postStatApi = async (endpoint, userId) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(userId),
+    });
+    if (response.status === 401) {
+        return "Unauthorized";
+    } else {
+        return response.status;
+    }
+};
+
+export const postStatExtApi = async (endpoint, userId, code) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ userId: userId, code: code }),
+    });
+    if (response.status === 401) {
+        return "Unauthorized";
+    } else {
+        return response.status;
+    }
+};
+
 export const patchApi = async (endpoint, user) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "PATCH",

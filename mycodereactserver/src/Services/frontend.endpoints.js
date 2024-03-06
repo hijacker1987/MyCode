@@ -11,6 +11,7 @@ export const uReg = `${u}register`;
 export const uLogin = `${u}login`;
 export const uUpdateOwn = `${u}updateUserData`;
 export const uPwChange = `${u}pwchange`;
+export const u2fa = `${u}verify/`;              //userId
 
 //CODES
 export const cReg = `${c}register`;
