@@ -1,6 +1,7 @@
-const a = "admin/"
-const c = "codes/"
-const u = "users/"
+const a = "admin/";
+const au = "auth/";
+const c = "codes/";
+const u = "users/";
 
 //USERS
     //GET
@@ -12,17 +13,17 @@ const u = "users/"
     export const userRegistration = `${u}register`;
 
     //PATCH
-    export const userUpdate = `${u}user-`;               //{id}
+    export const userUpdate = `${u}user-`;                  //{id}
     export const changePassword = `${u}changePassword`;         //Authorized to admin too
 
     //DELETE
-    export const deleteAccount = `${u}delete-`;           //{id}
+    export const deleteAccount = `${u}delete-`;             //{id}
 
 //CODES
     //GET
     export const getCodesByUser = `${c}by-user`;                //Authorized to admin too
     export const getCodesByVisibility = `${c}by-visibility`;    //Authorized to admin too
-    export const getCodesByUserId = `${c}code-`;        //{id} Authorized to admin too
+    export const getCodesByUserId = `${c}code-`;           //{id} Authorized to admin too
 
     //POST
     export const codeRegistration = `${c}register`;             //Authorized to admin too
@@ -41,7 +42,7 @@ const u = "users/"
 
     //PUT
     export const userSuperUpdate = `${a}aupdate-`;          //{id}
-    export const codeSuperUpdate = `${a}acupdate-`;        //{id}
+    export const codeSuperUpdate = `${a}acupdate-`;         //{id}
 
     //DELETE
     export const deleteSuperUser = `${a}aduser-`;           //{id}
@@ -49,3 +50,6 @@ const u = "users/"
 
 //SERVICE
     export const revoke = `token/revoke`;
+    export const enable2fa = `${au}enableTwoFactor`;
+    export const verify2fa = `${au}verifyTwoFactor`;
+    export const disable2fa = `${au}disableTwoFactor`;
