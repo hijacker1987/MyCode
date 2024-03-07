@@ -150,6 +150,41 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
+        [HttpGet("getUserId"), Authorize(Roles = "Admin, User")]
+        public ActionResult<UserRegResponse> GetUserId()
+        {
+            try
+            {
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim == null)
+                {
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
+
+                return Ok(user!.Id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
+            }
+        }
+
         [HttpPut("user-{id}"), Authorize(Roles = "User")]
         public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
         {
