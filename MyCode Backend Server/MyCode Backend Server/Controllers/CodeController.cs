@@ -23,18 +23,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -70,18 +60,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -127,18 +107,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id);
 
@@ -162,18 +132,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
                 {
@@ -231,18 +191,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
                 {
@@ -309,18 +259,9 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userIdClaim == null)

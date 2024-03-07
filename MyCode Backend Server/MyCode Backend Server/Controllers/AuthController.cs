@@ -21,18 +21,8 @@ namespace MyCode_Backend_Server.Controllers
         [HttpGet("basicsTwoFactor"), Authorize(Roles = "Admin, User")]
         public ActionResult BasicsTwoFactor(string userId)
         {
-            var authorizationCookie = Request.Cookies["Authorization"];
-
-            if (_tokenService.ValidateToken(authorizationCookie!))
-            {
-                var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                if (checkedToken == null)
-                {
-                    _logger.LogError("Token expired.");
-                    return BadRequest("Token expired.");
-                }
-            }
+            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("Must have an Id");
@@ -50,18 +40,8 @@ namespace MyCode_Backend_Server.Controllers
         [HttpPost("enableTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> EnableTwoFactor([FromBody] string userId)
         {
-            var authorizationCookie = Request.Cookies["Authorization"];
-
-            if (_tokenService.ValidateToken(authorizationCookie!))
-            {
-                var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                if (checkedToken == null)
-                {
-                    _logger.LogError("Token expired.");
-                    return BadRequest("Token expired.");
-                }
-            }
+            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("Must have an Id");
@@ -98,6 +78,9 @@ namespace MyCode_Backend_Server.Controllers
         [HttpPost("verifyTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> VerifyTwoFactor([FromBody] VerifyModel verify)
         {
+            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            if (tokenValidationResult != null) return tokenValidationResult;
+
             if (string.IsNullOrEmpty(verify.UserId))
                 return BadRequest("Must provide a user Id");
 
@@ -131,18 +114,8 @@ namespace MyCode_Backend_Server.Controllers
         [HttpPost("disableTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> DisableTwoFactor([FromBody] string userId)
         {
-            var authorizationCookie = Request.Cookies["Authorization"];
-
-            if (_tokenService.ValidateToken(authorizationCookie!))
-            {
-                var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                if (checkedToken == null)
-                {
-                    _logger.LogError("Token expired.");
-                    return BadRequest("Token expired.");
-                }
-            }
+            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("Must have an Id");
