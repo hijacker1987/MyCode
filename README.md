@@ -17,15 +17,15 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
   - Explore codes by visibility or user to extend Your knowledge.
 
 The backend is built on the ASP.NET 8 framework, with the main goals of being/having:
-  - Secure
+  - Secure /for example: 2fa/
   - Transparent
   - Easy to use
   - Object-Oriented
-  - MSSQL database
+  - MSSQL database /Testing uses separate MSSQL database/
 
 The frontend is powered by React using VITE to provide a fast and an interactive user interface:
   - also Transparent
-  - Secure
+  - Secure (for example: need Verified account to be able to add/modify any code)
   - Styled Components
   - Easy to use: for example -> Centralized data structure in the Services folder
   - Monaco Editor
