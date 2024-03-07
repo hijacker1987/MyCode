@@ -32,51 +32,6 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
-        [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
-        public ActionResult<UserRegResponse> GetUser()
-        {
-            try
-            {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
-
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-                if (userIdClaim == null)
-                {
-                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
-                    return BadRequest("No 'NameIdentifier' claim found.");
-                }
-
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
-                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
-
-                return Ok(user);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Error: {e.Message}", e);
-                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
-            }
-        }
-
         [HttpPost("register")]
         public async Task<ActionResult<UserRegResponse>> RegisterUserAsync(UserRegRequest request)
         {
@@ -160,23 +115,83 @@ namespace MyCode_Backend_Server.Controllers
             return new AuthResponse(roles[0], managedUser.Id.ToString());
         }
 
+        [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
+        public ActionResult<UserRegResponse> GetUser()
+        {
+            try
+            {
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim == null)
+                {
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
+
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
+            }
+        }
+
+        [HttpGet("getUserId"), Authorize(Roles = "Admin, User")]
+        public ActionResult<UserRegResponse> GetUserId()
+        {
+            try
+            {
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim == null)
+                {
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var userId = userIdClaim.Value;
+
+                if (!Guid.TryParse(userId, out var userIdGuid))
+                {
+                    _logger.LogError($"Unable to parse as a Guid.");
+                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
+
+                return Ok(user!.Id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
+            }
+        }
+
         [HttpPut("user-{id}"), Authorize(Roles = "User")]
         public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
                 {
@@ -214,18 +229,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
@@ -263,18 +268,8 @@ namespace MyCode_Backend_Server.Controllers
 
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var user = await _userManager.FindByIdAsync(id.ToString());
 

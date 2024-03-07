@@ -18,6 +18,22 @@ export const getApi = async (endpoint) => {
     }
 };
 
+export const getStatApi = async (endpoint, userId) => {
+    const response = await fetch(`${backendUrl}${endpoint}?userId=${userId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+    });
+    if (response.status === 401) {
+        return "Unauthorized";
+    } else {
+        const data = await response.json();
+        return data;
+    }
+};
+
 export const postApi = async (endpoint, user) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "POST",

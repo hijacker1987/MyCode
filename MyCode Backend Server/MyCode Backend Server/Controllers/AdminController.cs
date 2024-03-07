@@ -21,18 +21,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var users = _dataContext.Users.ToList();
                 var returningList = users.Where(user => user != null).ToList();
@@ -57,18 +47,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.Equals(id));
 
@@ -93,18 +73,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var codes = _dataContext.CodesDb!.ToList();
                 var returningList = codes.Where(code => code != null).ToList();
@@ -128,18 +98,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
                 {
@@ -177,18 +137,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
                 {
@@ -225,18 +175,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 _logger.LogInformation($"Deleting user with id: {id}");
 
@@ -267,18 +207,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var authorizationCookie = Request.Cookies["Authorization"];
-
-                if (_tokenService.ValidateToken(authorizationCookie!))
-                {
-                    var checkedToken = _tokenService.Refresh(authorizationCookie!, Request, Response);
-
-                    if (checkedToken == null)
-                    {
-                        _logger.LogError("Token expired.");
-                        return BadRequest("Token expired.");
-                    }
-                }
+                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
 
                 var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id);
 
