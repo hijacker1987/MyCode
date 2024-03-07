@@ -7,6 +7,7 @@ const u = "users/";
     //GET
     export const recentChuckNorris = `https://api.chucknorris.io/jokes/random`;
     export const getUser = `${u}getUser`;                      //Authorized to admin too
+    export const getUserId = `${u}getUserId`;                  //Authorized to admin too
 
     //POST
     export const userLogin = `${u}login`;
