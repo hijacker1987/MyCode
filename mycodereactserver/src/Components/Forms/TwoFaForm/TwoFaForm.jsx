@@ -1,7 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel }) {
+import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
+import { InputForm, InputWrapper } from "../../Styles/Input.styled";
+import { Form, FormColumn } from "../../Styles/Form.styled";
+
+function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel, isEmailConfirmed, isTwoFactorEnabled }) {
     const [code, setCode] = useState("");
+    const [isCodeSubmitEnabled, setIsCodeSubmitEnabled] = useState(false);
+    const [isDisableEnabled, setIsDisableEnabled] = useState(false);
+
+    useEffect(() => {
+        if (!isEmailConfirmed && isTwoFactorEnabled) {
+            setIsCodeSubmitEnabled(true);
+        } else {
+            setIsCodeSubmitEnabled(false);
+        }
+
+        if (isTwoFactorEnabled) {
+            setIsDisableEnabled(true);
+        } else {
+            setIsDisableEnabled(false);
+        }
+    }, [isEmailConfirmed, isTwoFactorEnabled]);
 
     const handleEnable = async () => {
         try {
@@ -29,22 +49,30 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel }
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <button type="button" onClick={handleEnable}>
-                Enable Verification
-            </button>
-            <label>
-                Two factor authentication code:
-                <input type="text" value={code} onChange={(e) => setCode(e.target.value)} />
-            </label>
-            <button type="submit">Send</button>
-            <button type="button" onClick={handleDisable}>
-                Disable Verification
-            </button>
-            <button type="button" onClick={onCancel}>
-                Cancel
-            </button>
-        </form>
+        <FormColumn onSubmit={handleSubmit}>
+            {!isDisableEnabled && (
+                <>
+                    <h3>Press the button if You would like to setup the two factor authentication</h3>
+                    <ButtonContainer type="button" onClick={handleEnable}>Enable Verification</ButtonContainer>
+                </>
+            )}
+            {isCodeSubmitEnabled && (
+                <>
+                    <h3>
+                        Please write Your unique two factor authentication code here:
+                        <InputForm type="text" value={code} onChange={(e) => setCode(e.target.value)} />
+                    </h3>
+                    <ButtonContainer type="submit" onClick={handleSubmit}>Send</ButtonContainer>
+                </>
+            )}
+            {isDisableEnabled && (
+                <>
+                    <h3>Press the button if You would like to revoke the two factor authentication</h3>
+                    <ButtonContainer type="button" onClick={handleDisable}>Disable Verification</ButtonContainer>
+                </>
+            )}
+            <ButtonContainer type="button" onClick={onCancel}>Cancel</ButtonContainer>
+        </FormColumn>
     );
 }
 

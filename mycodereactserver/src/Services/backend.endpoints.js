@@ -50,6 +50,7 @@ const u = "users/";
 
 //SERVICE
     export const revoke = `token/revoke`;
+    export const primary2fa = `${au}basicsTwoFactor`;
     export const enable2fa = `${au}enableTwoFactor`;
     export const verify2fa = `${au}verifyTwoFactor`;
     export const disable2fa = `${au}disableTwoFactor`;

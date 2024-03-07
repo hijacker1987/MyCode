@@ -1,17 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { postStatApi, postStatExtApi } from "../Services/Api";
+import { getStatApi, postStatApi, postStatExtApi } from "../Services/Api";
 import { ErrorPage, Notify } from "./Services";
-import { enable2fa, verify2fa, disable2fa } from "../Services/Backend.Endpoints";
+import { primary2fa, enable2fa, verify2fa, disable2fa } from "../Services/Backend.Endpoints";
 import TwoFactorAuthenticationForm from "../Components/Forms/TwoFaForm/index";
 import Loading from "../Components/Loading/index";
 
 const TwoFactorAuthentication = () => {
     const navigate = useNavigate();
     const { userIdParam } = useParams();
+    const [isEmailConfirmed, setEmailConfirmed] = useState(false);
+    const [isTwoFactorEnabled, setTwoFactorEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
+
+    useEffect(() => {
+        handleUserBasic();
+    }, []);
+
+    const handleUserBasic = async () => {
+        setLoading(true);
+        getStatApi(primary2fa, userIdParam)
+            .then((data) => {
+                setLoading(false);
+                setEmailConfirmed(data.emailConfirmed);
+                setTwoFactorEnabled(data.twoFactorEnabled);
+            })
+            .catch((error) => {
+                setLoading(false);
+                setError(`Error occurred getting basic data for verify: ${error}`);
+            });
+    }
 
     const handleSendEmailWithCode = async () => {
         setLoading(true);
@@ -19,6 +39,7 @@ const TwoFactorAuthentication = () => {
             .then(() => {
                 setLoading(false);
                 Notify("Success", "Please check Your e-mail!");
+                handleUserBasic();
             })
             .catch((error) => {
                 setLoading(false);
@@ -34,6 +55,7 @@ const TwoFactorAuthentication = () => {
                 navigate(-1);
                 if (res.status != 400) {
                     Notify("Success", "Successful Verification!");
+                    handleUserBasic();
                 } else {
                     Notify("Error", "Unable to Verify!");
                 }
@@ -50,6 +72,7 @@ const TwoFactorAuthentication = () => {
             .then(() => {
                 setLoading(false);
                 Notify("Success", "2fa disabled!");
+                handleUserBasic();
             })
             .catch((error) => {
                 setLoading(false);
@@ -67,7 +90,14 @@ const TwoFactorAuthentication = () => {
 
     return <div>
         {errorMessage == "" ? (
-            <TwoFactorAuthenticationForm onEnable={handleSendEmailWithCode} onSubmit={handleVerify2fa} onDisable={handleDisable2fa} onCancel={handleCancel} />
+            <TwoFactorAuthenticationForm
+                onEnable={handleSendEmailWithCode}
+                onSubmit={handleVerify2fa}
+                onDisable={handleDisable2fa}
+                onCancel={handleCancel}
+                isEmailConfirmed={isEmailConfirmed}
+                isTwoFactorEnabled={isTwoFactorEnabled}
+            />
         ) : (
             <ErrorPage errorMessage={errorMessage} />
         )}
