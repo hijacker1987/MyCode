@@ -156,6 +156,20 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
                 }
 
+                var user = _dataContext.Users!.FirstOrDefault(u => u.Id == userIdGuid);
+
+                if (user == null)
+                {
+                    _logger.LogInformation($"User with id {userIdGuid} not found.");
+                    return NotFound();
+                }
+
+                if (user.EmailConfirmed != true && user.TwoFactorEnabled)
+                {
+                    _logger.LogInformation($"User with id {userIdGuid} not verified.");
+                    return BadRequest();
+                }
+
                 var code = new Code(
                     codeRequest.CodeTitle,
                     codeRequest.MyCode,
@@ -213,6 +227,20 @@ namespace MyCode_Backend_Server.Controllers
                 {
                     _logger.LogError($"Unable to parse as a Guid.");
                     return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
+                }
+
+                var user = _dataContext.Users!.FirstOrDefault(u => u.Id == userIdGuid);
+
+                if (user == null)
+                {
+                    _logger.LogInformation($"User with id {id} not found.");
+                    return NotFound();
+                }
+
+                if (user.EmailConfirmed != true && user.TwoFactorEnabled)
+                {
+                    _logger.LogInformation($"User with id {id} not verified.");
+                    return BadRequest();
                 }
 
                 var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId == userIdGuid);
