@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import Modal from 'react-bootstrap/Modal';
+import Modal from "react-bootstrap/Modal";
 
+import { deleteApi } from "../../Services/Api";
 import { ErrorPage, Notify } from "../Services";
 import { useUser, logoutUser } from "../../Services/UserContext";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
-import { recentChuckNorris } from "../../Services/Backend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage, googleLogin } from "../../Services/Frontend.Endpoints";
+import { recentChuckNorris, revoke } from "../../Services/Backend.Endpoints";
+import { backendUrl } from "../../Services/Config";
+import Loading from "../../Components/Loading/index";
 
 import { ButtonRowContainer, ButtonRowButtonContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
@@ -22,6 +25,7 @@ const Layout = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [logoutSuccess, setLogoutSuccess] = useState(null);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
 
     useEffect(() => {
@@ -45,17 +49,29 @@ const Layout = () => {
         setShowLogoutModal(true);
     };
 
-    const confirmLogout = (loggedOut) => {
+    const confirmLogout = async (loggedOut) => {
         setShowLogoutModal(false);
         logoutUser();
         setUserData(null);
+        const data = await deleteApi(revoke);
 
-        if (loggedOut) {
+        if (loggedOut && data) {
             Notify("Success", "You logged out successfully!");
             setLogoutSuccess(true);
         } else {
             Notify("Error", "Session has expired. Please log in again.");
             setLogoutSuccess(false);
+        }
+    };
+
+    const handleOnGoogle = async () => {
+        setLoading(true);
+        try {
+            window.location.href = `${backendUrl}${googleLogin}`;
+        } catch (error) {
+            setError(`Error occurred during login: ${error}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -70,6 +86,10 @@ const Layout = () => {
             }
         }
     }, [logoutSuccess]);
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <div className="Layout">
@@ -88,6 +108,9 @@ const Layout = () => {
                                 <Link to={uReg} className="link">
                                     <ButtonContainer type="button">Registration</ButtonContainer>
                                 </Link>
+                                <ButtonContainer type="button" onClick={handleOnGoogle}>
+                                    Google Login
+                                </ButtonContainer>
                             </ButtonRowButtonContainer>
                         )}
                     </ButtonRowContainer>

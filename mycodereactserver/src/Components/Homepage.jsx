@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
+import Cookies from "js-cookie";
 
 import { useUser } from "../Services/UserContext";
 import { getApi, handleResponse } from "../Services/Api";
@@ -62,6 +63,18 @@ const Homepage = () => {
 
         return () => clearTimeout(initialRandomCode);
     }, [visibleCodes]);
+
+    useEffect(() => {
+        const cookieDataSync = async () => {
+            const userId = Cookies.get('UI');
+            const userRole = Cookies.get('UR');
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
+            }
+        };
+
+        cookieDataSync();
+    }, []);
 
     return (
         <div>
