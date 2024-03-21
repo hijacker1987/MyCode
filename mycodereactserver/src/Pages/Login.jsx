@@ -43,7 +43,7 @@ const UserLogin = () => {
     }
 
     return <div>
-        {errorMessage == "" ? (<Login onLogin={handleOnLogin} onCancel={handleCancel} />
+                {errorMessage == "" ? ( <Login onLogin={handleOnLogin} onCancel={handleCancel} />
                                   ) : (
                                         <ErrorPage errorMessage={errorMessage} />
                                   )}

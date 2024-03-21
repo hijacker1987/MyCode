@@ -8,9 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MyCode_Backend_Server.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using MyCode_Backend_Server.Service.Email_Sender;
 using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace MyCode_Backend_Server
 {
@@ -54,7 +54,6 @@ namespace MyCode_Backend_Server
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IGithubService, GithubService>();
             services.AddTransient<IEmailSender, EmailSender>();
 
             if (_environment.IsEnvironment("Test"))
@@ -81,23 +80,8 @@ namespace MyCode_Backend_Server
                 }
             });
 
-            services.AddAuthentication(o => {
-                        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                        o.DefaultChallengeScheme = "Google";
-                    })
-                    .AddCookie(options => {
-                        options.Cookie.Name = "Authorization";
-                        options.LoginPath = "/account/google-login";
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                        options.Cookie.SameSite = SameSiteMode.None;
-                        options.Cookie.HttpOnly = true;
-                    })
-                    .AddGoogle("Google", options =>
-                    {
-                        options.ClientId = "766929957895-6dac78sb0lpbegjlk7bpduajljnap9a6.apps.googleusercontent.com";
-                        options.ClientSecret = "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";
-                    })
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddCookie(c => { c.Cookie.Name = "Authorization"; })
                     .AddJwtBearer(options =>
                     {
                         var issuer = "";
@@ -159,7 +143,7 @@ namespace MyCode_Backend_Server
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(frontConnection!, "https://accounts.google.com/")
+                    builder.WithOrigins(frontConnection!)
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();

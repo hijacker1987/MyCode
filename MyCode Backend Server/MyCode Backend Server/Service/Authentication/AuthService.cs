@@ -14,12 +14,6 @@ namespace MyCode_Backend_Server.Service.Authentication
         public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber)
         {
             var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
-
-            if (email.EndsWith("@gmail.com"))
-            {
-                user.ReliableEmail = email;
-            }
-
             var result = await _userManager.CreateAsync(user, password);
 
             if (result == null || user == null)
@@ -76,46 +70,6 @@ namespace MyCode_Backend_Server.Service.Authentication
             if (!isPasswordValid)
             {
                 return InvalidPassword(email, managedUser.UserName!);
-            }
-
-            var roles = await _userManager.GetRolesAsync(managedUser);
-            var accessToken = _tokenService.CreateToken(managedUser, roles);
-            var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
-            var refreshToken = _tokenService.CreateRefreshToken();
-            var refreshTokenExp = Convert.ToDouble(_configuration["RefreshTokenExp"]);
-
-            managedUser.RefreshToken = refreshToken;
-            managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
-
-            var cookieOptions1 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
-            var cookieOptions2 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddHours(refreshTokenExp));
-
-            if (cookieOptions1 != null && cookieOptions2 != null)
-            {
-                response.Cookies.Append("Authorization", accessToken, cookieOptions1);
-                response.Cookies.Append("RefreshAuthorization", refreshToken, cookieOptions2);
-            }
-            else
-            {
-                _logger.LogError("Cookie options are null");
-                return new AuthResult("", false, "", "", "", "", "");
-            }
-
-            return new AuthResult(managedUser.Id.ToString(),
-                                  true, managedUser.Email,
-                                  managedUser.UserName,
-                                  managedUser.DisplayName,
-                                  managedUser.PhoneNumber,
-                                  accessToken);
-        }
-
-        public async Task<AuthResult> LoginGoogleAsync(string email, HttpRequest request, HttpResponse response)
-        {
-            var managedUser = await _userManager.FindByEmailAsync(email);
-
-            if (managedUser == null)
-            {
-                return InvalidEmail(email);
             }
 
             var roles = await _userManager.GetRolesAsync(managedUser);
