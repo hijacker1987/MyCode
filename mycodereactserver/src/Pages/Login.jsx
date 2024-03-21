@@ -43,11 +43,11 @@ const UserLogin = () => {
     }
 
     return <div>
-                {errorMessage == "" ? ( <Login onLogin={handleOnLogin} onCancel={handleCancel} />
-                                  ) : (
-                                        <ErrorPage errorMessage={errorMessage} />
-                                  )}
-           </div>
+        {errorMessage == "" ? (<Login onLogin={handleOnLogin} onCancel={handleCancel} />
+        ) : (
+            <ErrorPage errorMessage={errorMessage} />
+        )}
+    </div>
 };
 
 export default UserLogin;
