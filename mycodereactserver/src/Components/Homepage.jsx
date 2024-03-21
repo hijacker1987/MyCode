@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
+import Cookies from "js-cookie";
 
 import { useUser } from "../Services/UserContext";
 import { getApi, handleResponse } from "../Services/Api";
@@ -63,62 +64,74 @@ const Homepage = () => {
         return () => clearTimeout(initialRandomCode);
     }, [visibleCodes]);
 
+    useEffect(() => {
+        const cookieDataSync = async () => {
+            const userId = Cookies.get('UI');
+            const userRole = Cookies.get('UR');
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
+            }
+        };
+
+        cookieDataSync();
+    }, []);
+
     return (
         <div>
             {errorMessage === "" ? (
                 <div>
-                {!role && !userid ? (
-                    <MidContainer className="welcome-text">
-                        Welcome Code Fanatic!
-                        <p>Please login or register</p>
-                    </MidContainer>  
-                ) : (
-                    randomCodeIndex !== null && visibleCodes.length > 0 && (
-                        <MidContainer className="random-code">
-                            <div>
-                                Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
-                                <h4>Title:</h4>
-                                <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
-                            </div>
-
-                            <Editor
-                                height={editorMeasure[0]}
-                                width={editorMeasure[1]}
-                                defaultLanguage={visibleCodes[randomCodeIndex].whatKindOfCode.toLowerCase().replace(/#/g, "sharp")}
-                                defaultValue={visibleCodes[randomCodeIndex].myCode}
-                                onChange={(newValue, e) => setMyCode(newValue)}
-                                name="mycode"
-                                id="mycode"
-                                autoComplete="off"
-                                onMount={(editor, monaco) => handleEditorDidMount(editor, monaco, editorRef)}
-                                options={{ readOnly: true, fontSize: fontSize }}
-                                theme={theme}
-                            />
-
-                            <div>
-                                <label htmlFor="fontSizeSelector"> Font Size: </label>
-                                <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
-                                    {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
-                                        <option key={size} value={size}>{size}</option>
-                                    ))}
-                                </select>
-                                <label htmlFor="themeSelector"> Change Theme: </label>
-                                <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
-                                    <option value="vs">Light</option>
-                                    <option value="vs-dark">Dark</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <button onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</button>
-                                <button onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</button>
-                            </div>
+                    {!role && !userid ? (
+                        <MidContainer className="welcome-text">
+                            Welcome Code Fanatic!
+                            <p>Please login or register</p>
                         </MidContainer>
-                    )
+                    ) : (
+                        randomCodeIndex !== null && visibleCodes.length > 0 && (
+                            <MidContainer className="random-code">
+                                <div>
+                                    Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
+                                    <h4>Title:</h4>
+                                    <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
+                                </div>
+
+                                <Editor
+                                    height={editorMeasure[0]}
+                                    width={editorMeasure[1]}
+                                    defaultLanguage={visibleCodes[randomCodeIndex].whatKindOfCode.toLowerCase().replace(/#/g, "sharp")}
+                                    defaultValue={visibleCodes[randomCodeIndex].myCode}
+                                    onChange={(newValue, e) => setMyCode(newValue)}
+                                    name="mycode"
+                                    id="mycode"
+                                    autoComplete="off"
+                                    onMount={(editor, monaco) => handleEditorDidMount(editor, monaco, editorRef)}
+                                    options={{ readOnly: true, fontSize: fontSize }}
+                                    theme={theme}
+                                />
+
+                                <div>
+                                    <label htmlFor="fontSizeSelector"> Font Size: </label>
+                                    <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
+                                        {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
+                                            <option key={size} value={size}>{size}</option>
+                                        ))}
+                                    </select>
+                                    <label htmlFor="themeSelector"> Change Theme: </label>
+                                    <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
+                                        <option value="vs">Light</option>
+                                        <option value="vs-dark">Dark</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <button onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</button>
+                                    <button onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</button>
+                                </div>
+                            </MidContainer>
+                        )
                     )}
                 </div>
             ) : (
-            <ErrorPage errorMessage={errorMessage} />
+                <ErrorPage errorMessage={errorMessage} />
             )}
         </div>
     );

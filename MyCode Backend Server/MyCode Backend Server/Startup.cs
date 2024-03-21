@@ -8,9 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MyCode_Backend_Server.Models;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using MyCode_Backend_Server.Service.Email_Sender;
 using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace MyCode_Backend_Server
 {
@@ -80,8 +80,23 @@ namespace MyCode_Backend_Server
                 }
             });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddCookie(c => { c.Cookie.Name = "Authorization"; })
+            services.AddAuthentication(o => {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = "Google";
+            })
+                    .AddCookie(options => {
+                        options.Cookie.Name = "Authorization";
+                        options.LoginPath = "/account/google-login";
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        options.Cookie.SameSite = SameSiteMode.None;
+                        options.Cookie.HttpOnly = true;
+                    })
+                    .AddGoogle("Google", options =>
+                    {
+                        options.ClientId = _configuration["GoogleClientId"]!;
+                        options.ClientSecret = _configuration["GoogleClientSecret"]!;
+                    })
                     .AddJwtBearer(options =>
                     {
                         var issuer = "";
@@ -123,16 +138,16 @@ namespace MyCode_Backend_Server
                     });
 
             services.AddIdentityCore<User>(options =>
-                    {
-                        options.SignIn.RequireConfirmedAccount = false;
-                        options.User.RequireUniqueEmail = true;
-                        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                        options.Password.RequireDigit = false;
-                        options.Password.RequiredLength = 6;
-                        options.Password.RequireNonAlphanumeric = false;
-                        options.Password.RequireUppercase = false;
-                        options.Password.RequireLowercase = false;
-                    })
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
                     .AddRoles<IdentityRole<Guid>>()
                     .AddEntityFrameworkStores<DataContext>()
                     .AddDefaultTokenProviders();
@@ -143,7 +158,7 @@ namespace MyCode_Backend_Server
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(frontConnection!)
+                    builder.WithOrigins(frontConnection!, "https://accounts.google.com/")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();
