@@ -78,7 +78,7 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponse>> LoginAsync([FromBody] AuthRequest request)
+        public async Task<ActionResult> LoginAsync([FromBody] AuthRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -113,7 +113,10 @@ namespace MyCode_Backend_Server.Controllers
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
 
-            return new AuthResponse(roles[0], managedUser.Id.ToString());
+            Response.Cookies.Append("UI", managedUser.Id.ToString(), TokenHelper.GetCookieOptions(Request, 3));
+            Response.Cookies.Append("UR", roles[0], TokenHelper.GetCookieOptions(Request, 3));
+
+            return Ok("Successfully logged in");
         }
 
         [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
