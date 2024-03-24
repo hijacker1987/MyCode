@@ -19,7 +19,7 @@ const UserRegister = () => {
                 setLoading(false);
                 navigate("/");
                 if (res.status != 400) {
-                    Notify("Success", "Successful Registration!");
+                    Notify("Success", `Successful Registration for ${res.email}!`);
                 } else {
                     Notify("Error", "Unable to Register!");
                 }
