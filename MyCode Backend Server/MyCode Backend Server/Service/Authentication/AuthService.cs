@@ -87,8 +87,8 @@ namespace MyCode_Backend_Server.Service.Authentication
             managedUser.RefreshToken = refreshToken;
             managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
 
-            var cookieOptions1 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
-            var cookieOptions2 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddHours(refreshTokenExp));
+            var cookieOptions1 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
+            var cookieOptions2 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddHours(refreshTokenExp));
 
             if (cookieOptions1 != null && cookieOptions2 != null)
             {
@@ -127,8 +127,8 @@ namespace MyCode_Backend_Server.Service.Authentication
             managedUser.RefreshToken = refreshToken;
             managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
 
-            var cookieOptions1 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
-            var cookieOptions2 = _tokenService.GetCookieOptions(request, DateTime.UtcNow.AddHours(refreshTokenExp));
+            var cookieOptions1 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
+            var cookieOptions2 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddHours(refreshTokenExp));
 
             if (cookieOptions1 != null && cookieOptions2 != null)
             {

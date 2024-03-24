@@ -84,8 +84,8 @@ namespace MyCode_Backend_Server.Controllers
                     var userId = managedUser.Id.ToString();
                     var userRole = roles.FirstOrDefault();
 
-                    Response.Cookies.Append("UI", userId, TokenHelper.GetCookieOptions(Request, 3));
-                    Response.Cookies.Append("UR", userRole!, TokenHelper.GetCookieOptions(Request, 3));
+                    Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+                    Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }

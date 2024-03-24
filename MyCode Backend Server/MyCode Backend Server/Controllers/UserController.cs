@@ -113,8 +113,8 @@ namespace MyCode_Backend_Server.Controllers
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
 
-            Response.Cookies.Append("UI", managedUser.Id.ToString(), TokenHelper.GetCookieOptions(Request, 3));
-            Response.Cookies.Append("UR", roles[0], TokenHelper.GetCookieOptions(Request, 3));
+            Response.Cookies.Append("UI", managedUser.Id.ToString(), TokenAndCookieHelper.GetCookieOptions(Request, 3));
+            Response.Cookies.Append("UR", roles[0], TokenAndCookieHelper.GetCookieOptions(Request, 3));
 
             return Ok("Successfully logged in");
         }
@@ -124,7 +124,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -159,7 +159,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -194,7 +194,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
@@ -233,7 +233,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);
@@ -272,7 +272,7 @@ namespace MyCode_Backend_Server.Controllers
 
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var user = await _userManager.FindByIdAsync(id.ToString());

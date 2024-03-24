@@ -21,7 +21,7 @@ namespace MyCode_Backend_Server.Controllers
         [HttpGet("basicsTwoFactor"), Authorize(Roles = "Admin, User")]
         public ActionResult BasicsTwoFactor(string userId)
         {
-            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(userId))
@@ -40,7 +40,7 @@ namespace MyCode_Backend_Server.Controllers
         [HttpPost("enableTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> EnableTwoFactor([FromBody] string userId)
         {
-            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(userId))
@@ -78,7 +78,7 @@ namespace MyCode_Backend_Server.Controllers
         [HttpPost("verifyTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> VerifyTwoFactor([FromBody] VerifyModel verify)
         {
-            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(verify.UserId))
@@ -114,7 +114,7 @@ namespace MyCode_Backend_Server.Controllers
         [HttpPost("disableTwoFactor"), Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> DisableTwoFactor([FromBody] string userId)
         {
-            var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+            var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
             if (string.IsNullOrEmpty(userId))

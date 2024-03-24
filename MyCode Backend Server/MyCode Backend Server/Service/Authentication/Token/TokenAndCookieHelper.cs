@@ -1,10 +1,8 @@
-﻿using Azure.Core;
-using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MyCode_Backend_Server.Service.Authentication.Token
 {
-    public static class TokenHelper
+    public static class TokenAndCookieHelper
     {
         public static ActionResult ValidateAndRefreshToken(ITokenService tokenService, HttpRequest request, HttpResponse response, ILogger logger)
         {
@@ -41,6 +39,21 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                 HttpOnly = managedIdCookie.HttpOnly,
                 Secure = managedIdCookie.SecurePolicy == CookieSecurePolicy.Always,
                 SameSite = managedIdCookie.SameSite
+            };
+        }
+
+        public static CookieOptions GetCookieOptionsForHttpOnly(HttpRequest request, DateTimeOffset time)
+        {
+            var extendedTime = time.AddMinutes(5);
+
+            return new CookieOptions
+            {
+                Domain = request.Host.Host,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                Expires = time,
+                MaxAge = TimeSpan.FromSeconds((extendedTime - DateTime.UtcNow).TotalSeconds)
             };
         }
     }
