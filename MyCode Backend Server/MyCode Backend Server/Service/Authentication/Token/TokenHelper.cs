@@ -21,5 +21,25 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
             return null!;
         }
+
+        public static CookieOptions GetCookieOptions(HttpRequest request, double time)
+        {
+            var managedIdCookie = new CookieBuilder()
+            {
+                Domain = request.Host.Host,
+                Expiration = TimeSpan.FromSeconds(180),
+                HttpOnly = false,
+                SecurePolicy = CookieSecurePolicy.Always,
+                SameSite = SameSiteMode.None
+            };
+
+            return new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddMinutes(time),
+                HttpOnly = managedIdCookie.HttpOnly,
+                Secure = managedIdCookie.SecurePolicy == CookieSecurePolicy.Always,
+                SameSite = managedIdCookie.SameSite
+            };
+        }
     }
 }

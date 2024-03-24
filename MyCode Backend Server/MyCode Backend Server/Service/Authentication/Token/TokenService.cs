@@ -64,9 +64,8 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             return tokenHandler.WriteToken(token);
         }
 
-        private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, string issueAud, DateTime expiration) =>
-            new(
-                issueAud,
+        private static JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, string issueAud, DateTime expiration) =>
+            new(issueAud,
                 issueAud,
                 claims,
                 notBefore: DateTime.UtcNow,
@@ -182,6 +181,8 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                     user.RefreshToken = null;
                     response.Cookies.Delete(authCookie);
                     response.Cookies.Delete(refCookie);
+                    response.Cookies.Delete("UI");
+                    response.Cookies.Delete("UR");
 
                     _userManager.UpdateAsync(user).Wait();
                     _dataContext.SaveChangesAsync();

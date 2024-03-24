@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -287,6 +288,11 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (result.Succeeded)
                 {
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Delete("RefreshAuthorization");
+                    Response.Cookies.Delete("UI");
+                    Response.Cookies.Delete("UR");
+
                     await _dataContext.SaveChangesAsync();
 
                     return Ok($"Account with ID {id} successfully deleted.");
