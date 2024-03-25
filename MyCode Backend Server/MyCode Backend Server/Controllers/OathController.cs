@@ -8,6 +8,7 @@ using MyCode_Backend_Server.Service.Email_Sender;
 using Microsoft.AspNetCore.Identity;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -80,33 +81,11 @@ namespace MyCode_Backend_Server.Controllers
                     await _userManager.UpdateAsync(managedUser);
                     await _dataContext.SaveChangesAsync();
 
-                    var managedIdCookie = new CookieBuilder()
-                    {
-                        Domain = Request.Host.Host,
-                        Expiration = TimeSpan.FromSeconds(18000),
-                        HttpOnly = false,
-                        SecurePolicy = CookieSecurePolicy.Always,
-                        SameSite = SameSiteMode.None
-                    };
-
                     var userId = managedUser.Id.ToString();
                     var userRole = roles.FirstOrDefault();
 
-                    Response.Cookies.Append("UI", userId, new CookieOptions
-                    {
-                        Expires = DateTime.UtcNow.AddMinutes(30),
-                        HttpOnly = managedIdCookie.HttpOnly,
-                        Secure = managedIdCookie.SecurePolicy == CookieSecurePolicy.Always,
-                        SameSite = managedIdCookie.SameSite
-                    });
-
-                    Response.Cookies.Append("UR", userRole!, new CookieOptions
-                    {
-                        Expires = DateTime.UtcNow.AddMinutes(3),
-                        HttpOnly = managedIdCookie.HttpOnly,
-                        Secure = managedIdCookie.SecurePolicy == CookieSecurePolicy.Always,
-                        SameSite = managedIdCookie.SameSite
-                    });
+                    Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+                    Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
@@ -142,8 +121,8 @@ namespace MyCode_Backend_Server.Controllers
         {
             string allChars = LowerCaseChars + UpperCaseChars + NumericChars + SpecialChars;
             return new string(Enumerable.Range(1, 10)
-                .Select(_ => allChars[random.Next(allChars.Length)])
-                .ToArray());
+                                        .Select(_ => allChars[random.Next(allChars.Length)])
+                                        .ToArray());
         }
     }
 }

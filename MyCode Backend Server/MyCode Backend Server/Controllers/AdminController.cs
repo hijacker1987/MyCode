@@ -21,7 +21,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var users = _dataContext.Users.ToList();
@@ -47,7 +47,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.Equals(id));
@@ -73,7 +73,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var codes = _dataContext.CodesDb!.ToList();
@@ -98,7 +98,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
@@ -137,7 +137,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
@@ -175,7 +175,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 _logger.LogInformation($"Deleting user with id: {id}");
@@ -207,7 +207,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id);

@@ -55,3 +55,4 @@ const u = "users/";
     export const enable2fa = `${au}enableTwoFactor`;
     export const verify2fa = `${au}verifyTwoFactor`;
     export const disable2fa = `${au}disableTwoFactor`;
+    export const reliableAdd = `${au}addReliableAddress`;

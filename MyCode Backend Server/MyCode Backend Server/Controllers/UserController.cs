@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -77,7 +78,7 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponse>> LoginAsync([FromBody] AuthRequest request)
+        public async Task<ActionResult> LoginAsync([FromBody] AuthRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -112,7 +113,10 @@ namespace MyCode_Backend_Server.Controllers
             await _userManager.UpdateAsync(managedUser);
             await _dataContext.SaveChangesAsync();
 
-            return new AuthResponse(roles[0], managedUser.Id.ToString());
+            Response.Cookies.Append("UI", managedUser.Id.ToString(), TokenAndCookieHelper.GetCookieOptions(Request, 3));
+            Response.Cookies.Append("UR", roles[0], TokenAndCookieHelper.GetCookieOptions(Request, 3));
+
+            return Ok("Successfully logged in");
         }
 
         [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
@@ -120,7 +124,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -155,7 +159,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -190,7 +194,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
@@ -229,7 +233,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);
@@ -268,7 +272,7 @@ namespace MyCode_Backend_Server.Controllers
 
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var user = await _userManager.FindByIdAsync(id.ToString());
@@ -287,6 +291,11 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (result.Succeeded)
                 {
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Delete("RefreshAuthorization");
+                    Response.Cookies.Delete("UI");
+                    Response.Cookies.Delete("UR");
+
                     await _dataContext.SaveChangesAsync();
 
                     return Ok($"Account with ID {id} successfully deleted.");

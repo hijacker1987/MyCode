@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
-import { postApi } from "../Services/Api";
+import { postStatApi } from "../Services/Api";
 import { useUser } from "../Services/UserContext";
 import { ErrorPage, Notify } from "../Pages/Services";
 import { homePage } from "../Services/Frontend.Endpoints";
@@ -18,10 +19,12 @@ const UserLogin = () => {
     const handleOnLogin = async (user) => {
         setLoading(true);
         try {
-            const data = await postApi(userLogin, user);
+            await postStatApi(userLogin, user);
+            const userId = Cookies.get('UI');
+            const userRole = Cookies.get('UR');
 
-            if (data.role) {
-                setUserData(data.role, data.userid);
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
                 Notify("Success", "Successful Login!");
                 navigate(homePage);
             } else {

@@ -23,7 +23,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -60,7 +60,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -107,7 +107,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id);
@@ -132,7 +132,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
@@ -205,7 +205,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 if (!ModelState.IsValid)
@@ -287,7 +287,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             try
             {
-                var tokenValidationResult = TokenHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

@@ -21,21 +21,6 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
         private readonly IWebHostEnvironment _environment = environment;
         private readonly ILogger<TokenService> _logger = logger;
 
-        public CookieOptions GetCookieOptions(HttpRequest request, DateTimeOffset time)
-        {
-            var extendedTime = time.AddMinutes(5);
-
-            return new CookieOptions
-            {
-                Domain = request.Host.Host,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Secure = true,
-                Expires = time,
-                MaxAge = TimeSpan.FromSeconds((extendedTime - DateTime.UtcNow).TotalSeconds)
-            };
-        }
-
         public string CreateToken(User user, IList<string> roles)
         {
             var issueAud = "";
@@ -64,9 +49,8 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             return tokenHandler.WriteToken(token);
         }
 
-        private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, string issueAud, DateTime expiration) =>
-            new(
-                issueAud,
+        private static JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, string issueAud, DateTime expiration) =>
+            new(issueAud,
                 issueAud,
                 claims,
                 notBefore: DateTime.UtcNow,
@@ -182,6 +166,8 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
                     user.RefreshToken = null;
                     response.Cookies.Delete(authCookie);
                     response.Cookies.Delete(refCookie);
+                    response.Cookies.Delete("UI");
+                    response.Cookies.Delete("UR");
 
                     _userManager.UpdateAsync(user).Wait();
                     _dataContext.SaveChangesAsync();
@@ -194,7 +180,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
             var token = CreateToken(user, roles);
             var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
 
-            response.Cookies.Append("Authorization", token, GetCookieOptions(request, DateTime.UtcNow.AddMinutes(accessTokenExp)));
+            response.Cookies.Append("Authorization", token, TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp)));
 
             _logger.LogInformation("Refresh went successfully!");
 
