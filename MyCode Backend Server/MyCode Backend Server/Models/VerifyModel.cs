@@ -3,6 +3,6 @@
     public class VerifyModel
     {
         public required string UserId { get; set; }
-        public required string Code { get; set; }
+        public required string Attachment { get; set; }
     }
 }
