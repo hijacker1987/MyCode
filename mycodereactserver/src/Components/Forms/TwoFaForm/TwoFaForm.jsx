@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 
 import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
-import { InputForm, InputWrapper } from "../../Styles/Input.styled";
-import { Form, FormColumn } from "../../Styles/Form.styled";
+import { InputForm } from "../../Styles/Input.styled";
+import { FormColumn } from "../../Styles/Form.styled";
 
-function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel, isEmailConfirmed, isTwoFactorEnabled }) {
+function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDisable, onCancel, isEmailConfirmed, isTwoFactorEnabled, isReliable }) {
     const [code, setCode] = useState("");
+    const [email, setEmail] = useState("");
     const [isCodeSubmitEnabled, setIsCodeSubmitEnabled] = useState(false);
     const [isDisableEnabled, setIsDisableEnabled] = useState(false);
+    const [isReliableEnabled, setIsReliableEnabled] = useState(false);
 
     useEffect(() => {
         if (!isEmailConfirmed && isTwoFactorEnabled) {
@@ -21,7 +23,13 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel, 
         } else {
             setIsDisableEnabled(false);
         }
-    }, [isEmailConfirmed, isTwoFactorEnabled]);
+
+        if (isReliable) {
+            setIsReliableEnabled(true);
+        } else {
+            setIsReliableEnabled(false);
+        }
+    }, [isEmailConfirmed, isTwoFactorEnabled, isReliable]);
 
     const handleEnable = async () => {
         try {
@@ -40,6 +48,15 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel, 
         }
     };
 
+    const handleSubmitAddress = async (e) => {
+        e.preventDefault();
+        try {
+            await onSubmitAddress(email);
+        } catch (error) {
+            console.error("Unsuccessful update", error);
+        }
+    };
+
     const handleDisable = async () => {
         try {
             await onDisable();
@@ -50,6 +67,14 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onDisable, onCancel, 
 
     return (
         <FormColumn onSubmit={handleSubmit}>
+            {!isReliableEnabled && (
+                <>
+                    <h3>Please provide a trustworthy e-mail provider (like Gmail) here:
+                    <InputForm type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </h3>
+                    <ButtonContainer type="button" onClick={handleSubmitAddress}>Update address</ButtonContainer>
+                </>
+            )}
             {!isDisableEnabled && (
                 <>
                     <h3>Press the button if You would like to setup the two factor authentication</h3>

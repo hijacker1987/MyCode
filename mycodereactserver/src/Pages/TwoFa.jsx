@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getStatApi, postStatApi, postStatExtApi } from "../Services/Api";
+import { getStatApi, patchExtApi, postStatApi, postStatExtApi } from "../Services/Api";
 import { ErrorPage, Notify } from "./Services";
-import { primary2fa, enable2fa, verify2fa, disable2fa } from "../Services/Backend.Endpoints";
+import { primary2fa, enable2fa, verify2fa, disable2fa, reliableAdd } from "../Services/Backend.Endpoints";
 import TwoFactorAuthenticationForm from "../Components/Forms/TwoFaForm/index";
 import Loading from "../Components/Loading/index";
 
@@ -12,6 +12,7 @@ const TwoFactorAuthentication = () => {
     const { userIdParam } = useParams();
     const [isEmailConfirmed, setEmailConfirmed] = useState(false);
     const [isTwoFactorEnabled, setTwoFactorEnabled] = useState(false);
+    const [reliableAddress, setReliableAddress] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
 
@@ -26,6 +27,7 @@ const TwoFactorAuthentication = () => {
                 setLoading(false);
                 setEmailConfirmed(data.emailConfirmed);
                 setTwoFactorEnabled(data.twoFactorEnabled);
+                setReliableAddress(data.isReliable);
             })
             .catch((error) => {
                 setLoading(false);
@@ -80,6 +82,25 @@ const TwoFactorAuthentication = () => {
             });
     }
 
+    const handleAddressUpdate = (address) => {
+        setLoading(true);
+        patchExtApi(reliableAdd, userIdParam, address)
+            .then((res) => {
+                setLoading(false);
+                navigate(-1);
+                if (res.status != 400) {
+                    Notify("Success", "Successful Verification!");
+                    handleUserBasic();
+                } else {
+                    Notify("Error", "Unable to Verify!");
+                }
+            })
+            .catch((error) => {
+                setLoading(false);
+                setError(`Error occurred during verifycation: ${error}`);
+            });
+    };
+
     const handleCancel = () => {
         navigate(-1);
     };
@@ -93,10 +114,12 @@ const TwoFactorAuthentication = () => {
             <TwoFactorAuthenticationForm
                 onEnable={handleSendEmailWithCode}
                 onSubmit={handleVerify2fa}
+                onSubmitAddress={handleAddressUpdate}
                 onDisable={handleDisable2fa}
                 onCancel={handleCancel}
                 isEmailConfirmed={isEmailConfirmed}
                 isTwoFactorEnabled={isTwoFactorEnabled}
+                isReliable={reliableAddress}
             />
         ) : (
             <ErrorPage errorMessage={errorMessage} />

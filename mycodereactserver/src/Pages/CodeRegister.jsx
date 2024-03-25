@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { ErrorPage, Notify } from "./Services";
 import { getApi, getStatApi, postApi, handleResponse } from "../Services/Api";
@@ -75,10 +75,12 @@ const CodeRegister = () => {
     return (
         <div>
             {errorMessage === "" ? (
-                !isEmailConfirmed && !isTwoFactorEnabled ? (
-                    <>
-                        <h3>Please verify Your account to be able to add/share Your knowledge</h3>
-                    </>
+                !isEmailConfirmed || !isTwoFactorEnabled ? (
+                    <h3>
+                        {!isEmailConfirmed && isTwoFactorEnabled && "Reliable email provider required!"}
+                        {!isEmailConfirmed && !isTwoFactorEnabled && "Reliable email provider and two-factor authentication required!"}
+                        {isEmailConfirmed && !isTwoFactorEnabled && "Two-factor authentication required!"}
+                    </h3>
                 ) : (
                     <CodeForm onSave={handleCreateCode} onCancel={handleCancel} />
                 )

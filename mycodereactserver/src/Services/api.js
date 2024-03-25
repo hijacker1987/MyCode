@@ -67,14 +67,14 @@ export const postStatApi = async (endpoint, userId) => {
     }
 };
 
-export const postStatExtApi = async (endpoint, userId, code) => {
+export const postStatExtApi = async (endpoint, userId, attachment) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ userId: userId, code: code }),
+        body: JSON.stringify({ userId: userId, attachment: attachment }),
     });
     if (response.status === 401) {
         return "Unauthorized";
@@ -91,6 +91,23 @@ export const patchApi = async (endpoint, user) => {
         },
         credentials: "include",
         body: JSON.stringify(user)
+    });
+    if (response.status === 401) {
+        return "Unauthorized";
+    } else {
+        const data = await response.json();
+        return data;
+    }
+};
+
+export const patchExtApi = async (endpoint, userId, attachment) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ userId: userId, attachment: attachment }),
     });
     if (response.status === 401) {
         return "Unauthorized";
