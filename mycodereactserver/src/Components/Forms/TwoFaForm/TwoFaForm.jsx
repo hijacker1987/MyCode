@@ -75,13 +75,13 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
                     <ButtonContainer type="button" onClick={handleSubmitAddress}>Update address</ButtonContainer>
                 </>
             )}
-            {!isDisableEnabled && (
+            {isReliableEnabled && !isDisableEnabled && (
                 <>
                     <h3>Press the button if You would like to setup the two factor authentication</h3>
                     <ButtonContainer type="button" onClick={handleEnable}>Enable Verification</ButtonContainer>
                 </>
             )}
-            {isCodeSubmitEnabled && (
+            {isReliableEnabled && isCodeSubmitEnabled && (
                 <>
                     <h3>
                         Please write Your unique two factor authentication code here:
@@ -90,7 +90,7 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
                     <ButtonContainer type="submit" onClick={handleSubmit}>Send</ButtonContainer>
                 </>
             )}
-            {isDisableEnabled && (
+            {isReliableEnabled && isDisableEnabled && (
                 <>
                     <h3>Press the button if You would like to revoke the two factor authentication</h3>
                     <ButtonContainer type="button" onClick={handleDisable}>Disable Verification</ButtonContainer>

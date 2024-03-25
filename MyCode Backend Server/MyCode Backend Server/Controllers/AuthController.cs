@@ -70,7 +70,7 @@ namespace MyCode_Backend_Server.Controllers
 
             try
             {
-                await _emailSender.SendEmailAsync(user.Email!, "Activate two factor authentication", $"Your unique code for activation: {code}");
+                await _emailSender.SendEmailAsync(user.ReliableEmail!, "Activate two factor authentication", $"Your unique code for activation: {code}");
                 _logger.LogInformation("Email sent with the code for 2fa.");
             }
             catch (Exception ex)
@@ -110,7 +110,7 @@ namespace MyCode_Backend_Server.Controllers
             if (!isValid)
                 return BadRequest("Invalid verification code");
 
-            if (user.Email!.EndsWith("@gmail.com"))
+            if (user.ReliableEmail!.EndsWith("@gmail.com"))
             {
                 user.EmailConfirmed = true;
                 await _dataContext.SaveChangesAsync();
