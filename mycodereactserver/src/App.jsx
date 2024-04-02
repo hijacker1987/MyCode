@@ -14,7 +14,7 @@ import { UsersList, CodesList } from "./Pages/Lists/index";
 import Layout from "./Pages/Layout/index";
 import Homepage from "./Components/Homepage";
 import UserLogin from "./Pages/Login";
-import UserRegister from "./Pages/Register";
+import UserRegister from "./Pages/UserRegister";
 import UserUpdate from "./Pages/UserUpdate";
 import TwoFactorAuthentication from "./Pages/TwoFa";
 import PwChange from "./Pages/PasswordChange";

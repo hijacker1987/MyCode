@@ -14,12 +14,25 @@ const UserRegister = () => {
 
     const handleCreateUser = (user) => {
         setLoading(true);
+        
+        if (user.displayname == "") {
+            user.displayname = "Anonymous";
+        } 
+        if (user.phoneNumber == "") {
+            user.phoneNumber = "No phone number provided";
+        }
+
         postApi(userRegistration, user)
             .then((res) => {
                 setLoading(false);
                 navigate("/");
+
                 if (res.status != 400) {
-                    Notify("Success", `Successful Registration for ${res.email}!`);
+                    if (res.email == undefined) {
+                        Notify("Error", "Unable to Register, e-mail already in use!");
+                    } else {
+                        Notify("Success", `Successful Registration for ${res.email}!`);
+                    }
                 } else {
                     Notify("Error", "Unable to Register!");
                 }

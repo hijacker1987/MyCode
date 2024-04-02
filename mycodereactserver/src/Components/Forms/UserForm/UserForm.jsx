@@ -31,8 +31,34 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [errorMessage, setError] = useState("");
 
+    const isValidEmail = (email) => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
+
+        if (!email) {
+            Notify("Error", "Please provide an e-mail address!");
+            return;
+        }
+        if (!isValidEmail(email)) {
+            Notify("Error", "Please provide a valid e-mail address!");
+            return;
+        }
+        if (!username) {
+            Notify("Error", "Please provide a user name!");
+            return;
+        }
+        if (!password) {
+            Notify("Error", "Please provide a password!");
+            return;
+        }
+        if (password.length < 8) {
+            Notify("Error", "Password has to be at least 8 characters long.");
+            return;
+        }
 
         try {
             setLoading(true);
