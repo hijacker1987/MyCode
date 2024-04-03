@@ -15,6 +15,9 @@ export const ButtonContainer = styled.button`/
   border: none;
   padding: 12px;
   gap: 12px;
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
 
@@ -59,6 +62,13 @@ export const ButtonContainer = styled.button`/
   &:active::before {
     transform: scale(0.7);
   }
+`;
+
+export const ButtonContainerWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    margin-left: 165%;
 `;
 
 export const CancelButtonWrapper = styled.div`
