@@ -19,6 +19,11 @@ const Login = ({ onLogin, user, onCancel }) => {
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        if (email == "Chuck Norris") {
+            window.location.href = "https://www.chucknorris.com";
+            return;
+        }
+
         try {
             setLoading(true); 
             
