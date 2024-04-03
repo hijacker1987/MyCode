@@ -10,7 +10,7 @@ import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
 
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
+import { ButtonContainer, ButtonContainerWrapper } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
@@ -24,6 +24,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [email, setEmail] = useState(user?.email ?? "");
     const [username, setUsername] = useState(user?.userName ?? "");
     const [password, setPassword] = useState(user?.password ?? "");
+    const [showPassword, setShowPassword] = useState(false);
     const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
     const [isRegistration, setIsRegistration] = useState(!user);
@@ -51,11 +52,27 @@ const UserForm = ({ onSave, user, onCancel }) => {
             Notify("Error", "Please provide a user name!");
             return;
         }
-        if (!password) {
+        if (!password && isRegistration) {
             Notify("Error", "Please provide a password!");
             return;
         }
-        if (password.length < 8) {
+        if (password == "chucknorris") {
+            Notify("Error", "That password can't be started with lowercase!!!");
+            return;
+        }
+        if (password == "Chucknorris") {
+            Notify("Error", "This specific password's second part can't be started with lowercase!!!");
+            return;
+        }
+        if (password == "chuckNorris") {
+            Notify("Error", "How dare You to not start your password with Uppercase!!!");
+            return;
+        }
+        if (password == "ChuckNorris") {
+            Notify("Error", "Password is too strong!!!");
+            return;
+        }
+        if (password.length < 8 && isRegistration) {
             Notify("Error", "Password has to be at least 8 characters long.");
             return;
         }
@@ -184,9 +201,12 @@ const UserForm = ({ onSave, user, onCancel }) => {
                                         id="password"
                                         placeholder="Set a Password"
                                         autoComplete="off"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                     />
                                 </InputWrapper>
+                                <ButtonContainerWrapper>
+                                    <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                                </ButtonContainerWrapper>
                             </>
                         )}
                     </FormRow>
