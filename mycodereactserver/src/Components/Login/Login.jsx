@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import Loading from "../Loading/index";
 
-import { ButtonContainer } from "../Styles/ButtonContainer.styled";
+import { ButtonContainer, ButtonContainerWrapper } from "../Styles/ButtonContainer.styled";
 import { InputForm, InputWrapper } from "../Styles/Input.styled";
 import { ButtonRowContainer } from "../Styles/ButtonRow.styled";
 import { TextContainer } from "../Styles/TextContainer.styled";
@@ -14,6 +14,7 @@ const Login = ({ onLogin, user, onCancel }) => {
     const [email, setEmail] = useState(user?.email ?? "");
     const [password, setPassword] = useState(user?.password ?? "");
     const [confirmPassword, setConfirmPassword] = useState(user?.confirmPassword ?? "");
+    const [showPassword, setShowPassword] = useState(false);
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -57,16 +58,20 @@ const Login = ({ onLogin, user, onCancel }) => {
                     <InputWrapper>
                         <InputForm
                             value={password}
-                            onChange={(e) => { setPassword(e.target.value);
-                                               setConfirmPassword(e.target.value);
-                                             }}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setConfirmPassword(e.target.value);
+                            }}
                             name="password"
                             id="password"
-                            placeholder="Password"
+                            placeholder="Set a Password"
                             autoComplete="off"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                         />
                     </InputWrapper>
+                    <ButtonContainerWrapper>
+                        <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                    </ButtonContainerWrapper>
                 </FormRow>
 
                 <ButtonRowContainer>

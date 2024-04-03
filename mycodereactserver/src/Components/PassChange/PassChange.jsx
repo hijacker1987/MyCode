@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import Loading from "../Loading/index";
 
-import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
+import { ButtonContainer, ButtonContainerWrapper } from "../../Components/Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../Styles/Input.styled";
 import { TextContainer } from "../Styles/TextContainer.styled";
@@ -14,6 +14,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
     const [currentPassword, setCurrentPassword] = useState(user?.currentPassword || "");
     const [newPassword, setNewPassword] = useState(user?.newPassword || "");
     const [confirmPassword, setConfirmPassword] = useState(user?.confirmPassword || "");
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         setEmail(user?.email || "");
@@ -68,7 +69,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             id="currentPassword"
                             placeholder="Old Password"
                             autoComplete="off"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                         />
                     </InputWrapper>
 
@@ -81,7 +82,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             id="newPassword"
                             placeholder="New Password"
                             autoComplete="off"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                         />
                     </InputWrapper>
                     <TextContainer>Confirm Password:</TextContainer>
@@ -93,9 +94,12 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             id="confirmPassword"
                             placeholder="Confirm Password"
                             autoComplete="off"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                         />
                     </InputWrapper>
+                    <ButtonContainerWrapper>
+                        <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                    </ButtonContainerWrapper>
                 </FormRow>
 
                 <ButtonRowContainer>
