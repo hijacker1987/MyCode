@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Service.Authentication
 {
-    public class AuthService(IConfiguration configuration, UserManager<User> userManager, ITokenService tokenService, ILogger<AuthService> logger) : IAuthService
+    public class AuthService(IConfiguration configuration,
+                             UserManager<User> userManager,
+                             ITokenService tokenService,
+                             ILogger<AuthService> logger) : IAuthService
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly UserManager<User> _userManager = userManager;
@@ -38,18 +42,6 @@ namespace MyCode_Backend_Server.Service.Authentication
                 await _userManager.AddToRoleAsync(user, "User");
                 return new AuthResult(user.Id.ToString(), true, email, username, displayname, phoneNumber, "");
             }
-        }
-
-        private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)
-        {
-            var authenticationResult = new AuthResult(id, false, email, username, "", "", "");
-
-            foreach (var identityError in result.Errors)
-            {
-                authenticationResult.ErrorMessages.Add(identityError.Code ?? "", identityError.Description);
-            }
-
-            return authenticationResult;
         }
 
         public async Task<AuthResult> LoginAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
@@ -147,6 +139,45 @@ namespace MyCode_Backend_Server.Service.Authentication
                                   managedUser.DisplayName,
                                   managedUser.PhoneNumber,
                                   accessToken);
+        }
+
+        public async Task<string> GetRoleStatusAsync(User user)
+        {
+            var result = await _userManager.GetRolesAsync(user);
+
+            return result.FirstOrDefault()!;
+        }
+
+        public async Task<string> SetRoleStatusAsync(User user)
+        {
+            var userRole = await GetRoleStatusAsync(user);
+
+            if (userRole == "User")
+            {
+                await _userManager.RemoveFromRoleAsync(user, "User");
+                await _userManager.AddToRoleAsync(user, "Admin");
+                _logger.LogInformation("Successfully set A role");
+            } 
+            else
+            {
+                await _userManager.RemoveFromRoleAsync(user, "Admin");
+                await _userManager.AddToRoleAsync(user, "User");
+                _logger.LogInformation("Successfully set U role");
+            }
+
+            return user.Email!;
+        }
+
+        private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)
+        {
+            var authenticationResult = new AuthResult(id, false, email, username, "", "", "");
+
+            foreach (var identityError in result.Errors)
+            {
+                authenticationResult.ErrorMessages.Add(identityError.Code ?? "", identityError.Description);
+            }
+
+            return authenticationResult;
         }
 
         private static AuthResult InvalidEmail(string email)
