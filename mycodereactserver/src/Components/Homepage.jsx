@@ -19,8 +19,8 @@ const Homepage = () => {
     const [visibleCodes, setVisibleCodes] = useState([]);
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
     const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
-    const [fontSize, setFontSize] = useState(16);
-    const [theme, setTheme] = useState("vs-dark");
+    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${userid}`) ?? 16);
+    const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
 
     useEffect(() => {
         const fetchVisibleCodes = async () => {
@@ -70,6 +70,20 @@ const Homepage = () => {
         cookieDataSync();
     }, []);
 
+    useEffect(() => {
+        const storedTheme = localStorage.getItem(`theme-${userid}`);
+        if (storedTheme !== theme) {
+            setTheme(storedTheme);
+        }
+    }, [theme, userid]);
+
+    useEffect(() => {
+        const storedFontSize = localStorage.getItem(`fontsize-${userid}`);
+        if (storedFontSize !== theme) {
+            setFontSize(storedFontSize);
+        }
+    }, [fontSize, userid]);
+
     return (
         <div>
             {!role && !userid ? (
@@ -102,13 +116,13 @@ const Homepage = () => {
 
                         <div>
                             <label htmlFor="fontSizeSelector"> Font Size: </label>
-                            <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
+                            <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
                                 {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                     <option key={size} value={size}>{size}</option>
                                 ))}
                             </select>
                             <label htmlFor="themeSelector"> Change Theme: </label>
-                            <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
+                            <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
                                 <option value="vs">Light</option>
                                 <option value="vs-dark">Dark</option>
                             </select>
