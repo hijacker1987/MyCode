@@ -39,10 +39,27 @@ export const toggleFullscreen = (editorRef, originalMeasure, setEditorMeasure) =
     }
 };
 
-export const changeFontSize = (e, setFontSize) => {
-    setFontSize(parseInt(e.target.value));
+export const changeFontSize = (e, setFontSize, userid) => {
+    const selectedFontSize = e.target.value;
+    setFontSize(parseInt(selectedFontSize));
+
+    localStorage.setItem(`fontsize-${userid}`, selectedFontSize);
+
+    const storedFontSize = localStorage.getItem(`fontsize-${userid}`);
+    if (storedFontSize) {
+        setFontSize(storedFontSize);
+    }
 };
 
-export const changeTheme = (e, setTheme) => {
-    setTheme(e.target.value);
+export const changeTheme = (e, setTheme, userid) => {
+    const selectedTheme = e.target.value;
+    setTheme(selectedTheme);
+
+    localStorage.setItem(`theme-${userid}`, selectedTheme);
+
+    const storedTheme = localStorage.getItem(`theme-${userid}`);
+    if (storedTheme) {
+        setTheme(storedTheme);
+    }
 };
+

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
+import Cookies from "js-cookie";
 
 import { deleteApi } from "../../Services/Api";
 import { ErrorPage, Notify } from "../Services";
@@ -67,7 +68,17 @@ const Layout = () => {
     const handleOnGoogle = async () => {
         setLoading(true);
         try {
-            window.location.href = `${backendUrl}${googleLogin}`;
+            window.location.href = await `${backendUrl}${googleLogin}`;
+
+            const userId = Cookies.get('UI');
+            const userRole = Cookies.get('UR');
+
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
+                Notify("Success", "Successful Login via Google!");
+            } else {
+                Notify("Error", "Probably invalid username or password. Please try again.");
+            }
         } catch (error) {
             setError(`Error occurred during login: ${error}`);
         } finally {

@@ -4,20 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 
 namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
     [Route("/admin")]
-    public class AdminController(ITokenService tokenService, ILogger<AdminController> logger, DataContext dataContext) : ControllerBase
+    public class AdminController(ITokenService tokenService, IAuthService authService, ILogger<AdminController> logger, DataContext dataContext) : ControllerBase
     {
         private readonly ITokenService _tokenService = tokenService;
+        private readonly IAuthService _authService = authService;
         private readonly ILogger<AdminController> _logger = logger;
         private readonly DataContext _dataContext = dataContext;
 
         [HttpGet("getUsers"), Authorize(Roles = "Admin")]
-        public ActionResult<List<User>> GetAllUsers()
+        public async Task<ActionResult<List<UserWithRole>>> GetAllUsersAsync()
         {
             try
             {
@@ -25,15 +27,23 @@ namespace MyCode_Backend_Server.Controllers
                 if (tokenValidationResult != null) return tokenValidationResult;
 
                 var users = _dataContext.Users.ToList();
-                var returningList = users.Where(user => user != null).ToList();
+                var usersList = users.Where(user => user != null).ToList();
 
-                if (returningList.Count == 0)
+                if (usersList.Count == 0)
                 {
                     _logger.LogInformation("There are no users in the database.");
-                    return Ok(returningList);
+                    return Ok(usersList);
                 }
 
-                return Ok(returningList);
+                var returnList = new List<UserWithRole>();
+
+                foreach ( var user in usersList )
+                {
+                    var result = new UserWithRole(user, await _authService.GetRoleStatusAsync(user));
+                    returnList.Add(result);
+                }
+
+                return Ok(returnList);
             }
             catch (Exception e)
             {
@@ -57,7 +67,9 @@ namespace MyCode_Backend_Server.Controllers
                     return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
                 }
 
-                var response = new UserRegResponse(id.ToString(), user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!);
+                var role = await _authService.GetRoleStatusAsync(user);
+
+                var response = new UserRegResponse(id.ToString(), user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!, role);
 
                 return Ok(response);
             }
@@ -162,6 +174,38 @@ namespace MyCode_Backend_Server.Controllers
                 _dataContext.SaveChanges();
 
                 return Ok(existingCode);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error: {e.Message}", e);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("asupdate"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<RoleStatusResponse>> UpdateStatus([FromBody] RoleStatusRequest request)
+        {
+            try
+            {
+                var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
+                if (tokenValidationResult != null) return tokenValidationResult;
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var existingUser = await _dataContext.Users!.FirstOrDefaultAsync(u => u.Email == request.Status);
+
+                if (existingUser == null)
+                {
+                    _logger.LogInformation($"User with {request.Status} not found.");
+                    return NotFound();
+                }
+
+                var result = new RoleStatusResponse(await _authService.SetRoleStatusAsync(existingUser));
+
+                return Ok(result);
             }
             catch (Exception e)
             {

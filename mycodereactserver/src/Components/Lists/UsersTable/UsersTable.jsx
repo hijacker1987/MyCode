@@ -34,7 +34,10 @@ export const UsersTable = ({ users, headers, role, page }) => {
     }, [page, recordPerPage]);
 
     useEffect(() => {
-        setUpdatedUsers(users);
+        if (users != null) {
+            const updatedUsers = users.map(({ user, role }) => ({ ...user, role }));
+            setUpdatedUsers(updatedUsers);
+        }
     }, [users]);
 
     if (!updatedUsers || updatedUsers.length === 0) {
@@ -142,6 +145,7 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                     <StyledTd>{user.userName}</StyledTd>
                                     <StyledTd>{user.email}</StyledTd>
                                     <StyledTd>{user.phoneNumber}</StyledTd>
+                                    <StyledTd>{user.role}</StyledTd>
                                     <StyledTd>
                                         <Link to={`${uUpdate}${user.id}`} >
                                             <ButtonContainer type="button">Edit</ButtonContainer>
@@ -184,11 +188,11 @@ export const UsersTable = ({ users, headers, role, page }) => {
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
-                                        Cancel
-                                    </ButtonContainer>
                                     <ButtonContainer onClick={confirmDelete}>
                                         Delete
+                                    </ButtonContainer>
+                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
+                                        Cancel
                                     </ButtonContainer>
                                 </ButtonRowContainer>
                             </Modal.Footer>

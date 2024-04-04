@@ -10,13 +10,13 @@ import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
 
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
+import { ButtonContainer, ButtonContainerWrapper } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormRow } from "../../Styles/Form.styled";
 
-const UserForm = ({ onSave, user, onCancel }) => {
+const UserForm = ({ onSave, onRole, user, onCancel }) => {
     const navigate = useNavigate();
     const { userData, setUserData } = useUser();
     const { role } = userData;
@@ -24,6 +24,8 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [email, setEmail] = useState(user?.email ?? "");
     const [username, setUsername] = useState(user?.userName ?? "");
     const [password, setPassword] = useState(user?.password ?? "");
+    const [userRole, setUserRole] = useState(user?.role ?? "");
+    const [showPassword, setShowPassword] = useState(false);
     const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
     const [isRegistration, setIsRegistration] = useState(!user);
@@ -31,8 +33,50 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [errorMessage, setError] = useState("");
 
+    const isValidEmail = (email) => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
+
+        if (!email) {
+            Notify("Error", "Please provide an e-mail address!");
+            return;
+        }
+        if (!isValidEmail(email)) {
+            Notify("Error", "Please provide a valid e-mail address!");
+            return;
+        }
+        if (!username) {
+            Notify("Error", "Please provide a user name!");
+            return;
+        }
+        if (!password && isRegistration) {
+            Notify("Error", "Please provide a password!");
+            return;
+        }
+        if (password == "chucknorris") {
+            Notify("Error", "That password can't be started with lowercase!!!");
+            return;
+        }
+        if (password == "Chucknorris") {
+            Notify("Error", "This specific password's second part can't be started with lowercase!!!");
+            return;
+        }
+        if (password == "chuckNorris") {
+            Notify("Error", "How dare You to not start your password with Uppercase!!!");
+            return;
+        }
+        if (password == "ChuckNorris") {
+            Notify("Error", "Password is too strong!!!");
+            return;
+        }
+        if (password.length < 8 && isRegistration) {
+            Notify("Error", "Password has to be at least 8 characters long.");
+            return;
+        }
 
         try {
             setLoading(true);
@@ -158,11 +202,37 @@ const UserForm = ({ onSave, user, onCancel }) => {
                                         id="password"
                                         placeholder="Set a Password"
                                         autoComplete="off"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                     />
+                                </InputWrapper>
+                                <ButtonContainerWrapper>
+                                    <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                                </ButtonContainerWrapper>
+                            </>
+                        )}
+
+                        {user && role === "Admin" && (
+                            <>
+                                <TextContainer>Role:</TextContainer>
+                                <InputWrapper>
+                                    <InputForm
+                                        value={userRole}
+                                        onChange={(e) => setUserRole(e.target.value)}
+                                        name="userrole"
+                                        id="userrole"
+                                        placeholder=""
+                                        autoComplete="on"
+                                        readOnly
+                                    />
+                                    <ButtonContainerWrapper>
+                                        <ButtonContainer type="button" onClick={() => onRole(user.email)}>
+                                            Change Role
+                                        </ButtonContainer>
+                                    </ButtonContainerWrapper>
                                 </InputWrapper>
                             </>
                         )}
+
                     </FormRow>
 
                     {user && role === "User" && (
@@ -207,11 +277,11 @@ const UserForm = ({ onSave, user, onCancel }) => {
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
-                                        Cancel
-                                    </ButtonContainer>
                                     <ButtonContainer onClick={confirmDelete}>
                                         Delete
+                                    </ButtonContainer>
+                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
+                                        Cancel
                                     </ButtonContainer>
                                 </ButtonRowContainer>
                             </Modal.Footer>

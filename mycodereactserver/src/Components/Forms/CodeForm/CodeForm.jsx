@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 
+import { useUser } from "../../../Services/UserContext";
 import { ErrorPage, codeTypeOptions, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
 import Loading from "../../Loading/index";
 
@@ -13,6 +14,8 @@ import { Form, FormColumn } from "../../Styles/Form.styled";
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
     const originalEditorMeasure = ["25vh", "90vh"];
+    const { userData, setUserData } = useUser();
+    const { userid } = userData;
     const [loading, setLoading] = useState(false);
     const [codeTitle, setCodeTitle] = useState(code?.codeTitle ?? "");
     const [myCode, setMyCode] = useState(code?.myCode ?? "");
@@ -21,8 +24,8 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
     const [otherCodeType, setOtherCodeType] = useState("");
     const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
-    const [fontSize, setFontSize] = useState(16);
-    const [theme, setTheme] = useState("vs-dark");
+    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${userid}`) ?? 16);
+    const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
     const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
@@ -138,13 +141,13 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                     />
                                     <div>
                                         <label htmlFor="fontSizeSelector"> Font Size: </label>
-                                        <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize)} value={fontSize}>
+                                        <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
                                             {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                                 <option key={size} value={size}>{size}</option>
                                             ))}
                                         </select>
                                         <label htmlFor="themeSelector"> Change Theme: </label>
-                                        <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme)} value={theme}>
+                                        <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
                                             <option value="vs">Light</option>
                                             <option value="vs-dark">Dark</option>
                                         </select>

@@ -44,6 +44,7 @@ const u = "users/";
     //PUT
     export const userSuperUpdate = `${a}aupdate-`;          //{id}
     export const codeSuperUpdate = `${a}acupdate-`;         //{id}
+    export const changeRole = `${a}asupdate`;
 
     //DELETE
     export const deleteSuperUser = `${a}aduser-`;           //{id}
