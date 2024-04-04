@@ -210,6 +210,29 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                 </ButtonContainerWrapper>
                             </>
                         )}
+
+                        {user && role === "Admin" && (
+                            <>
+                                <TextContainer>Role:</TextContainer>
+                                <InputWrapper>
+                                    <InputForm
+                                        value={userRole}
+                                        onChange={(e) => setUserRole(e.target.value)}
+                                        name="userrole"
+                                        id="userrole"
+                                        placeholder=""
+                                        autoComplete="on"
+                                        readOnly
+                                    />
+                                    <ButtonContainerWrapper>
+                                        <ButtonContainer type="button" onClick={() => onRole(user.email)}>
+                                            Change Role
+                                        </ButtonContainer>
+                                    </ButtonContainerWrapper>
+                                </InputWrapper>
+                            </>
+                        )}
+
                     </FormRow>
 
                     {user && role === "User" && (
@@ -224,26 +247,6 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                 Delete Account
                             </ButtonContainer>
                         </ButtonRowContainer>
-                    )}
-
-                    {user && role === "Admin" && (
-                        <>
-                            <TextContainer>Role:</TextContainer>
-                            <InputWrapper>
-                                <InputForm
-                                    value={userRole}
-                                    onChange={(e) => setUserRole(e.target.value)}
-                                    name="userrole"
-                                    id="userrole"
-                                    placeholder=""
-                                    autoComplete="on"
-                                    readOnly
-                                />
-                            </InputWrapper>
-                            <ButtonContainer type="button" onClick={() => onRole(user.email)}>
-                                Change Role
-                            </ButtonContainer>
-                        </>
                     )}
 
                     <ButtonRowContainer>
