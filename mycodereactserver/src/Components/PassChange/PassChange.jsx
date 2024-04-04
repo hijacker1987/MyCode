@@ -96,10 +96,10 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             autoComplete="off"
                             type={showPassword ? "text" : "password"}
                         />
-                    </InputWrapper>
                     <ButtonContainerWrapper>
                         <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
                     </ButtonContainerWrapper>
+                    </InputWrapper>
                 </FormRow>
 
                 <ButtonRowContainer>

@@ -65,10 +65,10 @@ export const ButtonContainer = styled.button`/
 `;
 
 export const ButtonContainerWrapper = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 8px;
-    margin-left: 165%;
+    display: center;
+    justify-content: center;
+    margin-top: -19.5%;
+    margin-left: 105%;
 `;
 
 export const CancelButtonWrapper = styled.div`

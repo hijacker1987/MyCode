@@ -73,10 +73,10 @@ const Login = ({ onLogin, user, onCancel }) => {
                             autoComplete="off"
                             type={showPassword ? "text" : "password"}
                         />
+                        <ButtonContainerWrapper>
+                            <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                        </ButtonContainerWrapper>
                     </InputWrapper>
-                    <ButtonContainerWrapper>
-                        <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
-                    </ButtonContainerWrapper>
                 </FormRow>
 
                 <ButtonRowContainer>
