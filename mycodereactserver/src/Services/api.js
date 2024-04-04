@@ -43,6 +43,7 @@ export const postApi = async (endpoint, user) => {
         credentials: "include",
         body: JSON.stringify(user),
     });
+    
     if (response.status === 401) {
         return "Unauthorized";
     } else {
