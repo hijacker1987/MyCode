@@ -94,8 +94,16 @@ namespace MyCode_Backend_Server
                     })
                     .AddGoogle("Google", options =>
                     {
-                        options.ClientId = _configuration["GoogleClientId"]!;
-                        options.ClientSecret = _configuration["GoogleClientSecret"]!;
+                        if (_environment.IsEnvironment("Test"))
+                        {
+                            options.ClientId = "GoogleTestClientId"!;
+                            options.ClientSecret = "GoogleTestClientSecret"!;
+                        }
+                        else if (_environment.IsEnvironment("Development"))
+                        {
+                            options.ClientId = _configuration["GoogleClientId"]!;
+                            options.ClientSecret = _configuration["GoogleClientSecret"]!;
+                        }
                     })
                     .AddJwtBearer(options =>
                     {

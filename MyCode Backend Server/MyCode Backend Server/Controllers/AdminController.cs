@@ -200,6 +200,11 @@ namespace MyCode_Backend_Server.Controllers
                 if (existingUser == null)
                 {
                     _logger.LogInformation($"User with {request.Status} not found.");
+                    return BadRequest(request);
+                }
+
+                if (existingUser.UserName == HttpContext.User.Identity?.Name)
+                {
                     return NotFound();
                 }
 

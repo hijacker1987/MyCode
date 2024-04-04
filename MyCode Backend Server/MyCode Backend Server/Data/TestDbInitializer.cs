@@ -41,6 +41,7 @@ namespace MyCode_Backend_Server.Data
             {
                 var testUsers = Enumerable.Range(1, 10).Select(i => new User
                 {
+                    ReliableEmail = $"tester{i}@gmail.com",
                     UserName = $"Tester{i}",
                     Email = $"tester{i}@test.com",
                     DisplayName = $"{i}. test {userNames[random.Next(userNames.Count)]}",

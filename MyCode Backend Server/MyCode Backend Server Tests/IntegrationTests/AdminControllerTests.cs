@@ -99,7 +99,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             });
 
             var response = await client.GetAsync("/admin/user-by-123");
-
+            
             Assert.True(response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound);
         }
 

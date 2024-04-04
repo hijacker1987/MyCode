@@ -1,6 +1,4 @@
-﻿using Azure;
-using MyCode_Backend_Server.Contracts.Services;
-using MyCode_Backend_Server.Service.Authentication;
+﻿using MyCode_Backend_Server.Contracts.Services;
 using Newtonsoft.Json;
 using System.Text;
 

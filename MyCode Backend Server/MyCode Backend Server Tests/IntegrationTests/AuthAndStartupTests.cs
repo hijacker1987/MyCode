@@ -20,10 +20,10 @@ using Microsoft.Extensions.Logging;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
-    public class AuthAndStartupTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
-           : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
+    public class AuthAndStartupTests(CustomWebApplicationFactory<Program> factory)
+           : IClassFixture<CustomWebApplicationFactory<Program>>
     {
-        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
+        private readonly CustomWebApplicationFactory<Program> _factory = factory;
 
         [Fact]
         public async Task ChangePasswordAsync_NotLoggedIn_ReturnsUnauthorized()
