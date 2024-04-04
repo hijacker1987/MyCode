@@ -74,9 +74,11 @@ const UserUpdate = () => {
         postApi(changeRole, requestData)
             .then((data) => {
                 setLoading(false);
-
+                console.log(data);
                 if (data === "Unauthorized") {
                     handleResponse(data, navigate, setUserData);
+                } else if (data.status == 404) {
+                    Notify("Error", "Unable to Change OWN Role!");
                 } else if (data) {
                     navigate(-1);
                     Notify("Success", "Successful Role Change!");
