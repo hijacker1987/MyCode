@@ -16,9 +16,10 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
   - Edit and delete your codes as You desire.
   - Explore codes by visibility or user to extend Your knowledge.
   - Now able to login via Google Account
+  - Local storage for Monaco Editor setup (for each logged in user)
 
 The backend is built on the ASP.NET 8 framework, with the main goals of being/having:
-  - Secure /for example: 2fa/
+  - Secure /for example: mfa (which obsolete 2fa)/
   - Transparent
   - Easy to use
   - Object-Oriented
