@@ -33,6 +33,9 @@ export const InputForm = styled.input`
   background: black !important;
   color: #e81cff;
   border-radius: 8px;
+  font-family: Vancouver, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
 `;
 
 export const SelectForm = styled.select`

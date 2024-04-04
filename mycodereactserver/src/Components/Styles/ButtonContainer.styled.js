@@ -9,13 +9,13 @@ export const ButtonContainer = styled.button`/
   background-color: #000;
   display: flex;
   align-items: center;
-  color: green;
+  color: rgba(0, 255, 0, 0.6);
   flex-direction: column;
   justify-content: center;
   border: none;
   padding: 12px;
   gap: 12px;
-  font-family: Inter, sans-serif;
+  font-family: Inter;
   font-size: 15px;
   font-weight: bold;
   border-radius: 8px;

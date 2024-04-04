@@ -22,7 +22,6 @@ export const TextContainer = styled.div`
   background-color: #000;
   display: flex;
   align-items: center;
-  color: green;
   flex-direction: column;
   justify-content: center;
   border: none;
@@ -30,7 +29,10 @@ export const TextContainer = styled.div`
   gap: 12px;
   border-radius: 8px;
   animation: ${wave} 10s infinite linear;
-  color: darkgreen;
+  color: lightgreen;
+  font-family: Script, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
 
   &::before {
     content: '';
