@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { ErrorPage, Notify } from "./Services";
 import { useUser } from "../Services/UserContext";
-import { getApi, putApi, handleResponse } from "../Services/Api";
-import { getUser, userById, userUpdate, userSuperUpdate } from "../Services/Backend.Endpoints";
+import { getApi, postApi, putApi, handleResponse } from "../Services/Api";
+import { getUser, userById, userUpdate, userSuperUpdate, changeRole } from "../Services/Backend.Endpoints";
 import UserForm from "../Components/Forms/UserForm/index";
 import Loading from "../Components/Loading/index";
 
@@ -67,6 +67,29 @@ const UserUpdate = () => {
             });
     };
 
+    const handleOnRole = (userToChange) => {
+        setLoading(true);
+        const requestData = { status: userToChange };
+
+        postApi(changeRole, requestData)
+            .then((data) => {
+                setLoading(false);
+
+                if (data === "Unauthorized") {
+                    handleResponse(data, navigate, setUserData);
+                } else if (data) {
+                    navigate(-1);
+                    Notify("Success", "Successful Role Change!");
+                } else {
+                    Notify("Error", "Unable to Change Role!");
+                }
+            })
+            .catch((error) => {
+                setLoading(false);
+                setError(`Error occurred during role change: ${error}`);
+            });
+    };
+
     const handleCancel = () => {
         navigate(-1);
     };
@@ -79,6 +102,7 @@ const UserUpdate = () => {
                 {errorMessage == "" ? (
                     <UserForm
                         onSave={handleOnSave}
+                        onRole={handleOnRole}
                         user={user}
                         role={role}
                         onCancel={handleCancel}

@@ -16,7 +16,7 @@ import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
 import { Form, FormRow } from "../../Styles/Form.styled";
 
-const UserForm = ({ onSave, user, onCancel }) => {
+const UserForm = ({ onSave, onRole, user, onCancel }) => {
     const navigate = useNavigate();
     const { userData, setUserData } = useUser();
     const { role } = userData;
@@ -24,6 +24,7 @@ const UserForm = ({ onSave, user, onCancel }) => {
     const [email, setEmail] = useState(user?.email ?? "");
     const [username, setUsername] = useState(user?.userName ?? "");
     const [password, setPassword] = useState(user?.password ?? "");
+    const [userRole, setUserRole] = useState(user?.role ?? "");
     const [showPassword, setShowPassword] = useState(false);
     const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
@@ -223,6 +224,26 @@ const UserForm = ({ onSave, user, onCancel }) => {
                                 Delete Account
                             </ButtonContainer>
                         </ButtonRowContainer>
+                    )}
+
+                    {user && role === "Admin" && (
+                        <>
+                            <TextContainer>Role:</TextContainer>
+                            <InputWrapper>
+                                <InputForm
+                                    value={userRole}
+                                    onChange={(e) => setUserRole(e.target.value)}
+                                    name="userrole"
+                                    id="userrole"
+                                    placeholder=""
+                                    autoComplete="on"
+                                    readOnly
+                                />
+                            </InputWrapper>
+                            <ButtonContainer type="button" onClick={() => onRole(user.email)}>
+                                Change Role
+                            </ButtonContainer>
+                        </>
                     )}
 
                     <ButtonRowContainer>
