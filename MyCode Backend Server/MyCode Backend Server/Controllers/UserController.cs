@@ -68,7 +68,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 await _emailSender.SendEmailAsync(request.Email, subject, message);
 
-                return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!, result.DisplayName!, result.PhoneNumber!));
+                return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!, result.DisplayName!, result.PhoneNumber!, ""));
             }
             catch (Exception e)
             {
