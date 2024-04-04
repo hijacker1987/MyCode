@@ -277,11 +277,11 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
-                                        Cancel
-                                    </ButtonContainer>
                                     <ButtonContainer onClick={confirmDelete}>
                                         Delete
+                                    </ButtonContainer>
+                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
+                                        Cancel
                                     </ButtonContainer>
                                 </ButtonRowContainer>
                             </Modal.Footer>
