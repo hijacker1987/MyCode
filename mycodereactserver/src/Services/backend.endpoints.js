@@ -1,5 +1,6 @@
 const a = "admin/";
 const au = "auth/";
+const ac = "account/";
 const c = "codes/";
 const u = "users/";
 
@@ -57,3 +58,5 @@ const u = "users/";
     export const verify2fa = `${au}verifyTwoFactor`;
     export const disable2fa = `${au}disableTwoFactor`;
     export const reliableAdd = `${au}addReliableAddress`;
+    export const googleLogin = `${ac}google-login`;
+    export const facebookLogin = `${ac}facebook-login`;
