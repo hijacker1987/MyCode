@@ -101,7 +101,7 @@ namespace MyCode_Backend_Server.Service.Authentication
                                   accessToken);
         }
 
-        public async Task<AuthResult> LoginGoogleAsync(string email, HttpRequest request, HttpResponse response)
+        public async Task<AuthResult> LoginExternalAsync(string email, HttpRequest request, HttpResponse response)
         {
             var managedUser = await _userManager.FindByEmailAsync(email);
 
