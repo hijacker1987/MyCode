@@ -6,8 +6,8 @@ import Cookies from "js-cookie";
 import { deleteApi } from "../../Services/Api";
 import { ErrorPage, Notify } from "../Services";
 import { useUser, logoutUser } from "../../Services/UserContext";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage, googleLogin } from "../../Services/Frontend.Endpoints";
-import { recentChuckNorris, revoke } from "../../Services/Backend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
+import { facebookLogin, googleLogin, recentChuckNorris, revoke } from "../../Services/Backend.Endpoints";
 import { backendUrl } from "../../Services/Config";
 import Loading from "../../Components/Loading/index";
 
@@ -86,6 +86,27 @@ const Layout = () => {
         }
     };
 
+    const handleOnFacebook = async () => {
+        setLoading(true);
+        try {
+            window.location.href = await `${backendUrl}${facebookLogin}`;
+
+            const userId = Cookies.get('UI');
+            const userRole = Cookies.get('UR');
+
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
+                Notify("Success", "Successful Login via Facebook!");
+            } else {
+                Notify("Error", "Probably invalid username or password. Please try again.");
+            }
+        } catch (error) {
+            setError(`Error occurred during login: ${error}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (logoutSuccess !== null) {
             if (logoutSuccess) {
@@ -121,6 +142,9 @@ const Layout = () => {
                                     </Link>
                                     <ButtonContainer type="button" onClick={handleOnGoogle}>
                                         Google Login
+                                    </ButtonContainer>
+                                    <ButtonContainer type="button" onClick={handleOnFacebook}>
+                                        Facebook Login
                                     </ButtonContainer>
                                 </ButtonRowButtonContainer>
                             )}
