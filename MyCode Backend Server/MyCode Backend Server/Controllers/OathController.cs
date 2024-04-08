@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using Microsoft.AspNetCore.Authentication.Facebook;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -56,11 +57,11 @@ namespace MyCode_Backend_Server.Controllers
                 var username = claims.ElementAtOrDefault(0)?.Value!;
                 var displayName = claims.ElementAtOrDefault(1)?.Value!;
 
-                var loginResult = await _authenticationService.LoginGoogleAsync(email, Request, Response);
+                var loginResult = await _authenticationService.LoginExternalAsync(email, Request, Response);
 
                 if (!loginResult.Success)
                 {
-                    var regPass = await RegisterGoogleAccAsync(email, username, displayName);
+                    var regPass = await RegisterExternalAccAsync(email, username, displayName, "Googler");
 
                     loginResult = await _authenticationService.LoginAsync(email, regPass, regPass, Request, Response);
                 }
@@ -100,7 +101,80 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        private async Task<string> RegisterGoogleAccAsync(string email, string username, string displayName)
+        [AllowAnonymous]
+        [HttpGet("facebook-login")]
+        public async Task FacebookLogin() => await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme,
+                new AuthenticationProperties { RedirectUri = Url.Action(nameof(FacebookResponse)) });
+
+        [AllowAnonymous]
+        [HttpGet("facebook-response")]
+        public async Task<IActionResult> FacebookResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (result?.Principal != null)
+            {
+                var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new
+                {
+                    claim.Issuer,
+                    claim.OriginalIssuer,
+                    claim.Type,
+                    claim.Value
+                });
+
+                var email = claims.ElementAtOrDefault(1)?.Value!;
+                var username = claims.ElementAtOrDefault(0)?.Value!;
+                var displayName = claims.ElementAtOrDefault(2)?.Value!;
+                foreach (var claim in claims)
+                {
+                    Console.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
+                }
+                
+                var loginResult = await _authenticationService.LoginExternalAsync(email, Request, Response);
+
+                if (!loginResult.Success)
+                {
+                    var regPass = await RegisterExternalAccAsync(email, username, displayName, "Facebook user");
+
+                    loginResult = await _authenticationService.LoginAsync(email, regPass, regPass, Request, Response);
+                }
+
+                if (loginResult.Success)
+                {
+                    var managedUser = await _userManager.FindByEmailAsync(email);
+                    if (managedUser == null)
+                    {
+                        return NotFound("User not found.");
+                    }
+
+                    var roles = await _userManager.GetRolesAsync(managedUser);
+                    await _userManager.AddToRolesAsync(managedUser, roles);
+
+                    managedUser.LastTimeLogin = DateTime.UtcNow;
+
+                    await _userManager.UpdateAsync(managedUser);
+                    await _dataContext.SaveChangesAsync();
+
+                    var userId = managedUser.Id.ToString();
+                    var userRole = roles.FirstOrDefault();
+
+                    Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+                    Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+
+                    return Redirect($"https://localhost:5173/myCodeHome/");
+                }
+                else
+                {
+                    return BadRequest("Failed to login user");
+                }
+            }
+            else
+            {
+                return BadRequest("Authentication failed");
+            }
+        }
+
+        private async Task<string> RegisterExternalAccAsync(string email, string username, string displayName, string externalLoginMethod)
         {
             var generatedPassword = GeneratePassword();
             await _authenticationService.RegisterAsync(email,
@@ -109,7 +183,7 @@ namespace MyCode_Backend_Server.Controllers
                                                        displayName,
                                                        "");
 
-            var subject = "Greetings Googler, Welcome to My Code!!!";
+            var subject = $"Greetings {externalLoginMethod}, Welcome to My Code!!!";
 
             var message = $"{displayName}, Your automatically generated password to the website is: {generatedPassword} Thank You very much to use my application, ENJOY IT!";
 

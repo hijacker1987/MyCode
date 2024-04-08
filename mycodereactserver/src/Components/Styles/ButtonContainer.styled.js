@@ -67,8 +67,15 @@ export const ButtonContainer = styled.button`/
 export const ButtonContainerWrapper = styled.div`
     display: center;
     justify-content: center;
-    margin-top: -19.5%;
-    margin-left: 105%;
+    margin-top: 10%;
+    margin-left:25%;
+`;
+
+export const ButtonRegContainerWrapper = styled.div`
+    display: center;
+    justify-content: center;
+    margin-top: 10%;
+    margin-left: 155%;
 `;
 
 export const CancelButtonWrapper = styled.div`

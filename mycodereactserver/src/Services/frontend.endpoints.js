@@ -5,7 +5,6 @@ const u = "/account/";
 //SERVICE
 export const homePage = "/myCodeHome";
 export const errorOccured = "/somethingWentWrong";
-export const googleLogin = "account/google-login";
 
 //USERS
 export const uReg = `${u}register`;

@@ -105,6 +105,19 @@ namespace MyCode_Backend_Server
                             options.ClientSecret = _configuration["GoogleClientSecret"]!;
                         }
                     })
+                    .AddFacebook("Facebook", options =>
+                    {
+                        if (_environment.IsEnvironment("Test"))
+                        {
+                            options.ClientId = "FacebookTestClientId"!;
+                            options.ClientSecret = "FacebookTestClientSecret"!;
+                        }
+                        else if (_environment.IsEnvironment("Development"))
+                        {
+                            options.ClientId = _configuration["FacebookClientId"]!;
+                            options.ClientSecret = _configuration["FacebookClientSecret"]!;
+                        }
+                    })
                     .AddJwtBearer(options =>
                     {
                         var issuer = "";

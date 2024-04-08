@@ -10,7 +10,7 @@ import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
 
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import { ButtonContainer, ButtonContainerWrapper } from "../../Styles/ButtonContainer.styled";
+import { ButtonContainer, ButtonRegContainerWrapper, ButtonContainerWrapper } from "../../Styles/ButtonContainer.styled";
 import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
 import { InputForm, InputWrapper } from "../../Styles/Input.styled";
 import { TextContainer } from "../../Styles/TextContainer.styled";
@@ -70,7 +70,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
             return;
         }
         if (password == "ChuckNorris") {
-            Notify("Error", "Password is too strong!!!");
+            Notify("Error", "Password is too strong, also Real Chuck Norris registered already!!!");
             return;
         }
         if (password.length < 8 && isRegistration) {
@@ -205,9 +205,9 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                         type={showPassword ? "text" : "password"}
                                     />
                                 </InputWrapper>
-                                <ButtonContainerWrapper>
+                                <ButtonRegContainerWrapper>
                                     <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
-                                </ButtonContainerWrapper>
+                                </ButtonRegContainerWrapper>
                             </>
                         )}
 

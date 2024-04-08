@@ -65,6 +65,24 @@ namespace MyCode_Backend_Server.Data
                     await userManager.AddToRoleAsync(user, "User");
                 }
             }
+
+            var gUser = new User
+            {
+                UserName = "GoogleUser",
+                Email = "googleuser@gmail.com",
+                DisplayName = "Googler",
+                PhoneNumber = "123456",
+                TwoFactorEnabled = true,
+                EmailConfirmed = true
+            };
+
+            var gUserResult = await userManager.CreateAsync(gUser, "Password");
+
+            if (gUserResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(gUser, "User");
+            }
+
             context.SaveChanges();
 
             foreach (var user in users)
