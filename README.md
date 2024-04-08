@@ -7,7 +7,7 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
 **ONGOING Project!**
 
 ## Backend Installation Instructions
-  - Install the .NET SDK 8.0.1.
+  - Install the .NET SDK 8.0.203
   - Install dependencies.
   - Set up the database connections, and other needs through the `secrets.json`, and `appsettings.json` files.
      
@@ -15,7 +15,7 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
   - Register than log in to add your favorite code snippets.
   - Edit and delete your codes as You desire.
   - Explore codes by visibility or user to extend Your knowledge.
-  - Now able to login via Google Account
+  - Now able to login via Google and Facebook accounts
   - Local storage for Monaco Editor setup (for each logged in user)
 
 The backend is built on the ASP.NET 8 framework, with the main goals of being/having:
@@ -56,7 +56,7 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
 
 ```json
 {
-  // Database Initialization
+  // Database Initialization <- change to false to avoid having dummy data
   "InitDb": true,
 
   // Database Connection
@@ -66,9 +66,13 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
   "IssueAudience": "YourIssueAudience",
   "IssueSign": "YourIssueSignature",
 
-  //Google Auth Keys <- Through Google Cloud Provider
+  // Google Auth Keys <- Through Google Cloud Provider
   "GoogleClientId": "",
   "GoogleClientSecret": "",
+
+  // Facebook Auth Keys <- Through Facebook Meta For Developers
+  "FacebookClientId": "",
+  "FacebookClientSecret": "",
   
   // First Admin User Details
   "AEmail": "admin@example.com",
