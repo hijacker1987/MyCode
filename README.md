@@ -7,7 +7,7 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
 **ONGOING Project!**
 
 ## Backend Installation Instructions
-  - Install the .NET SDK 8.0.203
+  - Install the .NET SDK 8.0.204 (.NET 8.0.4)
   - Install dependencies.
   - Set up the database connections, and other needs through the `secrets.json`, and `appsettings.json` files.
      
