@@ -5,9 +5,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using MyCode_Backend_Server.Contracts.Services;
+using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using MyCode_Backend_Server.Service.Email_Sender;
 using MyCode_Backend_Server_Tests.Services;
 using System.Security.Claims;
 using Xunit;
@@ -31,17 +33,19 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
                 new Mock<ILookupNormalizer>().Object,
                 new Mock<IdentityErrorDescriber>().Object,
                 new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<User>>>().Object);
+                new Mock<ILogger<UserManager<User>>>().Object,
+                new Mock<IEmailSender>().Object);
 
             var tokenServiceMock = new Mock<ITokenService>();
+            var dataContextMock = new Mock<DataContext>();
 
             userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                                                          .ReturnsAsync(IdentityResult.Success);
 
-            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, dataContextMock.Object, (IEmailSender)userManagerMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
+            var result = await authService.RegisterAccAsync("test@example.com", "username", "password", "displayname", "123456789");
 
             // Assert
             Assert.True(result.Success);
@@ -66,15 +70,16 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
 
             var tokenServiceMock = new Mock<ITokenService>();
 
+            var dataContextMock = new Mock<DataContext>();
+
             var errors = new List<IdentityError> { new() { Code = "ErrorCode", Description = "ErrorDescription" } };
 
-            userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                                                         .ReturnsAsync(IdentityResult.Failed([.. errors]));
+            userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed([.. errors]));
 
-            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, dataContextMock.Object, (IEmailSender)userManagerMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
+            var result = await authService.RegisterAccAsync("test@example.com", "username", "password", "displayname", "123456789");
 
             // Assert
             Assert.False(result.Success);
@@ -99,14 +104,16 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
                 new Mock<IServiceProvider>().Object,
                 new Mock<ILogger<UserManager<User>>>().Object);
 
-            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+            var dataContextMock = new Mock<DataContext>();
+
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), dataContextMock.Object, (IEmailSender)userManagerMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             var httpContext = new DefaultHttpContext();
             var httpRequest = httpContext.Request;
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("nonexistent@example.com", "password", "confirmPassword", httpRequest, httpResponse);
+            var result = await authService.LoginAccAsync("nonexistent@example.com", "password", "confirmPassword", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);
@@ -129,14 +136,16 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
                 new Mock<IServiceProvider>().Object,
                 new Mock<ILogger<UserManager<User>>>().Object);
 
-            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+            var dataContextMock = new Mock<DataContext>();
+
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), dataContextMock.Object, (IEmailSender)userManagerMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             var httpContext = new DefaultHttpContext();
             var httpRequest = httpContext.Request;
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("testexample.com", "password", "confirmPassword", httpRequest, httpResponse);
+            var result = await authService.LoginAccAsync("testexample.com", "password", "confirmPassword", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);
@@ -161,15 +170,16 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
 
             var tokenServiceMock = new Mock<ITokenService>();
 
+            var dataContextMock = new Mock<DataContext>();
+
             var errors = new List<IdentityError> { new() { Code = "DuplicateUserName", Description = "Username 'test' is already taken." } };
 
-            userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                                                           .ReturnsAsync(IdentityResult.Failed(errors.ToArray()));
+            userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed([.. errors]));
 
-            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, dataContextMock.Object, (IEmailSender)userManagerMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "test", "password", "displayname", "123456789");
+            var result = await authService.RegisterAccAsync("test@example.com", "test", "password", "displayname", "123456789");
 
             // Assert
             Assert.False(result.Success);
@@ -192,9 +202,12 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
                 new Mock<ILookupNormalizer>().Object,
                 new Mock<IdentityErrorDescriber>().Object,
                 new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<User>>>().Object);
+                new Mock<ILogger<UserManager<User>>>().Object,
+                new Mock<IEmailSender>().Object);
 
-            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), new Mock<ILogger<AuthService>>().Object);
+            var dataContextMock = new Mock<DataContext>();
+
+            var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, Mock.Of<ITokenService>(), dataContextMock.Object, (IEmailSender)userManagerMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             var httpContext = new DefaultHttpContext
             {
@@ -205,7 +218,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("tester5@test.com", "Password", "Password", httpRequest, httpResponse);
+            var result = await authService.LoginAccAsync("tester5@test.com", "Password", "Password", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);

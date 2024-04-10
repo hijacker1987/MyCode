@@ -15,11 +15,7 @@ namespace MyCode_Backend_Server.Service.Email_Sender
             };
 
             return client.SendMailAsync(
-                new MailMessage(from: "MyCodeApp@mycode.com",
-                                to: email,
-                                subject,
-                                message
-                                ));
+                new MailMessage(from: "MyCodeApp@mycode.com", to: email, subject, message));
         }
     }
 }

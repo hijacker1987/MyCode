@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
+using MyCode_Backend_Server.Service.Email_Sender;
 
 namespace MyCode_Backend_Server.Service.Authentication
 {
@@ -10,15 +11,24 @@ namespace MyCode_Backend_Server.Service.Authentication
                              UserManager<User> userManager,
                              ITokenService tokenService,
                              DataContext dataContext,
+                             IEmailSender emailSender,
                              ILogger<AuthService> logger) : IAuthService
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly UserManager<User> _userManager = userManager;
         private readonly ITokenService _tokenService = tokenService;
         private readonly DataContext _dataContext = dataContext;
+        private readonly IEmailSender _emailSender = emailSender;
         private readonly ILogger<AuthService> _logger = logger;
 
-        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber)
+        private const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
+        private const string UpperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private const string NumericChars = "0123456789";
+        private const string SpecialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+        private static readonly Random random = new();
+
+        public async Task<AuthResult> RegisterAccAsync(string email, string username, string password, string displayname, string phoneNumber)
         {
             bool isExternalRegister = false;
 
@@ -55,7 +65,25 @@ namespace MyCode_Backend_Server.Service.Authentication
             }
         }
 
-        public async Task<AuthResult> LoginAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
+        public async Task<string> RegisterExternalAccAsync(string email, string username, string displayName, string externalLoginMethod)
+        {
+            var generatedPassword = GeneratePassword();
+            await RegisterAccAsync(email,
+                                   username,
+                                   generatedPassword,
+                                   displayName,
+                                   "Ext");
+
+            var subject = $"Greetings {externalLoginMethod}, Welcome to My Code!!!";
+
+            var message = $"{displayName}, Your automatically generated password to the website is: {generatedPassword} Thank You very much to use my application, ENJOY IT!";
+
+            await _emailSender.SendEmailAsync(email, subject, message);
+
+            return generatedPassword;
+        }
+
+        public async Task<AuthResult> LoginAccAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
             if (request.HttpContext.User.Identity!.IsAuthenticated)
             {
@@ -81,48 +109,53 @@ namespace MyCode_Backend_Server.Service.Authentication
                 return InvalidPassword(email, managedUser.UserName!);
             }
 
-            var roles = await _userManager.GetRolesAsync(managedUser);
-            var accessToken = _tokenService.CreateToken(managedUser, roles);
-            var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
-            var refreshToken = _tokenService.CreateRefreshToken();
-            var refreshTokenExp = Convert.ToDouble(_configuration["RefreshTokenExp"]);
-
-            managedUser.RefreshToken = refreshToken;
-            managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
-
-            var cookieOptions1 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
-            var cookieOptions2 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddHours(refreshTokenExp));
-
-            if (cookieOptions1 != null && cookieOptions2 != null)
-            {
-                response.Cookies.Append("Authorization", accessToken, cookieOptions1);
-                response.Cookies.Append("RefreshAuthorization", refreshToken, cookieOptions2);
-            }
-            else
-            {
-                _logger.LogError("Cookie options are null");
-                return new AuthResult("", false, "", "", "", "", "");
-            }
-
-            return new AuthResult(managedUser.Id.ToString(),
-                                  true, managedUser.Email,
-                                  managedUser.UserName,
-                                  managedUser.DisplayName,
-                                  managedUser.PhoneNumber,
-                                  accessToken);
+            return await AuthBuilder(managedUser, request, response);
         }
 
         public async Task<AuthResult> LoginExternalAsync(string email, HttpRequest request, HttpResponse response)
         {
-            var managedUser = await _userManager.FindByEmailAsync(email);
-            var reliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+            User userToLogin = await TryGetUser(email);
 
-            if (managedUser == null && reliableUser == null)
+            if (userToLogin == null)
             {
                 return InvalidEmail(email);
             }
 
-            User userToLogin;
+            return await AuthBuilder(userToLogin, request, response);
+        }
+
+        public async Task ApprovedAccLogin(User approvedUser, HttpRequest request, HttpResponse response)
+        {
+            var roles = await _userManager.GetRolesAsync(approvedUser);
+            await _userManager.AddToRolesAsync(approvedUser, roles);
+
+            approvedUser.LastTimeLogin = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(approvedUser);
+            await _dataContext.SaveChangesAsync();
+
+            var userId = approvedUser.Id.ToString();
+            var userRole = roles.FirstOrDefault();
+
+            response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(request, 3));
+            response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(request, 3));
+        }
+
+        public async Task<User> TryGetUser(string email)
+        {
+            var managedUser = await _userManager.FindByEmailAsync(email);
+            User reliableUser = null!;
+
+            if (managedUser == null)
+            {
+                var getReliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+                if (getReliableUser != null)
+                {
+                    reliableUser = getReliableUser;
+                }
+            }
+
+            User userToLogin = null!;
             if (managedUser != null)
             {
                 userToLogin = managedUser;
@@ -132,35 +165,7 @@ namespace MyCode_Backend_Server.Service.Authentication
                 userToLogin = reliableUser!;
             }
 
-            var roles = await _userManager.GetRolesAsync(userToLogin);
-            var accessToken = _tokenService.CreateToken(userToLogin, roles);
-            var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
-            var refreshToken = _tokenService.CreateRefreshToken();
-            var refreshTokenExp = Convert.ToDouble(_configuration["RefreshTokenExp"]);
-
-            userToLogin.RefreshToken = refreshToken;
-            userToLogin.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
-
-            var cookieOptions1 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
-            var cookieOptions2 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddHours(refreshTokenExp));
-
-            if (cookieOptions1 != null && cookieOptions2 != null)
-            {
-                response.Cookies.Append("Authorization", accessToken, cookieOptions1);
-                response.Cookies.Append("RefreshAuthorization", refreshToken, cookieOptions2);
-            }
-            else
-            {
-                _logger.LogError("Cookie options are null");
-                return new AuthResult("", false, "", "", "", "", "");
-            }
-
-            return new AuthResult(userToLogin.Id.ToString(),
-                                  true, userToLogin.Email,
-                                  userToLogin.UserName,
-                                  userToLogin.DisplayName,
-                                  userToLogin.PhoneNumber,
-                                  accessToken);
+            return userToLogin;
         }
 
         public async Task<string> GetRoleStatusAsync(User user)
@@ -188,6 +193,48 @@ namespace MyCode_Backend_Server.Service.Authentication
             }
 
             return user.Email!;
+        }
+
+        private async Task<AuthResult> AuthBuilder(User user, HttpRequest request, HttpResponse response)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var accessToken = _tokenService.CreateToken(user, roles);
+            var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
+            var refreshToken = _tokenService.CreateRefreshToken();
+            var refreshTokenExp = Convert.ToDouble(_configuration["RefreshTokenExp"]);
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
+
+            var cookieOptions1 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
+            var cookieOptions2 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddHours(refreshTokenExp));
+
+            if (cookieOptions1 != null && cookieOptions2 != null)
+            {
+                response.Cookies.Append("Authorization", accessToken, cookieOptions1);
+                response.Cookies.Append("RefreshAuthorization", refreshToken, cookieOptions2);
+            }
+            else
+            {
+                _logger.LogError("Cookie options are null");
+                return new AuthResult("", false, "", "", "", "", "");
+            }
+
+            return new AuthResult(user.Id.ToString(),
+                                  true,
+                                  user.Email,
+                                  user.UserName,
+                                  user.DisplayName,
+                                  user.PhoneNumber,
+                                  accessToken);
+        }
+
+        private static string GeneratePassword()
+        {
+            string allChars = LowerCaseChars + UpperCaseChars + NumericChars + SpecialChars;
+            return new string(Enumerable.Range(1, 10)
+                                        .Select(_ => allChars[random.Next(allChars.Length)])
+                                        .ToArray());
         }
 
         private static AuthResult FailedRegistration(string id, IdentityResult result, string email, string username)

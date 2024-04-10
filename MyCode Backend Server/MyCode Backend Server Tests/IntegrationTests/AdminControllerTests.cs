@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using MyCode_Backend_Server.Data;
 using Xunit;
 using Assert = Xunit.Assert;
 using User = MyCode_Backend_Server.Models.User;
@@ -11,18 +9,9 @@ using MyCode_Backend_Server.Models;
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
     [Collection("firstSequence")]
-    public class AdminControllerTests : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
+    public class AdminControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory) : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
     {
-        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
-        private readonly HttpClient _client;
-        private readonly DataContext _dataContext;
-
-        public AdminControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
-        {
-            _factory = factory;
-            _client = _factory.CreateClient();
-            _dataContext = _factory.Services.GetRequiredService<DataContext>();
-        }
+        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
         [Theory]
         [InlineData("/getUsers")]
