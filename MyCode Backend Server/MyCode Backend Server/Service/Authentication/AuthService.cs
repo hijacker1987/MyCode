@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using MyCode_Backend_Server.Contracts.Registers;
+using Microsoft.EntityFrameworkCore;
+using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
 
@@ -8,18 +9,28 @@ namespace MyCode_Backend_Server.Service.Authentication
     public class AuthService(IConfiguration configuration,
                              UserManager<User> userManager,
                              ITokenService tokenService,
+                             DataContext dataContext,
                              ILogger<AuthService> logger) : IAuthService
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly UserManager<User> _userManager = userManager;
         private readonly ITokenService _tokenService = tokenService;
+        private readonly DataContext _dataContext = dataContext;
         private readonly ILogger<AuthService> _logger = logger;
 
         public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber)
         {
+            bool isExternalRegister = false;
+
+            if (phoneNumber == "Ext")
+            {
+                isExternalRegister = true;
+                phoneNumber = "Not provided yet!";
+            }
+
             var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
 
-            if (email.EndsWith("@gmail.com"))
+            if (email.EndsWith("@gmail.com") || isExternalRegister)
             {
                 user.ReliableEmail = email;
             }
@@ -104,20 +115,31 @@ namespace MyCode_Backend_Server.Service.Authentication
         public async Task<AuthResult> LoginExternalAsync(string email, HttpRequest request, HttpResponse response)
         {
             var managedUser = await _userManager.FindByEmailAsync(email);
+            var reliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.ReliableEmail == email);
 
-            if (managedUser == null)
+            if (managedUser == null && reliableUser == null)
             {
                 return InvalidEmail(email);
             }
 
-            var roles = await _userManager.GetRolesAsync(managedUser);
-            var accessToken = _tokenService.CreateToken(managedUser, roles);
+            User userToLogin;
+            if (managedUser != null)
+            {
+                userToLogin = managedUser;
+            }
+            else
+            {
+                userToLogin = reliableUser!;
+            }
+
+            var roles = await _userManager.GetRolesAsync(userToLogin);
+            var accessToken = _tokenService.CreateToken(userToLogin, roles);
             var accessTokenExp = Convert.ToDouble(_configuration["AccessTokenExp"]);
             var refreshToken = _tokenService.CreateRefreshToken();
             var refreshTokenExp = Convert.ToDouble(_configuration["RefreshTokenExp"]);
 
-            managedUser.RefreshToken = refreshToken;
-            managedUser.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
+            userToLogin.RefreshToken = refreshToken;
+            userToLogin.RefreshTokenExpiry = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["RefreshTokenExp"]));
 
             var cookieOptions1 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddMinutes(accessTokenExp));
             var cookieOptions2 = TokenAndCookieHelper.GetCookieOptionsForHttpOnly(request, DateTime.UtcNow.AddHours(refreshTokenExp));
@@ -133,11 +155,11 @@ namespace MyCode_Backend_Server.Service.Authentication
                 return new AuthResult("", false, "", "", "", "", "");
             }
 
-            return new AuthResult(managedUser.Id.ToString(),
-                                  true, managedUser.Email,
-                                  managedUser.UserName,
-                                  managedUser.DisplayName,
-                                  managedUser.PhoneNumber,
+            return new AuthResult(userToLogin.Id.ToString(),
+                                  true, userToLogin.Email,
+                                  userToLogin.UserName,
+                                  userToLogin.DisplayName,
+                                  userToLogin.PhoneNumber,
                                   accessToken);
         }
 
