@@ -73,6 +73,10 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
   // Facebook Auth Keys <- Through Facebook Meta For Developers
   "FacebookClientId": "",
   "FacebookClientSecret": "",
+
+  // GitHub Auth Keys <- Through GitHub Developer Settings
+  "GithubClientId": "",
+  "GithubClientSecret": "",
   
   // First Admin User Details
   "AEmail": "admin@example.com",
