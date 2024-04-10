@@ -58,5 +58,6 @@ const u = "users/";
     export const verify2fa = `${au}verifyTwoFactor`;
     export const disable2fa = `${au}disableTwoFactor`;
     export const reliableAdd = `${au}addReliableAddress`;
+    export const githubLogin = `${ac}github-login`;
     export const googleLogin = `${ac}google-login`;
     export const facebookLogin = `${ac}facebook-login`;

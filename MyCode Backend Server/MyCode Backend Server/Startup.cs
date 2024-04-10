@@ -11,6 +11,10 @@ using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Email_Sender;
 using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace MyCode_Backend_Server
 {
@@ -87,7 +91,7 @@ namespace MyCode_Backend_Server
             })
                     .AddCookie(options => {
                         options.Cookie.Name = "Authorization";
-                        options.LoginPath = "/account/google-login";
+                        //options.LoginPath = "/account/google-login";
                         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         options.Cookie.SameSite = SameSiteMode.None;
                         options.Cookie.HttpOnly = true;
@@ -116,6 +120,30 @@ namespace MyCode_Backend_Server
                         {
                             options.ClientId = _configuration["FacebookClientId"]!;
                             options.ClientSecret = _configuration["FacebookClientSecret"]!;
+                        }
+                    })
+                    .AddGitHub("GitHub", options =>
+                    {
+                        if (_environment.IsEnvironment("Test"))
+                        {
+                            options.ClientId = "GithubTestClientId"!;
+                            options.ClientSecret = "GithubTestClientSecret"!;
+                        }
+                        else if (_environment.IsEnvironment("Development"))
+                        {
+                            options.ClientId = _configuration["GithubClientId"]!;
+                            options.ClientSecret = _configuration["GithubClientSecret"]!;
+                            options.CallbackPath = new PathString("/signin-github");
+                            options.Scope.Add("user:email");
+
+                            options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+                            options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+                            options.UserInformationEndpoint = "https://api.github.com/user";
+
+                            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                            options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
+                            options.ClaimActions.MapJsonKey("urn:github:name", "name");
+                            options.ClaimActions.MapJsonKey("urn:github:email", "email", ClaimValueTypes.Email);
                         }
                     })
                     .AddJwtBearer(options =>
