@@ -74,19 +74,7 @@ namespace MyCode_Backend_Server.Controllers
                         return NotFound("User not found.");
                     }
 
-                    var roles = await _userManager.GetRolesAsync(managedUser);
-                    await _userManager.AddToRolesAsync(managedUser, roles);
-
-                    managedUser.LastTimeLogin = DateTime.UtcNow;
-
-                    await _userManager.UpdateAsync(managedUser);
-                    await _dataContext.SaveChangesAsync();
-
-                    var userId = managedUser.Id.ToString();
-                    var userRole = roles.FirstOrDefault();
-
-                    Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
-                    Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+                    await ApprovedExternalLogin(managedUser);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
@@ -125,10 +113,6 @@ namespace MyCode_Backend_Server.Controllers
                 var email = claims.ElementAtOrDefault(1)?.Value!;
                 var username = claims.ElementAtOrDefault(0)?.Value!;
                 var displayName = claims.ElementAtOrDefault(2)?.Value!;
-                foreach (var claim in claims)
-                {
-                    Console.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
-                }
                 
                 var loginResult = await _authenticationService.LoginExternalAsync(email, Request, Response);
 
@@ -147,19 +131,7 @@ namespace MyCode_Backend_Server.Controllers
                         return NotFound("User not found.");
                     }
 
-                    var roles = await _userManager.GetRolesAsync(managedUser);
-                    await _userManager.AddToRolesAsync(managedUser, roles);
-
-                    managedUser.LastTimeLogin = DateTime.UtcNow;
-
-                    await _userManager.UpdateAsync(managedUser);
-                    await _dataContext.SaveChangesAsync();
-
-                    var userId = managedUser.Id.ToString();
-                    var userRole = roles.FirstOrDefault();
-
-                    Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
-                    Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+                    await ApprovedExternalLogin(managedUser);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
@@ -174,6 +146,23 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
+        private async Task ApprovedExternalLogin(User approvedUser)
+        {
+            var roles = await _userManager.GetRolesAsync(approvedUser);
+            await _userManager.AddToRolesAsync(approvedUser, roles);
+
+            approvedUser.LastTimeLogin = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(approvedUser);
+            await _dataContext.SaveChangesAsync();
+
+            var userId = approvedUser.Id.ToString();
+            var userRole = roles.FirstOrDefault();
+
+            Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+            Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
+        }
+
         private async Task<string> RegisterExternalAccAsync(string email, string username, string displayName, string externalLoginMethod)
         {
             var generatedPassword = GeneratePassword();
@@ -181,7 +170,7 @@ namespace MyCode_Backend_Server.Controllers
                                                        username,
                                                        generatedPassword,
                                                        displayName,
-                                                       "");
+                                                       "Ext");
 
             var subject = $"Greetings {externalLoginMethod}, Welcome to My Code!!!";
 
