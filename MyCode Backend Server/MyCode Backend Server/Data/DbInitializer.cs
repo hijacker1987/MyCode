@@ -70,6 +70,7 @@ namespace MyCode_Backend_Server.Data
             {
                 UserName = "GoogleUser",
                 Email = "googleuser@gmail.com",
+                ReliableEmail = "googleuser@gmail.com",
                 DisplayName = "Googler",
                 PhoneNumber = "123456",
                 TwoFactorEnabled = true,
