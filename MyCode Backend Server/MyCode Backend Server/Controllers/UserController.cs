@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -105,16 +104,7 @@ namespace MyCode_Backend_Server.Controllers
                 return Unauthorized("PW not valid.");
             }
 
-            var roles = await _userManager.GetRolesAsync(managedUser);
-            await _userManager.AddToRolesAsync(managedUser, roles);
-
-            managedUser.LastTimeLogin = DateTime.UtcNow;
-
-            await _userManager.UpdateAsync(managedUser);
-            await _dataContext.SaveChangesAsync();
-
-            Response.Cookies.Append("UI", managedUser.Id.ToString(), TokenAndCookieHelper.GetCookieOptions(Request, 3));
-            Response.Cookies.Append("UR", roles[0], TokenAndCookieHelper.GetCookieOptions(Request, 3));
+            await _authenticationService.ApprovedLogin(managedUser, Request, Response);
 
             return Ok("Successfully logged in");
         }

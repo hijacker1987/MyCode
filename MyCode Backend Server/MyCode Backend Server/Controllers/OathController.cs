@@ -4,33 +4,22 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MyCode_Backend_Server.Service.Authentication;
-using MyCode_Backend_Server.Service.Email_Sender;
 using Microsoft.AspNetCore.Identity;
-using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
-using MyCode_Backend_Server.Service.Authentication.Token;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using MyCode_Backend_Server.Data;
 
 namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
     [Route("/account")]
     public class OathController(IAuthService authenticationService,
-                                IEmailSender emailSender,
                                 DataContext dataContext,
                                 UserManager<User> userManager) : ControllerBase
     {
         private readonly IAuthService _authenticationService = authenticationService;
-        private readonly IEmailSender _emailSender = emailSender;
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
-
-        private const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
-        private const string UpperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private const string NumericChars = "0123456789";
-        private const string SpecialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-
-        private static readonly Random random = new();
 
         [AllowAnonymous]
         [HttpGet("google-login")]
@@ -61,20 +50,20 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (!loginResult.Success)
                 {
-                    var regPass = await RegisterExternalAccAsync(email, username, displayName, "Googler");
+                    var regPass = await _authenticationService.RegisterExternalAccAsync(email, username, displayName, "Googler");
 
                     loginResult = await _authenticationService.LoginAsync(email, regPass, regPass, Request, Response);
                 }
 
                 if (loginResult.Success)
                 {
-                    var managedUser = await _userManager.FindByEmailAsync(email);
+                    var managedUser = await _authenticationService.TryLoginUser(email);
                     if (managedUser == null)
                     {
                         return NotFound("User not found.");
                     }
 
-                    await ApprovedExternalLogin(managedUser);
+                    await _authenticationService.ApprovedLogin(managedUser, Request, Response);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
@@ -118,20 +107,20 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (!loginResult.Success)
                 {
-                    var regPass = await RegisterExternalAccAsync(email, username, displayName, "Facebook user");
+                    var regPass = await _authenticationService.RegisterExternalAccAsync(email, username, displayName, "Facebook user");
 
                     loginResult = await _authenticationService.LoginAsync(email, regPass, regPass, Request, Response);
                 }
 
                 if (loginResult.Success)
                 {
-                    var managedUser = await _userManager.FindByEmailAsync(email);
+                    var managedUser = await _authenticationService.TryLoginUser(email);
                     if (managedUser == null)
                     {
                         return NotFound("User not found.");
                     }
 
-                    await ApprovedExternalLogin(managedUser);
+                    await _authenticationService.ApprovedLogin(managedUser, Request, Response);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
@@ -144,48 +133,6 @@ namespace MyCode_Backend_Server.Controllers
             {
                 return BadRequest("Authentication failed");
             }
-        }
-
-        private async Task ApprovedExternalLogin(User approvedUser)
-        {
-            var roles = await _userManager.GetRolesAsync(approvedUser);
-            await _userManager.AddToRolesAsync(approvedUser, roles);
-
-            approvedUser.LastTimeLogin = DateTime.UtcNow;
-
-            await _userManager.UpdateAsync(approvedUser);
-            await _dataContext.SaveChangesAsync();
-
-            var userId = approvedUser.Id.ToString();
-            var userRole = roles.FirstOrDefault();
-
-            Response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(Request, 3));
-            Response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(Request, 3));
-        }
-
-        private async Task<string> RegisterExternalAccAsync(string email, string username, string displayName, string externalLoginMethod)
-        {
-            var generatedPassword = GeneratePassword();
-            await _authenticationService.RegisterAsync(email,
-                                                       username,
-                                                       generatedPassword,
-                                                       displayName,
-                                                       "Ext");
-
-            var subject = $"Greetings {externalLoginMethod}, Welcome to My Code!!!";
-
-            var message = $"{displayName}, Your automatically generated password to the website is: {generatedPassword} Thank You very much to use my application, ENJOY IT!";
-
-            await _emailSender.SendEmailAsync(email, subject, message);
-
-            return generatedPassword;
-        }
-        private static string GeneratePassword()
-        {
-            string allChars = LowerCaseChars + UpperCaseChars + NumericChars + SpecialChars;
-            return new string(Enumerable.Range(1, 10)
-                                        .Select(_ => allChars[random.Next(allChars.Length)])
-                                        .ToArray());
         }
     }
 }
