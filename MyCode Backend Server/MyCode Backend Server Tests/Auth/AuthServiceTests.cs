@@ -41,7 +41,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
+            var result = await authService.RegisterAccAsync("test@example.com", "username", "password", "displayname", "123456789");
 
             // Assert
             Assert.True(result.Success);
@@ -74,7 +74,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "username", "password", "displayname", "123456789");
+            var result = await authService.RegisterAccAsync("test@example.com", "username", "password", "displayname", "123456789");
 
             // Assert
             Assert.False(result.Success);
@@ -106,7 +106,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("nonexistent@example.com", "password", "confirmPassword", httpRequest, httpResponse);
+            var result = await authService.LoginAccAsync("nonexistent@example.com", "password", "confirmPassword", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);
@@ -136,7 +136,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("testexample.com", "password", "confirmPassword", httpRequest, httpResponse);
+            var result = await authService.LoginAccAsync("testexample.com", "password", "confirmPassword", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);
@@ -169,7 +169,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var authService = new AuthService(Mock.Of<IConfiguration>(), userManagerMock.Object, tokenServiceMock.Object, new Mock<ILogger<AuthService>>().Object);
 
             // Act
-            var result = await authService.RegisterAsync("test@example.com", "test", "password", "displayname", "123456789");
+            var result = await authService.RegisterAccAsync("test@example.com", "test", "password", "displayname", "123456789");
 
             // Assert
             Assert.False(result.Success);
@@ -205,7 +205,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             var httpResponse = httpContext.Response;
 
             // Act
-            var result = await authService.LoginAsync("tester5@test.com", "Password", "Password", httpRequest, httpResponse);
+            var result = await authService.LoginAccAsync("tester5@test.com", "Password", "Password", httpRequest, httpResponse);
 
             // Assert
             Assert.False(result.Success);

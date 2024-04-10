@@ -28,7 +28,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         private static readonly Random random = new();
 
-        public async Task<AuthResult> RegisterAsync(string email, string username, string password, string displayname, string phoneNumber)
+        public async Task<AuthResult> RegisterAccAsync(string email, string username, string password, string displayname, string phoneNumber)
         {
             bool isExternalRegister = false;
 
@@ -64,17 +64,15 @@ namespace MyCode_Backend_Server.Service.Authentication
                 return new AuthResult(user.Id.ToString(), true, email, username, displayname, phoneNumber, "");
             }
         }
-        public async Task<string> RegisterExternalAccAsync(string email,
-                                                           string username,
-                                                           string displayName,
-                                                           string externalLoginMethod)
+
+        public async Task<string> RegisterExternalAccAsync(string email, string username, string displayName, string externalLoginMethod)
         {
             var generatedPassword = GeneratePassword();
-            await RegisterAsync(email,
-                                username,
-                                generatedPassword,
-                                displayName,
-                                "Ext");
+            await RegisterAccAsync(email,
+                                   username,
+                                   generatedPassword,
+                                   displayName,
+                                   "Ext");
 
             var subject = $"Greetings {externalLoginMethod}, Welcome to My Code!!!";
 
@@ -84,7 +82,8 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             return generatedPassword;
         }
-        public async Task<AuthResult> LoginAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
+
+        public async Task<AuthResult> LoginAccAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
             if (request.HttpContext.User.Identity!.IsAuthenticated)
             {
@@ -115,7 +114,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task<AuthResult> LoginExternalAsync(string email, HttpRequest request, HttpResponse response)
         {
-            User userToLogin = await TryLoginUser(email);
+            User userToLogin = await TryGetUser(email);
 
             if (userToLogin == null)
             {
@@ -125,7 +124,7 @@ namespace MyCode_Backend_Server.Service.Authentication
             return await AuthBuilder(userToLogin, request, response);
         }
 
-        public async Task ApprovedLogin(User approvedUser, HttpRequest request, HttpResponse response)
+        public async Task ApprovedAccLogin(User approvedUser, HttpRequest request, HttpResponse response)
         {
             var roles = await _userManager.GetRolesAsync(approvedUser);
             await _userManager.AddToRolesAsync(approvedUser, roles);
@@ -142,7 +141,7 @@ namespace MyCode_Backend_Server.Service.Authentication
             response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(request, 3));
         }
 
-        public async Task<User> TryLoginUser(string email)
+        public async Task<User> TryGetUser(string email)
         {
             var managedUser = await _userManager.FindByEmailAsync(email);
             User reliableUser = null!;
@@ -222,7 +221,8 @@ namespace MyCode_Backend_Server.Service.Authentication
             }
 
             return new AuthResult(user.Id.ToString(),
-                                  true, user.Email,
+                                  true,
+                                  user.Email,
                                   user.UserName,
                                   user.DisplayName,
                                   user.PhoneNumber,

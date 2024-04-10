@@ -10,6 +10,7 @@ using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Email_Sender;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -43,17 +44,17 @@ namespace MyCode_Backend_Server.Controllers
                     {
                         foreach (var error in modelState.Errors)
                         {
-                            _logger.LogError($"ModelState Error: {error.ErrorMessage}");
+                            _logger.LogError($"ModelState Error");
                         }
                     }
                     return BadRequest(ModelState);
                 }
 
-                var result = await _authenticationService.RegisterAsync(request.Email,
-                                                                        request.Username,
-                                                                        request.Password,
-                                                                        request.DisplayName,
-                                                                        request.PhoneNumber);
+                var result = await _authenticationService.RegisterAccAsync(request.Email,
+                                                                           request.Username,
+                                                                           request.Password,
+                                                                           request.DisplayName,
+                                                                           request.PhoneNumber);
 
                 if (!result.Success)
                 {
@@ -71,7 +72,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Cannot register!");
                 return BadRequest(new { ErrorMessage = "Cannot register!", ExceptionDetails = e.ToString() });
             }
         }
@@ -82,7 +83,7 @@ namespace MyCode_Backend_Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authenticationService.LoginAsync(request.Email, request.Password, request.ConfirmPassword, Request, Response);
+            var result = await _authenticationService.LoginAccAsync(request.Email, request.Password, request.ConfirmPassword, Request, Response);
 
             if (!result.Success)
             {
@@ -104,7 +105,7 @@ namespace MyCode_Backend_Server.Controllers
                 return Unauthorized("PW not valid.");
             }
 
-            await _authenticationService.ApprovedLogin(managedUser, Request, Response);
+            await _authenticationService.ApprovedAccLogin(managedUser, Request, Response);
 
             return Ok("Successfully logged in");
         }
@@ -139,7 +140,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error occurred while fetching user by ID!");
                 return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
             }
         }
@@ -174,7 +175,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error occurred while fetching user by ID!");
                 return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
             }
         }
@@ -196,7 +197,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (existingUser == null)
                 {
-                    _logger.LogInformation($"User with id {id} not found.");
+                    _logger.LogInformation("User not found.");
                     return NotFound();
                 }
 
@@ -213,8 +214,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return BadRequest();
+                _logger.LogError($"Error");
+                return BadRequest(e);
             }
         }
 
@@ -247,7 +248,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error occurred while changing password!");
                 return StatusCode(500, new { ErrorMessage = "Error occurred while changing password!", ExceptionDetails = e.ToString() });
             }
         }
@@ -297,12 +298,12 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogError($"Concurrency error during account deletion: {ex.Message}", ex);
-                return Ok($"Account with ID {id} successfully deleted.");
+                _logger.LogError($"Concurrency error during account deletion");
+                return Ok($"Account with ex {ex} successfully deleted.");
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError($"Error");
                 return BadRequest(e.Message);
             }
         }

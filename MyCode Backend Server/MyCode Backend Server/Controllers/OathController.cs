@@ -14,11 +14,9 @@ namespace MyCode_Backend_Server.Controllers
     [ApiController]
     [Route("/account")]
     public class OathController(IAuthService authenticationService,
-                                DataContext dataContext,
                                 UserManager<User> userManager) : ControllerBase
     {
         private readonly IAuthService _authenticationService = authenticationService;
-        private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
         [AllowAnonymous]
@@ -52,18 +50,18 @@ namespace MyCode_Backend_Server.Controllers
                 {
                     var regPass = await _authenticationService.RegisterExternalAccAsync(email, username, displayName, "Googler");
 
-                    loginResult = await _authenticationService.LoginAsync(email, regPass, regPass, Request, Response);
+                    loginResult = await _authenticationService.LoginAccAsync(email, regPass, regPass, Request, Response);
                 }
 
                 if (loginResult.Success)
                 {
-                    var managedUser = await _authenticationService.TryLoginUser(email);
+                    var managedUser = await _authenticationService.TryGetUser(email);
                     if (managedUser == null)
                     {
                         return NotFound("User not found.");
                     }
 
-                    await _authenticationService.ApprovedLogin(managedUser, Request, Response);
+                    await _authenticationService.ApprovedAccLogin(managedUser, Request, Response);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
@@ -109,18 +107,18 @@ namespace MyCode_Backend_Server.Controllers
                 {
                     var regPass = await _authenticationService.RegisterExternalAccAsync(email, username, displayName, "Facebook user");
 
-                    loginResult = await _authenticationService.LoginAsync(email, regPass, regPass, Request, Response);
+                    loginResult = await _authenticationService.LoginAccAsync(email, regPass, regPass, Request, Response);
                 }
 
                 if (loginResult.Success)
                 {
-                    var managedUser = await _authenticationService.TryLoginUser(email);
+                    var managedUser = await _authenticationService.TryGetUser(email);
                     if (managedUser == null)
                     {
                         return NotFound("User not found.");
                     }
 
-                    await _authenticationService.ApprovedLogin(managedUser, Request, Response);
+                    await _authenticationService.ApprovedAccLogin(managedUser, Request, Response);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }
