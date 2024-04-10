@@ -47,8 +47,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return NotFound();
+                _logger.LogError("Error");
+                return NotFound(e);
             }
         }
 
@@ -75,7 +75,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error");
                 return StatusCode(500, new { ErrorMessage = "Error occurred while fetching user by ID!", ExceptionDetails = e.ToString() });
             }
         }
@@ -100,8 +100,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return NotFound();
+                _logger.LogError("Error");
+                return NotFound(e);
             }
         }
 
@@ -122,7 +122,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (existingUser == null)
                 {
-                    _logger.LogInformation($"User with id {id} not found.");
+                    _logger.LogInformation("User not found.");
                     return NotFound();
                 }
 
@@ -139,8 +139,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return BadRequest();
+                _logger.LogError("Error");
+                return BadRequest(e);
             }
         }
 
@@ -161,7 +161,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (existingCode == null)
                 {
-                    _logger.LogInformation($"Code with id {id} not found.");
+                    _logger.LogInformation("Code not found.");
                     return NotFound();
                 }
 
@@ -177,8 +177,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return BadRequest();
+                _logger.LogError("Error");
+                return BadRequest(e);
             }
         }
 
@@ -199,7 +199,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (existingUser == null)
                 {
-                    _logger.LogInformation($"User with {request.Status} not found.");
+                    _logger.LogInformation("User not found.");
                     return BadRequest(request);
                 }
 
@@ -214,8 +214,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return BadRequest();
+                _logger.LogError("Error");
+                return BadRequest(e);
             }
         }
 
@@ -227,26 +227,25 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                _logger.LogInformation($"Deleting user with id: {id}");
+                _logger.LogInformation("Deleting user");
 
                 var user = _dataContext.Users!.FirstOrDefault(u => u.Id == id);
 
                 if (user == null)
                 {
-                    _logger.LogError($"User with id {id} not found.");
+                    _logger.LogError("User not found.");
                     return NotFound();
                 }
 
                 _dataContext.Users!.Remove(user);
                 _dataContext.SaveChanges();
 
-                _logger.LogInformation($"User with id {id} successfully deleted.");
+                _logger.LogInformation("User successfully deleted.");
                 return Ok($"User with id {id} successfully deleted.");
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error during user deletion: {e.Message}");
-                _logger.LogError(e.StackTrace);
+                _logger.LogError("Error during user deletion");
                 return StatusCode(500, $"Internal Server Error: {e.Message}");
             }
         }
@@ -263,7 +262,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (code == null)
                 {
-                    _logger.LogInformation($"Code with id {id} not found.");
+                    _logger.LogInformation("Code not found.");
                     return NotFound();
                 }
 
@@ -274,8 +273,8 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                return BadRequest();
+                _logger.LogError("Error");
+                return BadRequest(e);
             }
         }
     }

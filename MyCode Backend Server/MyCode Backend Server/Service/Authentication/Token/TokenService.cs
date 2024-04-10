@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
@@ -41,7 +42,7 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
             if (token == null)
             {
-                throw new ArgumentNullException(nameof(token));
+                throw new NullReferenceException(nameof(token));
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -78,10 +79,10 @@ namespace MyCode_Backend_Server.Service.Authentication.Token
 
                 return claims;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.LogError($"Error: {e.Message}", e);
-                throw;
+                _logger.LogError("Error");
+                throw new NullReferenceException();
             }
         }
 
