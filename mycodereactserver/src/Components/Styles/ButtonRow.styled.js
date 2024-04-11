@@ -14,6 +14,7 @@ export const ButtonColumnContainer = styled.div`
   margin-left: 10px;
   margin-bottom: 10px;
   display: flex;
+  gap: 20px;
   flex-direction: column;
   justify-content: space-between;
 `;

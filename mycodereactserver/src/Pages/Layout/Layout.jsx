@@ -11,10 +11,10 @@ import { facebookLogin, githubLogin, googleLogin, recentChuckNorris, revoke } fr
 import { backendUrl } from "../../Services/Config";
 import Loading from "../../Components/Loading/index";
 
-import { ButtonRowContainer, ButtonRowButtonContainer } from "../../Components/Styles/ButtonRow.styled";
+import { ButtonRowContainer, ButtonRowButtonContainer, ButtonColumnContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
-import { CenteredContainer } from "../../Components/Styles/TextContainer.styled";
+import { CenteredContainer, ColumnTextWrapper, TextWrapper } from "../../Components/Styles/TextContainer.styled";
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import "../../index.css";
 
@@ -154,22 +154,26 @@ const Layout = () => {
                     {!role && !userid ? (
                         <ButtonRowContainer>
                             {location.pathname !== uLogin && location.pathname !== uReg && (
-                                <ButtonRowButtonContainer>
+                                <ButtonRowButtonContainer style={{ marginLeft: "17%" }}>
                                     <Link to={uLogin} className="link">
                                         <ButtonContainer type="button">Login</ButtonContainer>
                                     </Link>
                                     <Link to={uReg} className="link">
                                         <ButtonContainer type="button">Registration</ButtonContainer>
                                     </Link>
-                                    <ButtonContainer type="button" onClick={handleOnGoogle}>
-                                        Google Login
-                                    </ButtonContainer>
-                                    <ButtonContainer type="button" onClick={handleOnFacebook}>
-                                        Facebook Login
-                                    </ButtonContainer>
-                                    <ButtonContainer type="button" onClick={handleOnGithub}>
-                                        GitHub Login
-                                    </ButtonContainer>
+                                    <ButtonColumnContainer style={{ marginTop: "-6%", marginLeft: "147%" }}>
+                                        <TextContainer type="text">You can also Login with:</TextContainer>
+                                        <ButtonContainer type="button" onClick={handleOnGoogle} style={{ marginTop: "-10%", marginLeft: "8%" }}>
+                                            Google
+                                        </ButtonContainer>
+                                        <ButtonContainer type="button" onClick={handleOnFacebook} style={{ marginLeft: "8%" }}>
+                                            Facebook
+                                        </ButtonContainer>
+                                        <ButtonContainer type="button" onClick={handleOnGithub} style={{ marginLeft: "8%" }}>
+                                            GitHub
+                                        </ButtonContainer>
+                                        <ColumnTextWrapper style={{ marginTop: "-6%", marginLeft: "10%" }}>Accounts</ColumnTextWrapper>
+                                    </ButtonColumnContainer>
                                 </ButtonRowButtonContainer>
                             )}
                         </ButtonRowContainer>
