@@ -13,8 +13,6 @@ using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace MyCode_Backend_Server
 {
@@ -87,11 +85,9 @@ namespace MyCode_Backend_Server
             services.AddAuthentication(o => {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = "Google";
             })
                     .AddCookie(options => {
                         options.Cookie.Name = "Authorization";
-                        //options.LoginPath = "/account/google-login";
                         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         options.Cookie.SameSite = SameSiteMode.None;
                         options.Cookie.HttpOnly = true;
@@ -126,13 +122,13 @@ namespace MyCode_Backend_Server
                     {
                         if (_environment.IsEnvironment("Test"))
                         {
-                            options.ClientId = "GithubTestClientId"!;
-                            options.ClientSecret = "GithubTestClientSecret"!;
+                            options.ClientId = "GitHubTestClientId"!;
+                            options.ClientSecret = "GitHubTestClientSecret"!;
                         }
                         else if (_environment.IsEnvironment("Development"))
                         {
-                            options.ClientId = _configuration["GithubClientId"]!;
-                            options.ClientSecret = _configuration["GithubClientSecret"]!;
+                            options.ClientId = _configuration["GitHubClientId"]!;
+                            options.ClientSecret = _configuration["GitHubClientSecret"]!;
                             options.CallbackPath = new PathString("/signin-github");
                             options.Scope.Add("user:email");
 
