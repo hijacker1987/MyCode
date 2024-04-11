@@ -63,20 +63,20 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
   "ConnectionString": "YourDatabaseConnectionString",
   
   // Authentication Keys
-  "IssueAudience": "YourIssueAudience",
-  "IssueSign": "YourIssueSignature",
+  "IssueAudience": "Your IssueAudience",
+  "IssueSign": "Your IssueSignature",
 
   // Google Auth Keys <- Through Google Cloud Provider
-  "GoogleClientId": "",
-  "GoogleClientSecret": "",
+  "GoogleClientId": "Your unique key",
+  "GoogleClientSecret": "Your unique key",
 
   // Facebook Auth Keys <- Through Facebook Meta For Developers
-  "FacebookClientId": "",
-  "FacebookClientSecret": "",
+  "FacebookClientId": "Your unique key",
+  "FacebookClientSecret": "Your unique key",
 
   // GitHub Auth Keys <- Through GitHub Developer Settings
-  "GithubClientId": "",
-  "GithubClientSecret": "",
+  "GitHubClientId": "Your unique key",
+  "GitHubClientSecret": "Your unique key",
   
   // First Admin User Details
   "AEmail": "admin@example.com",
