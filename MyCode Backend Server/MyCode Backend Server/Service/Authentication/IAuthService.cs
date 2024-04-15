@@ -9,7 +9,7 @@ namespace MyCode_Backend_Server.Service.Authentication
         Task<AuthResult> LoginAccAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response);
         Task<AuthResult> LoginExternalAsync(string email, HttpRequest request, HttpResponse response);
         Task ApprovedAccLogin(User approvedUser, HttpRequest request, HttpResponse response);
-        Task<User> TryGetUser(string email);
+        Task<User?> TryGetUser(string email);
         Task<string> GetRoleStatusAsync(User user);
         Task<string> SetRoleStatusAsync(User user);
     }
