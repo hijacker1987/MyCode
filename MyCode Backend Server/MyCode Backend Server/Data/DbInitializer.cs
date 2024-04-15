@@ -45,6 +45,8 @@ namespace MyCode_Backend_Server.Data
 
             if (_configuration["InitDb"] == "False" || context.Users.Any(u => u.Email == "user1@example.com"))
             {
+                context.SaveChanges();
+
                 return;
             }
 
@@ -70,7 +72,6 @@ namespace MyCode_Backend_Server.Data
             {
                 UserName = "GoogleUser",
                 Email = "googleuser@gmail.com",
-                ReliableEmail = "googleuser@gmail.com",
                 DisplayName = "Googler",
                 PhoneNumber = "123456",
                 TwoFactorEnabled = true,
@@ -84,7 +85,14 @@ namespace MyCode_Backend_Server.Data
                 await userManager.AddToRoleAsync(gUser, "User");
             }
 
-            context.SaveChanges();
+            var mfaResult = new Mfa
+            {
+                UserId = gUser.Id,
+                ReliableEmail = "googleuser@gmail.com",
+                SecondaryLoginMethod = true,
+            };
+
+            await context.MFADb!.AddAsync(mfaResult);
 
             foreach (var user in users)
             {

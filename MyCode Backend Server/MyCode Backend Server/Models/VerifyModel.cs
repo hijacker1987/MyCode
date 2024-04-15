@@ -4,5 +4,6 @@
     {
         public required string UserId { get; set; }
         public required string Attachment { get; set; }
+        public required bool External { get; set; } = false;
     }
 }

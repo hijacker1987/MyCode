@@ -42,7 +42,8 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             if (email.EndsWith("@gmail.com") || isExternalRegister)
             {
-                user.ReliableEmail = email;
+                var regReliable = new Mfa(user.Email);
+                await _dataContext.MFADb!.AddAsync(regReliable);
             }
 
             var result = await _userManager.CreateAsync(user, password);
@@ -61,6 +62,8 @@ namespace MyCode_Backend_Server.Service.Authentication
             else
             {
                 await _userManager.AddToRoleAsync(user, "User");
+                await _dataContext.SaveChangesAsync();
+
                 return new AuthResult(user.Id.ToString(), true, email, username, displayname, phoneNumber, "");
             }
         }
@@ -148,10 +151,12 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             if (managedUser == null)
             {
-                var getReliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.ReliableEmail == email);
-                if (getReliableUser != null)
+                var getReliableUser = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+                var theReliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == getReliableUser!.Id);
+
+                if (theReliableUser != null)
                 {
-                    reliableUser = getReliableUser;
+                    reliableUser = theReliableUser;
                 }
             }
 

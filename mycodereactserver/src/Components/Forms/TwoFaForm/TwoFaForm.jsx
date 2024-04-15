@@ -69,7 +69,7 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
         <FormColumn onSubmit={handleSubmit}>
             {!isReliableEnabled && (
                 <>
-                    <h3>Please provide a trustworthy e-mail provider (like Gmail) here:
+                    <h3>Please provide Your trustworthy e-mail provider (like Gmail, or the current one again) here:
                     <InputForm type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </h3>
                     <ButtonContainer type="button" onClick={handleSubmitAddress}>Update address</ButtonContainer>

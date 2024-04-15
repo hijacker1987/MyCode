@@ -51,7 +51,7 @@ const TwoFactorAuthentication = () => {
 
     const handleVerify2fa = (code) => {
         setLoading(true);
-        postStatExtApi(verify2fa, userIdParam, code)
+        postStatExtApi(verify2fa, userIdParam, code, false)
             .then((res) => {
                 setLoading(false);
                 navigate(-1);
@@ -84,7 +84,7 @@ const TwoFactorAuthentication = () => {
 
     const handleAddressUpdate = (address) => {
         setLoading(true);
-        patchExtApi(reliableAdd, userIdParam, address)
+        patchExtApi(reliableAdd, userIdParam, address, false)
             .then((res) => {
                 setLoading(false);
                 navigate(-1);
