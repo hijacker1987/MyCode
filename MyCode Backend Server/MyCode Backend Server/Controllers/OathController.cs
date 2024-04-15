@@ -13,10 +13,9 @@ namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
     [Route("/account")]
-    public class OathController(IAuthService authenticationService,
-                                UserManager<User> userManager) : ControllerBase
+    public class OathController(IAuthService authService, UserManager<User> userManager) : ControllerBase
     {
-        private readonly IAuthService _authenticationService = authenticationService;
+        private readonly IAuthService _authenticationService = authService;
         private readonly UserManager<User> _userManager = userManager;
 
         [AllowAnonymous]
@@ -58,7 +57,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalLoginHelper(result, [7, 2, 1], "GitHub user") : BadRequest("Authentication failed");
+            return result?.Principal != null ? await ExternalLoginHelper(result, [7, 1, 2], "GitHub user") : BadRequest("Authentication failed");
         }
 
         private async Task<IActionResult> ExternalLoginHelper(AuthenticateResult result, int[] query, string externalUse)
@@ -71,9 +70,19 @@ namespace MyCode_Backend_Server.Controllers
                 claim.Value
             });
 
+            if (claims == null)
+            {
+                return BadRequest("Authentication failed: No claims found.");
+            }
+
             var email = claims.ElementAtOrDefault(query[0])?.Value!;
             var username = claims.ElementAtOrDefault(query[1])?.Value!;
             var displayName = claims.ElementAtOrDefault(query[2])?.Value!;
+
+            if (email == null || username == null || displayName == null)
+            {
+                return BadRequest("Authentication failed: Missing required claims.");
+            }
 
             var loginResult = await _authenticationService.LoginExternalAsync(email, Request, Response);
 
@@ -98,7 +107,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             else
             {
-                return BadRequest("Failed to login user");
+                return BadRequest($"Failed to login user.");
             }
         }
     }

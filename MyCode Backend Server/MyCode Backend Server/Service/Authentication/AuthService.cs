@@ -40,11 +40,6 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
 
-            if (email.EndsWith("@gmail.com") || isExternalRegister)
-            {
-                user.ReliableEmail = email;
-            }
-
             var result = await _userManager.CreateAsync(user, password);
 
             if (result == null || user == null)
@@ -54,6 +49,16 @@ namespace MyCode_Backend_Server.Service.Authentication
                                                                                                   email, username);
             }
 
+            if (isExternalRegister)
+            {
+                var regReliable = new Mfa(email, true)
+                {
+                    UserId = user.Id,
+                };
+
+                await _dataContext.MFADb!.AddAsync(regReliable);
+            }
+
             if (!result.Succeeded)
             {
                 return FailedRegistration(user.Id.ToString(), result, email, username);
@@ -61,6 +66,8 @@ namespace MyCode_Backend_Server.Service.Authentication
             else
             {
                 await _userManager.AddToRoleAsync(user, "User");
+                await _dataContext.SaveChangesAsync();
+
                 return new AuthResult(user.Id.ToString(), true, email, username, displayname, phoneNumber, "");
             }
         }
@@ -114,7 +121,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task<AuthResult> LoginExternalAsync(string email, HttpRequest request, HttpResponse response)
         {
-            User userToLogin = await TryGetUser(email);
+            User? userToLogin = await TryGetUser(email);
 
             if (userToLogin == null)
             {
@@ -141,31 +148,32 @@ namespace MyCode_Backend_Server.Service.Authentication
             response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(request, 3));
         }
 
-        public async Task<User> TryGetUser(string email)
+        public async Task<User?> TryGetUser(string email)
         {
             var managedUser = await _userManager.FindByEmailAsync(email);
-            User reliableUser = null!;
+            User? reliableUser = null;
 
             if (managedUser == null)
             {
-                var getReliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+                var getReliableUser = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
                 if (getReliableUser != null)
                 {
-                    reliableUser = getReliableUser;
+                    var theReliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == getReliableUser.Id);
+                    if (theReliableUser != null)
+                    {
+                        reliableUser = theReliableUser;
+                    }
                 }
             }
 
-            User userToLogin = null!;
             if (managedUser != null)
             {
-                userToLogin = managedUser;
+                return managedUser;
             }
             else
             {
-                userToLogin = reliableUser!;
+                return reliableUser;
             }
-
-            return userToLogin;
         }
 
         public async Task<string> GetRoleStatusAsync(User user)

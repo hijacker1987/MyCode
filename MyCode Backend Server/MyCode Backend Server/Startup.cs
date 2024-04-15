@@ -203,7 +203,7 @@ namespace MyCode_Backend_Server
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(frontConnection!, "https://accounts.google.com/")
+                    builder.WithOrigins(frontConnection!, "https://accounts.google.com/", "https://www.github.com/")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();

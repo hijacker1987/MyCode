@@ -33,8 +33,10 @@ namespace MyCode_Backend_Server.Controllers
             if (user == null)
                 return NotFound();
 
+            var userMfa = _dataContext.MFADb!.FirstOrDefault(u => u.UserId == user.Id);
+
             bool isReliable = false;
-            if (user.ReliableEmail != null && user.ReliableEmail.Length > 0)
+            if (userMfa != null && userMfa.ReliableEmail != null && userMfa.ReliableEmail.Length > 0)
             {
                 isReliable = true;
             }
@@ -68,14 +70,18 @@ namespace MyCode_Backend_Server.Controllers
 
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
+            var userMfa = _dataContext.MFADb!.FirstOrDefault(u => u.UserId == user.Id);
+            if (userMfa == null)
+                return NotFound();
+
             try
             {
-                await _emailSender.SendEmailAsync(user.ReliableEmail!, "Activate two factor authentication", $"Your unique code for activation: {code}");
+                await _emailSender.SendEmailAsync(userMfa.ReliableEmail!, "Activate two factor authentication", $"Your unique code for activation: {code}");
                 _logger.LogInformation("Email sent with the code for 2fa.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"Error sending email: {ex.Message}");
+                _logger.LogError($"Error sending email!");
                 return StatusCode(500, "Error sending email. Please try again later.");
             }
 
@@ -110,9 +116,17 @@ namespace MyCode_Backend_Server.Controllers
             if (!isValid)
                 return BadRequest("Invalid verification code");
 
-            if (user.ReliableEmail!.EndsWith("@gmail.com"))
+            var userMfa = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.UserId == user.Id);
+
+            if (userMfa != null)
             {
                 user.EmailConfirmed = true;
+
+                if (request.External)
+                {
+                    userMfa.SecondaryLoginMethod = true;
+                }
+
                 await _dataContext.SaveChangesAsync();
             }
 
@@ -135,8 +149,15 @@ namespace MyCode_Backend_Server.Controllers
             if (user == null)
                 return NotFound();
 
+            var userMfa = _dataContext.MFADb!.FirstOrDefault(u => u.UserId == user.Id);
+
+            if (userMfa == null)
+                return NotFound();
+
             await _userManager.SetTwoFactorEnabledAsync(user, false);
-            _logger.LogInformation($"{user.UserName} disabled 2fa.");
+            _logger.LogInformation("User disabled 2fa.");
+
+            userMfa.SecondaryLoginMethod = false;
 
             user.EmailConfirmed = false;
             await _dataContext.SaveChangesAsync();
@@ -159,29 +180,44 @@ namespace MyCode_Backend_Server.Controllers
                     return NotFound($"{request.UserId} not found.");
                 }
 
-                if (request.Attachment.EndsWith("gmail.com"))
+                if (request.External)
                 {
                     var checker = await _userManager.FindByEmailAsync(request.Attachment);
-                    var existing = await _dataContext.Users.FirstOrDefaultAsync(u => u.ReliableEmail == request.Attachment);
+                    var existing = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == request.Attachment);
 
                     if (checker != null && existing != null)
                     {
                         return BadRequest();
                     }
 
-                    existingUser.ReliableEmail = request.Attachment;
+                    var newUserMfa = new Mfa(request.Attachment, true)
+                    {
+                        UserId = existingUser.Id
+                    };
+
+                    await _dataContext.MFADb!.AddAsync(newUserMfa);
 
                     await _dataContext.SaveChangesAsync();
+
                     return Ok(new { Message = $"Successful added {request.Attachment}" });
                 }
                 else
                 {
-                    return BadRequest(new { ErrorMessage = "Unable to extend Your data." });
+                    var newUserMfa = new Mfa(request.Attachment, false)
+                    {
+                        UserId = existingUser.Id
+                    };
+
+                    await _dataContext.MFADb!.AddAsync(newUserMfa);
+
+                    await _dataContext.SaveChangesAsync();
+
+                    return Ok(new { Message = $"Successful added {request.Attachment}" });
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error changing");
                 return StatusCode(500, new { ErrorMessage = "Error occurred while changing password!", ExceptionDetails = e.ToString() });
             }
         }
