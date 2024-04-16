@@ -1,8 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { homePage } from "../../Services/Frontend.Endpoints";
-
 import { Form, FormRow } from "../../Components/Styles/Form.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { TextContainerWhite, MidTextContainer } from "../../Components/Styles/TextContainer.styled";
@@ -57,8 +55,8 @@ const PriPolPage = () => {
                             <h5>This privacy policy was last updated on April 16, 2024.</h5>
                         </TextContainerWhite>
                     </MidTextContainer>
-                    <Link to={`${homePage}`} className="link">
-                        <ButtonContainer type="button" style={{ marginTop: "140%", marginLeft: "17%" }}>Homepage</ButtonContainer>
+                    <Link to="#" className="link" onClick={() => window.history.back()} >
+                        <ButtonContainer type="button" style={{ marginTop: "140%", marginLeft: "17%" }}>Back</ButtonContainer>
                     </Link>
                 </FormRow>
             </Form>
