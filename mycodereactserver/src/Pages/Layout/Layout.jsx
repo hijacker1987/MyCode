@@ -4,9 +4,9 @@ import Modal from "react-bootstrap/Modal";
 import Cookies from "js-cookie";
 
 import { deleteApi } from "../../Services/Api";
-import { ErrorPage, Notify } from "../Services";
+import { ErrorPage, Notify } from "../Services/index";
 import { useUser, logoutUser } from "../../Services/UserContext";
-import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage } from "../../Services/Frontend.Endpoints";
+import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage, priPol } from "../../Services/Frontend.Endpoints";
 import { facebookLogin, gitHubLogin, googleLogin, recentChuckNorris, revoke } from "../../Services/Backend.Endpoints";
 import { backendUrl } from "../../Services/Config";
 import Loading from "../../Components/Loading/index";
@@ -65,59 +65,19 @@ const Layout = () => {
         }
     };
 
-    const handleOnGoogle = async () => {
+    const handleOnExternalLogin = async (ext) => {
         setLoading(true);
         try {
-            window.location.href = await `${backendUrl}${googleLogin}`;
+            const whichExtLogin = ext == "GitHub" ? gitHubLogin : ext == "Google" ? googleLogin : facebookLogin;
+
+            window.location.href = await `${backendUrl}${whichExtLogin}`;
 
             const userId = Cookies.get("UI");
             const userRole = Cookies.get("UR");
 
             if (userId != "" || userId != undefined) {
                 setUserData(userRole, userId);
-                Notify("Success", "Successful Login via Google!");
-            } else {
-                Notify("Error", "Probably invalid username or password. Please try again.");
-            }
-        } catch (error) {
-            setError(`Error occurred during login: ${error}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleOnFacebook = async () => {
-        setLoading(true);
-        try {
-            window.location.href = await `${backendUrl}${facebookLogin}`;
-
-            const userId = Cookies.get("UI");
-            const userRole = Cookies.get("UR");
-
-            if (userId != "" || userId != undefined) {
-                setUserData(userRole, userId);
-                Notify("Success", "Successful Login via Facebook!");
-            } else {
-                Notify("Error", "Probably invalid username or password. Please try again.");
-            }
-        } catch (error) {
-            setError(`Error occurred during login: ${error}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleOnGitHub = async () => {
-        setLoading(true);
-        try {
-            window.location.href = await `${backendUrl}${gitHubLogin}`;
-
-            const userId = Cookies.get("UI");
-            const userRole = Cookies.get("UR");
-
-            if (userId != "" || userId != undefined) {
-                setUserData(userRole, userId);
-                Notify("Success", "Successful Login via GitHub!");
+                Notify("Success", `Successful Login via ${ext}!`);
             } else {
                 Notify("Error", "Probably invalid username or password. Please try again.");
             }
@@ -162,14 +122,17 @@ const Layout = () => {
                                         <ButtonContainer type="button">Registration</ButtonContainer>
                                     </Link>
                                     <ButtonColumnContainer style={{ marginTop: "-6%", marginLeft: "147%" }}>
+                                        <ButtonContainer type="button" style={{ textAlign: "center", marginLeft: "8%" }}>
+                                            <Link to={priPol} className="link">Privacy Policy</Link>
+                                        </ButtonContainer>
                                         <TextContainer type="text">You can also Login with:</TextContainer>
-                                        <ButtonContainer type="button" onClick={handleOnGoogle} style={{ marginTop: "-10%", marginLeft: "8%" }}>
+                                        <ButtonContainer type="button" onClick={() => handleOnExternalLogin("Google")} style={{ marginTop: "-10%", marginLeft: "8%" }}>
                                             Google
                                         </ButtonContainer>
-                                        <ButtonContainer type="button" onClick={handleOnFacebook} style={{ marginLeft: "8%" }}>
+                                        <ButtonContainer type="button" onClick={() => handleOnExternalLogin("Facebook")} style={{ marginLeft: "8%" }}>
                                             Facebook
                                         </ButtonContainer>
-                                        <ButtonContainer type="button" onClick={handleOnGitHub} style={{ marginLeft: "8%" }}>
+                                        <ButtonContainer type="button" onClick={() => handleOnExternalLogin("GitHub")} style={{ marginLeft: "8%" }}>
                                             GitHub
                                         </ButtonContainer>
                                         <ColumnTextWrapper style={{ marginTop: "-6%", marginLeft: "10%" }}>Accounts</ColumnTextWrapper>
