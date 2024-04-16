@@ -122,6 +122,9 @@ const Layout = () => {
                                         <ButtonContainer type="button">Registration</ButtonContainer>
                                     </Link>
                                     <ButtonColumnContainer style={{ marginTop: "-6%", marginLeft: "147%" }}>
+                                        <ButtonContainer type="button" style={{ textAlign: "center", marginLeft: "8%" }}>
+                                            <Link to={priPol} className="link">Privacy Policy</Link>
+                                        </ButtonContainer>
                                         <TextContainer type="text">You can also Login with:</TextContainer>
                                         <ButtonContainer type="button" onClick={() => handleOnExternalLogin("Google")} style={{ marginTop: "-10%", marginLeft: "8%" }}>
                                             Google
@@ -175,11 +178,6 @@ const Layout = () => {
                             </ButtonRowButtonContainer>
                         </ButtonRowContainer>
                     )}
-                    <footer className="footerContainer" style={{ marginTop: "87%", marginLeft: "37%" }}>
-                        <TextContainer type="button" style={{ textAlign: "center" }}>
-                            <Link to={priPol} className="link">Privacy Policy</Link>
-                        </TextContainer>
-                    </footer>
                 </nav>
             ) : (
                 <ErrorPage errorMessage={errorMessage} />

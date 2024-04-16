@@ -9,7 +9,8 @@ import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./Services/UserContext";
 import { uLogin, uReg, uUpdateOwn, uUpdate, uPwChange, u2fa,
          cReg, cUpdateOwn, cUpdate, cOwn, cOthers, uList, cList,
-         errorOccured, homePage, priPol } from "../src/Services/Frontend.Endpoints";
+         errorOccured, homePage, accDel, priPol
+        } from "../src/Services/Frontend.Endpoints";
 import { UsersList, CodesList } from "./Pages/Lists/index";
 import Layout from "./Pages/Layout/index";
 import Homepage from "./Components/Homepage";
@@ -20,6 +21,7 @@ import TwoFactorAuthentication from "./Pages/TwoFa";
 import PwChange from "./Pages/PasswordChange";
 import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
+import AccDelPage from "./Pages/Services/AccDel";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -102,6 +104,10 @@ function App() {
         {                             
             path: priPol,
             element: <PriPolPage />
+        },
+        {
+            path: accDel,
+            element: <AccDelPage />
         },
     ]);
 

@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 
 import { useUser } from "../../../Services/UserContext";
 import { ErrorPage, Notify } from "./../../../Pages/Services";
-import { homePage, uPwChange, u2fa } from "../../../Services/Frontend.Endpoints";
+import { homePage, uPwChange, u2fa, priPol, accDel } from "../../../Services/Frontend.Endpoints";
 import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
@@ -253,6 +253,9 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                         <ButtonContainer type="submit">
                             {user ? "Update User" : "Register"}
                         </ButtonContainer>
+                        <ButtonContainer type="button">
+                            <Link to={priPol} className="link">Privacy Policy</Link>
+                        </ButtonContainer>
                         <ButtonContainer type="button" onClick={onCancel}>
                             Cancel
                         </ButtonContainer>
@@ -274,6 +277,9 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                 <Modal.Body>
                                     Are you sure you want to delete your Account?
                                 </Modal.Body>
+                                <ButtonContainer type="button" style={{ textAlign: "center", marginLeft: "8%" }}>
+                                    <Link to={accDel} className="link">Click for more information</Link>
+                                </ButtonContainer>
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
