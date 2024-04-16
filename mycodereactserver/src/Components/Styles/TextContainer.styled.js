@@ -50,6 +50,41 @@ export const TextContainer = styled.div`
   }
 `;
 
+export const TextContainerWhite = styled.div`
+  position: relative;
+  top: -14%;
+  left: 0%;
+  width: auto;
+  height: auto;
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 22px;
+  border-radius: 8px;
+  margin-top: 30%;
+  border-radius: 8px;
+  text-align: center;
+  display: column;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 2fr));
+  grid-gap: 12px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    left: -2px;
+    margin-top: -2px;
+    margin-right: -2px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+    z-index: -10;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+`;
+
 export const ErrorTextContainerRed = styled.div`
   position: relative;
   top: 30%;
@@ -190,6 +225,44 @@ export const MidContainer = styled.div`
   transform: translate(-50%, -50%);
   width: auto;
   height: auto;
+  background-color: #000;
+  color: white;
+  flex-direction: column;
+  justify-content: center;
+  border: none;
+  padding: 22px;
+  gap: 12px;
+  border-radius: 8px;
+  text-align: center;
+  animation: ${wave} 10s infinite linear;
+  color: aliceblue;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    left: -2px;
+    margin-top: -3px;
+    width: 100.5%;
+    height: 102%;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #e81cff 29%, #40c9ff 100%);
+    z-index: -10;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+`;
+
+export const MidTextContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: 45%;
+  left: 155%;
+  transform: translate(-50%, -50%);
+  width: 230%;
+  height: 75%;
   background-color: #000;
   color: white;
   flex-direction: column;

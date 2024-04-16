@@ -5,6 +5,7 @@ const u = "/account/";
 //SERVICE
 export const homePage = "/myCodeHome";
 export const errorOccured = "/somethingWentWrong";
+export const priPol = "/privacyPolicy";
 
 //USERS
 export const uReg = `${u}register`;

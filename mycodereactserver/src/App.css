@@ -17,3 +17,7 @@ th, td {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+
+.footerContainer {
+    width: 150px;
+}
