@@ -10,7 +10,6 @@ using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Email_Sender;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -91,7 +90,7 @@ namespace MyCode_Backend_Server.Controllers
                 return NotFound(ModelState);
             }
 
-            var managedUser = await _userManager.FindByEmailAsync(request.Email);
+            var managedUser = await _userManager.FindByEmailAsync(result.Email!);
 
             if (managedUser == null)
             {

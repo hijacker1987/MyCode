@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getStatApi, patchExtApi, postStatApi, postStatExtApi } from "../Services/Api";
+import { useUser } from "../Services/UserContext";
+import { getStatApi, postStatApi, postStatExtApi } from "../Services/Api";
 import { ErrorPage, Notify } from "./Services";
-import { primary2fa, enable2fa, verify2fa, disable2fa, reliableAdd } from "../Services/Backend.Endpoints";
+import { primary2fa, enable2fa, verify2fa, disable2fa, facebookAddon, gitHubAddon, googleAddon } from "../Services/Backend.Endpoints";
+import { backendUrl } from "../Services/Config";
 import TwoFactorAuthenticationForm from "../Components/Forms/TwoFaForm/index";
 import Loading from "../Components/Loading/index";
 
 const TwoFactorAuthentication = () => {
     const navigate = useNavigate();
     const { userIdParam } = useParams();
+    const { setUserData } = useUser();
     const [isEmailConfirmed, setEmailConfirmed] = useState(false);
     const [isTwoFactorEnabled, setTwoFactorEnabled] = useState(false);
     const [reliableAddress, setReliableAddress] = useState(false);
@@ -82,23 +85,30 @@ const TwoFactorAuthentication = () => {
             });
     }
 
-    const handleAddressUpdate = (address) => {
+    const handleAddressUpdate = async (ext) => {
         setLoading(true);
-        patchExtApi(reliableAdd, userIdParam, address, false)
-            .then((res) => {
-                setLoading(false);
-                navigate(-1);
-                if (res.status != 400) {
-                    Notify("Success", "Successful Verification!");
-                    handleUserBasic();
-                } else {
-                    Notify("Error", "Unable to Verify!");
-                }
-            })
-            .catch((error) => {
-                setLoading(false);
-                setError(`Error occurred during verifycation: ${error}`);
-            });
+        try {
+            const whichExtAddon = ext == "GitHub" ? `${gitHubAddon}?attachment=${encodeURIComponent(userIdParam)}`
+                                : ext == "Google" ? `${googleAddon}?attachment=${encodeURIComponent(userIdParam)}`
+                                                  : `${facebookAddon}?attachment=${encodeURIComponent(userIdParam)}`;
+;
+
+            window.location.href = await `${backendUrl}${whichExtAddon}`;
+
+            const userId = Cookies.get("UI");
+            const userRole = Cookies.get("UR");
+
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
+                Notify("Success", `Successfully verified Your ${ext} Account!`);
+            } else {
+                Notify("Error", "Probably invalid username or password. Please try again.");
+            }
+        } catch (error) {
+            setError(`Error occurred during login: ${error}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancel = () => {

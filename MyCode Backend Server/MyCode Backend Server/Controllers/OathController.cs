@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using MyCode_Backend_Server.Models;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using AspNet.Security.OAuth.GitHub;
+using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -60,6 +61,119 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalLoginHelper(result, [7, 1, 2], "GitHub user") : BadRequest("Authentication failed");
         }
 
+        [AllowAnonymous]
+        [HttpGet("google-addon")]
+        public async Task GoogleAddon(string attachment)
+        {
+            Response.Cookies.Append("Attachment", attachment);
+
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
+                new AuthenticationProperties { RedirectUri = Url.Action(nameof(GoogleResponse2)) });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("google-response2")]
+        public async Task<IActionResult> GoogleResponse2()
+        {
+            var attachment = Request.Cookies["Attachment"];
+
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return result?.Principal != null ? await ExternalAddonHelper(result, 4, attachment!) : BadRequest("Addon failed");
+        }
+
+        [AllowAnonymous]
+        [HttpGet("facebook-addon")]
+        public async Task FacebookAddon(string attachment)
+        {
+            Response.Cookies.Append("Attachment", attachment);
+
+            await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme,
+                new AuthenticationProperties { RedirectUri = Url.Action(nameof(FacebookResponse2)) });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("facebook-response2")]
+        public async Task<IActionResult> FacebookResponse2()
+        {
+            var attachment = Request.Cookies["Attachment"];
+
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return result?.Principal != null ? await ExternalAddonHelper(result, 1, attachment!) : BadRequest("Addon failed");
+        }
+
+        [AllowAnonymous]
+        [HttpGet("github-addon")]
+        public async Task GitHubAddon(string attachment)
+        {
+            Response.Cookies.Append("Attachment", attachment);
+
+            await HttpContext.ChallengeAsync(GitHubAuthenticationDefaults.AuthenticationScheme,
+                new AuthenticationProperties { RedirectUri = Url.Action(nameof(GitHubResponse2)) });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("github-response2")]
+        public async Task<IActionResult> GitHubResponse2()
+        {
+            var attachment = Request.Cookies["Attachment"];
+
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return result?.Principal != null ? await ExternalAddonHelper(result, 7, attachment!) : BadRequest("Addon failed");
+        }
+
+        private async Task<IActionResult> ExternalAddonHelper(AuthenticateResult result, int index, string attachment)
+        {
+            var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new
+            {
+                claim.Issuer,
+                claim.OriginalIssuer,
+                claim.Type,
+                claim.Value
+            });
+
+            if (claims == null)
+            {
+                return BadRequest("Authentication failed: No claims found.");
+            }
+            
+            var email = claims.ElementAtOrDefault(index)?.Value!;
+            
+            if (email == null)
+            {
+                return BadRequest("Authentication failed: Missing required claims.");
+            }
+
+            var managedUser = await _authenticationService.AddReliableAddress(email, attachment, Request, Response);
+
+            if (managedUser != null)
+            {
+                var loginResult = await _authenticationService.LoginExternalAsync(managedUser.Email!, Request, Response);
+
+                if (loginResult.Success)
+                {
+                    Response.Cookies.Delete("Authorization");
+                    Response.Cookies.Delete("RefreshAuthorization");
+                    Response.Cookies.Delete("UI");
+                    Response.Cookies.Delete("UR");
+
+                    await _authenticationService.ApprovedAccLogin(managedUser, Request, Response);
+
+                    return Redirect($"https://localhost:5173/myCodeHome/");
+                }
+                else
+                {
+                    return BadRequest($"Failed to login user.");
+                }
+            }
+            else
+            {
+                return BadRequest($"Failed to add {email}");
+            }
+        }
+
         private async Task<IActionResult> ExternalLoginHelper(AuthenticateResult result, int[] query, string externalUse)
         {
             var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new
@@ -96,6 +210,7 @@ namespace MyCode_Backend_Server.Controllers
             if (loginResult.Success)
             {
                 var managedUser = await _authenticationService.TryGetUser(email);
+
                 if (managedUser == null)
                 {
                     return NotFound("User not found.");

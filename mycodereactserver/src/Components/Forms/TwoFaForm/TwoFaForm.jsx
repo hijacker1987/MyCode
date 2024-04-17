@@ -48,15 +48,6 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
         }
     };
 
-    const handleSubmitAddress = async (e) => {
-        e.preventDefault();
-        try {
-            await onSubmitAddress(email);
-        } catch (error) {
-            console.error("Unsuccessful update", error);
-        }
-    };
-
     const handleDisable = async () => {
         try {
             await onDisable();
@@ -65,14 +56,28 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
         }
     }
 
+    const handleOnExternalLogin = async (ext) => {
+        try {
+            await onSubmitAddress(ext);
+        } catch (error) {
+            console.error(`Error occurred during login: ${error}`);
+        }
+    };
+
     return (
         <FormColumn onSubmit={handleSubmit}>
             {!isReliableEnabled && (
                 <>
-                    <h3>Please provide Your trustworthy e-mail provider (like Gmail, or the current one again) here:
-                    <InputForm type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </h3>
-                    <ButtonContainer type="button" onClick={handleSubmitAddress}>Update address</ButtonContainer>
+                    <h3>Please provide Your trustworthy e-mail (like Gmail) here with external authentication:</h3>
+                    <ButtonContainer type="button" onClick={() => handleOnExternalLogin("Google")} style={{ marginLeft: "45%" }}>
+                        Google
+                    </ButtonContainer>
+                    <ButtonContainer type="button" onClick={() => handleOnExternalLogin("Facebook")} style={{ marginLeft: "45%" }}>
+                        Facebook
+                    </ButtonContainer>
+                    <ButtonContainer type="button" onClick={() => handleOnExternalLogin("GitHub")} style={{ marginLeft: "45%" }}>
+                        GitHub
+                    </ButtonContainer>
                 </>
             )}
             {isReliableEnabled && !isDisableEnabled && (

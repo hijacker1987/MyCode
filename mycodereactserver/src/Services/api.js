@@ -101,23 +101,6 @@ export const patchApi = async (endpoint, user) => {
     }
 };
 
-export const patchExtApi = async (endpoint, userId, attachment, external) => {
-    const response = await fetch(`${backendUrl}${endpoint}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ userId: userId, attachment: attachment, external: external }),
-    });
-    if (response.status === 401) {
-        return "Unauthorized";
-    } else {
-        const data = await response.json();
-        return data;
-    }
-};
-
 export const putApi = async (endpoint, user) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "PUT",

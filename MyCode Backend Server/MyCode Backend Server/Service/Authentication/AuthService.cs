@@ -39,6 +39,14 @@ namespace MyCode_Backend_Server.Service.Authentication
             }
 
             var user = new User { UserName = username, Email = email, DisplayName = displayname, PhoneNumber = phoneNumber };
+            var secData = await TryGetUser(email);
+
+            if (secData != null)
+            {
+                _logger.LogError($"Registration failed: user exist");
+                return FailedRegistration("", await _userManager.CreateAsync(user, password) ?? IdentityResult
+                    .Failed(new IdentityError { Code = "UnknownError", Description = "Registration failed." }), email, username);
+            }
 
             var result = await _userManager.CreateAsync(user, password);
 
@@ -92,12 +100,23 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task<AuthResult> LoginAccAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
+            /*
             if (request.HttpContext.User.Identity!.IsAuthenticated)
             {
                 return AlreadyLoggedIn(request.HttpContext.User.Identity.Name!);
-            }
+            }*/
 
-            var managedUser = await _userManager.FindByEmailAsync(email);
+            var managedUser = await TryGetUser(email);
+            var secondaryData = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+
+            if (secondaryData != null)
+            {
+                var result = await _dataContext.Users!.FirstOrDefaultAsync(u => u.Id == secondaryData.UserId);
+                if (result != null)
+                {
+                    managedUser = result;
+                }
+            }
 
             if (managedUser == null)
             {
@@ -133,8 +152,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task ApprovedAccLogin(User approvedUser, HttpRequest request, HttpResponse response)
         {
-            var roles = await _userManager.GetRolesAsync(approvedUser);
-            await _userManager.AddToRolesAsync(approvedUser, roles);
+            var role = await GetRoleStatusAsync(approvedUser);
 
             approvedUser.LastTimeLogin = DateTime.UtcNow;
 
@@ -142,10 +160,9 @@ namespace MyCode_Backend_Server.Service.Authentication
             await _dataContext.SaveChangesAsync();
 
             var userId = approvedUser.Id.ToString();
-            var userRole = roles.FirstOrDefault();
 
             response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(request, 3));
-            response.Cookies.Append("UR", userRole!, TokenAndCookieHelper.GetCookieOptions(request, 3));
+            response.Cookies.Append("UR", role!, TokenAndCookieHelper.GetCookieOptions(request, 3));
         }
 
         public async Task<User?> TryGetUser(string email)
@@ -235,6 +252,33 @@ namespace MyCode_Backend_Server.Service.Authentication
                                   user.DisplayName,
                                   user.PhoneNumber,
                                   accessToken);
+        }
+
+        public async Task<User> AddReliableAddress(string email, string toAttachTo, HttpRequest request, HttpResponse response)
+        {
+            var checker = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == toAttachTo);
+
+            var existing = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+
+            if (checker != null && existing != null)
+            {
+                return checker;
+            }
+
+            if (checker != null && existing == null)
+            {
+                var regReliable = new Mfa(email, true)
+                {
+                    UserId = checker.Id,
+                };
+
+                await _dataContext.MFADb!.AddAsync(regReliable);
+                await _dataContext.SaveChangesAsync();
+
+                return checker;
+            }
+
+            return null!;
         }
 
         private static string GeneratePassword()

@@ -7,8 +7,8 @@ const u = "users/";
 //USERS
     //GET
     export const recentChuckNorris = `https://api.chucknorris.io/jokes/random`;
-    export const getUser = `${u}getUser`;                      //Authorized to admin too
-    export const getUserId = `${u}getUserId`;                  //Authorized to admin too
+    export const getUser = `${u}getUser`;                        //Authorized to admin too
+    export const getUserId = `${u}getUserId`;                    //Authorized to admin too
 
     //POST
     export const userLogin = `${u}login`;
@@ -16,19 +16,19 @@ const u = "users/";
 
     //PATCH
     export const userUpdate = `${u}user-`;                  //{id}
-    export const changePassword = `${u}changePassword`;         //Authorized to admin too
+    export const changePassword = `${u}changePassword`;          //Authorized to admin too
 
     //DELETE
     export const deleteAccount = `${u}delete-`;             //{id}
 
 //CODES
     //GET
-    export const getCodesByUser = `${c}by-user`;                //Authorized to admin too
-    export const getCodesByVisibility = `${c}by-visibility`;    //Authorized to admin too
-    export const getCodesByUserId = `${c}code-`;           //{id} Authorized to admin too
+    export const getCodesByUser = `${c}by-user`;                 //Authorized to admin too
+    export const getCodesByVisibility = `${c}by-visibility`;     //Authorized to admin too
+    export const getCodesByUserId = `${c}code-`;            //{id} Authorized to admin too
 
     //POST
-    export const codeRegistration = `${c}register`;             //Authorized to admin too
+    export const codeRegistration = `${c}register`;              //Authorized to admin too
 
     //PUT
     export const codeUpdate = `${c}cupdate-`;               //{id}
@@ -57,7 +57,9 @@ const u = "users/";
     export const enable2fa = `${au}enableTwoFactor`;
     export const verify2fa = `${au}verifyTwoFactor`;
     export const disable2fa = `${au}disableTwoFactor`;
-    export const reliableAdd = `${au}addReliableAddress`;
     export const gitHubLogin = `${ac}github-login`;
     export const googleLogin = `${ac}google-login`;
     export const facebookLogin = `${ac}facebook-login`;
+    export const gitHubAddon = `${ac}github-addon`;
+    export const googleAddon = `${ac}google-addon`;
+    export const facebookAddon = `${ac}facebook-addon`;
