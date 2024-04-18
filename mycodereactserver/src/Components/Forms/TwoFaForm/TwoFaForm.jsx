@@ -9,7 +9,6 @@ import "../../Styles/CustomCss/fb.css";
 
 function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDisable, onCancel, isEmailConfirmed, isTwoFactorEnabled, isReliable }) {
     const [code, setCode] = useState("");
-    const [email, setEmail] = useState("");
     const [isCodeSubmitEnabled, setIsCodeSubmitEnabled] = useState(false);
     const [isDisableEnabled, setIsDisableEnabled] = useState(false);
     const [isReliableEnabled, setIsReliableEnabled] = useState(false);
