@@ -23,6 +23,22 @@ const Homepage = () => {
     const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
 
     useEffect(() => {
+        const cookieDataSync = async () => {
+            const userId = Cookies.get("UI");
+            const userRole = Cookies.get("UR");
+
+            if (userId != "" || userId != undefined) {
+                setUserData(userRole, userId);
+
+                Cookies.remove("UI");
+                Cookies.remove("UR");
+            }
+        };
+
+        cookieDataSync();
+    }, []);
+
+    useEffect(() => {
         const fetchVisibleCodes = async () => {
             const responseData = await getApi(getCodesByVisibility);
 
@@ -57,18 +73,6 @@ const Homepage = () => {
 
         return () => clearTimeout(initialRandomCode);
     }, [visibleCodes]);
-
-    useEffect(() => {
-        const cookieDataSync = async () => {
-            const userId = Cookies.get('UI');
-            const userRole = Cookies.get('UR');
-            if (userId != "" || userId != undefined) {
-                setUserData(userRole, userId);
-            }
-        };
-
-        cookieDataSync();
-    }, []);
 
     useEffect(() => {
         const storedTheme = localStorage.getItem(`theme-${userid}`);

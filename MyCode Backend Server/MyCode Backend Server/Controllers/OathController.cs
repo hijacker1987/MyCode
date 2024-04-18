@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using MyCode_Backend_Server.Models;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using AspNet.Security.OAuth.GitHub;
-using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -150,16 +149,18 @@ namespace MyCode_Backend_Server.Controllers
 
             if (managedUser != null)
             {
-                var loginResult = await _authenticationService.LoginExternalAsync(managedUser.Email!, Request, Response);
+                var addonResult = await _authenticationService.TryGetUserById(attachment);
 
-                if (loginResult.Success)
+                if (addonResult != null)
                 {
                     Response.Cookies.Delete("Authorization");
                     Response.Cookies.Delete("RefreshAuthorization");
                     Response.Cookies.Delete("UI");
                     Response.Cookies.Delete("UR");
+                    Response.Cookies.Delete("Attachment");
 
-                    await _authenticationService.ApprovedAccLogin(managedUser, Request, Response);
+                    await _authenticationService.LoginExternalAsync(email, Request, Response);
+                    await _authenticationService.ApprovedAccLogin(addonResult, Request, Response);
 
                     return Redirect($"https://localhost:5173/myCodeHome/");
                 }

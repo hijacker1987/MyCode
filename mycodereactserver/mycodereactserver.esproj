@@ -13,5 +13,6 @@
     <Folder Include="src\Components\Forms\PaginationForm\" />
     <Folder Include="src\Components\Lists\CodesTable\" />
     <Folder Include="src\Components\Lists\UsersTable\" />
+    <Folder Include="src\Components\Styles\CustomCss\" />
   </ItemGroup>
 </Project>

@@ -100,23 +100,12 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task<AuthResult> LoginAccAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
-            /*
-            if (request.HttpContext.User.Identity!.IsAuthenticated)
+            /*if (request.HttpContext.User.Identity!.IsAuthenticated)
             {
                 return AlreadyLoggedIn(request.HttpContext.User.Identity.Name!);
             }*/
 
             var managedUser = await TryGetUser(email);
-            var secondaryData = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
-
-            if (secondaryData != null)
-            {
-                var result = await _dataContext.Users!.FirstOrDefaultAsync(u => u.Id == secondaryData.UserId);
-                if (result != null)
-                {
-                    managedUser = result;
-                }
-            }
 
             if (managedUser == null)
             {
@@ -168,29 +157,37 @@ namespace MyCode_Backend_Server.Service.Authentication
         public async Task<User?> TryGetUser(string email)
         {
             var managedUser = await _userManager.FindByEmailAsync(email);
-            User? reliableUser = null;
 
-            if (managedUser == null)
+            var secondaryData = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
+
+            if (secondaryData != null)
             {
-                var getReliableUser = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.ReliableEmail == email);
-                if (getReliableUser != null)
+                var result = await _dataContext.Users!.FirstOrDefaultAsync(u => u.Id == secondaryData.UserId);
+                if (result != null)
                 {
-                    var theReliableUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == getReliableUser.Id);
-                    if (theReliableUser != null)
-                    {
-                        reliableUser = theReliableUser;
-                    }
+                    managedUser = result;
                 }
             }
 
-            if (managedUser != null)
+            return managedUser;
+        }
+
+        public async Task<User?> TryGetUserById(string id)
+        {
+            var managedUser = await _userManager.FindByIdAsync(id);
+
+            var secondaryData = await _dataContext.MFADb!.FirstOrDefaultAsync(u => u.UserId.ToString() == id);
+
+            if (secondaryData != null)
             {
-                return managedUser;
+                var result = await _dataContext.Users!.FirstOrDefaultAsync(u => u.Id == secondaryData.UserId);
+                if (result != null)
+                {
+                    managedUser = result;
+                }
             }
-            else
-            {
-                return reliableUser;
-            }
+
+            return managedUser;
         }
 
         public async Task<string> GetRoleStatusAsync(User user)
