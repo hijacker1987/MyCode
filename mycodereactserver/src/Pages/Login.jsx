@@ -20,11 +20,13 @@ const UserLogin = () => {
         setLoading(true);
         try {
             await postStatApi(userLogin, user);
-            const userId = Cookies.get('UI');
-            const userRole = Cookies.get('UR');
+
+            const userId = Cookies.get("UI");
+            const userRole = Cookies.get("UR");
 
             if (userId != "" || userId != undefined) {
                 setUserData(userRole, userId);
+
                 Notify("Success", "Successful Login!");
                 navigate(homePage);
             } else {

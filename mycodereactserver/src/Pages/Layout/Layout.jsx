@@ -77,6 +77,7 @@ const Layout = () => {
 
             if (userId != "" || userId != undefined) {
                 setUserData(userRole, userId);
+
                 Notify("Success", `Successful Login via ${ext}!`);
             } else {
                 Notify("Error", "Probably invalid username or password. Please try again.");
@@ -84,6 +85,10 @@ const Layout = () => {
         } catch (error) {
             setError(`Error occurred during login: ${error}`);
         } finally {
+
+            Cookies.remove("UI");
+            Cookies.remove("UR");
+
             setLoading(false);
         }
     };

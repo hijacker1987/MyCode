@@ -12,6 +12,7 @@ namespace MyCode_Backend_Server.Service.Authentication
         Task ApprovedAccLogin(User approvedUser, HttpRequest request, HttpResponse response);
         Task<User> AddReliableAddress(string email, string toAttachTo,  HttpRequest request, HttpResponse response);
         Task<User?> TryGetUser(string email);
+        Task<User?> TryGetUserById(string attachment);
         Task<string> GetRoleStatusAsync(User user);
         Task<string> SetRoleStatusAsync(User user);
     }

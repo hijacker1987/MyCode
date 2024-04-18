@@ -157,6 +157,7 @@ namespace MyCode_Backend_Server.Controllers
             await _userManager.SetTwoFactorEnabledAsync(user, false);
             _logger.LogInformation("User disabled 2fa.");
 
+            userMfa.ReliableEmail = "";
             userMfa.SecondaryLoginMethod = false;
 
             user.EmailConfirmed = false;
