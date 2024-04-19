@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MyCode_Backend_Server.Models;
+﻿using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Service.Authentication
 {
