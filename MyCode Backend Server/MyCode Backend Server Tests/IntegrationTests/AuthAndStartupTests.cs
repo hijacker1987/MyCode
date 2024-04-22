@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using MyCode_Backend_Server.Data.Service;
 
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
@@ -134,6 +135,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 .UseInMemoryDatabase(databaseName: "Test_DbInitializer_CreatesDatabaseAndAdminUser")
                 .Options;
             var dbContext = new DataContext(dbContextOptions);
+            var dummy = new DummyData();
+            var faq = new FAQBotData();
 
             var users = new List<User>();
 
@@ -175,7 +178,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var initializer = new DbInitializer(configuration);
 
             // Act
-            await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object);
+            await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object, faq, dummy);
 
             // Assert
             var adminUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == "admin@example.com");
@@ -191,6 +194,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 .UseInMemoryDatabase(databaseName: "Test_DbInitializer_CreatesUsersAndTheirCodes")
                 .Options;
             var dbContext = new DataContext(dbContextOptions);
+            var dummy = new DummyData();
+            var faq = new FAQBotData();
 
             var users = new List<User>();
 
@@ -232,7 +237,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var initializer = new DbInitializer(configuration);
 
             // Act
-            await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object);
+            await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object, faq, dummy);
 
             // Assert
             var usersList = await dbContext.Users.ToListAsync();
@@ -251,6 +256,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 .UseInMemoryDatabase(databaseName: "Test_TestDbInitializer_CreatesTestDatabaseAndUsers")
                 .Options;
             var dbContext = new DataContext(dbContextOptions);
+            var dummy = new DummyData();
+            var faq = new FAQBotData();
 
             var users = new List<User>();
 
@@ -291,7 +298,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var initializer = new TestDbInitializer();
 
             // Act
-            await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object);
+            await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object, faq, dummy);
 
             // Assert
             var testAdminUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == "admin@test.com");
