@@ -100,10 +100,10 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task<AuthResult> LoginAccAsync(string email, string password, string confirmPassword, HttpRequest request, HttpResponse response)
         {
-            /*if (request.HttpContext.User.Identity!.IsAuthenticated)
+            if (request.HttpContext.User.Identity!.IsAuthenticated)
             {
                 return AlreadyLoggedIn(request.HttpContext.User.Identity.Name!);
-            }*/
+            }
 
             var managedUser = await TryGetUser(email);
 
