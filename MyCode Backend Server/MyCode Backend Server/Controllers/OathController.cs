@@ -29,7 +29,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalLoginHelper(result, [4, 0, 1], "Google user") : BadRequest("Authentication failed");
+            return result?.Principal != null ? await ExternalLoginHelper(result, "Google user") : BadRequest("Authentication failed");
         }
 
         [AllowAnonymous]
@@ -43,7 +43,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalLoginHelper(result, [1, 0, 2], "Facebook user") : BadRequest("Authentication failed");
+            return result?.Principal != null ? await ExternalLoginHelper(result, "Facebook user") : BadRequest("Authentication failed");
         }
 
         [AllowAnonymous]
@@ -57,7 +57,7 @@ namespace MyCode_Backend_Server.Controllers
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalLoginHelper(result, [7, 1, 2], "GitHub user") : BadRequest("Authentication failed");
+            return result?.Principal != null ? await ExternalLoginHelper(result, "GitHub user") : BadRequest("Authentication failed");
         }
 
         [AllowAnonymous]
@@ -78,7 +78,7 @@ namespace MyCode_Backend_Server.Controllers
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalAddonHelper(result, 4, attachment!) : BadRequest("Addon failed");
+            return result?.Principal != null ? await ExternalAddonHelper(result, attachment!) : BadRequest("Addon failed");
         }
 
         [AllowAnonymous]
@@ -99,7 +99,7 @@ namespace MyCode_Backend_Server.Controllers
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalAddonHelper(result, 1, attachment!) : BadRequest("Addon failed");
+            return result?.Principal != null ? await ExternalAddonHelper(result, attachment!) : BadRequest("Addon failed");
         }
 
         [AllowAnonymous]
@@ -120,10 +120,10 @@ namespace MyCode_Backend_Server.Controllers
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return result?.Principal != null ? await ExternalAddonHelper(result, 7, attachment!) : BadRequest("Addon failed");
+            return result?.Principal != null ? await ExternalAddonHelper(result, attachment!) : BadRequest("Addon failed");
         }
 
-        private async Task<IActionResult> ExternalAddonHelper(AuthenticateResult result, int index, string attachment)
+        private async Task<IActionResult> ExternalAddonHelper(AuthenticateResult result, string attachment)
         {
             var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new
             {
@@ -137,9 +137,9 @@ namespace MyCode_Backend_Server.Controllers
             {
                 return BadRequest("Authentication failed: No claims found.");
             }
-            
-            var email = claims.ElementAtOrDefault(index)?.Value!;
-            
+
+            var email = claims.FirstOrDefault(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")!.Value;
+
             if (email == null)
             {
                 return BadRequest("Authentication failed: Missing required claims.");
@@ -175,7 +175,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        private async Task<IActionResult> ExternalLoginHelper(AuthenticateResult result, int[] query, string externalUse)
+        private async Task<IActionResult> ExternalLoginHelper(AuthenticateResult result, string externalUse)
         {
             var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new
             {
@@ -190,9 +190,9 @@ namespace MyCode_Backend_Server.Controllers
                 return BadRequest("Authentication failed: No claims found.");
             }
 
-            var email = claims.ElementAtOrDefault(query[0])?.Value!;
-            var username = claims.ElementAtOrDefault(query[1])?.Value!;
-            var displayName = claims.ElementAtOrDefault(query[2])?.Value!;
+            var email = claims.FirstOrDefault(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")!.Value;
+            var username = claims.FirstOrDefault(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")!.Value;
+            var displayName = claims.FirstOrDefault(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")!.Value;
 
             if (email == null || username == null || displayName == null)
             {

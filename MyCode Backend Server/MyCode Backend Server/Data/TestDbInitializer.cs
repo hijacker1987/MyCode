@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MyCode_Backend_Server.Data.Service;
 using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Data
 {
     public class TestDbInitializer : IDbInitializer
     {
-        public async Task Initialize(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+        public async Task Initialize(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager, FAQBotData fAQBotData, DummyData dummyData)
         {
             context.Database.EnsureCreated();
 

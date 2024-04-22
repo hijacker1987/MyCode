@@ -13,6 +13,10 @@ using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using MyCode_Backend_Server.Service.Bot;
+using IBot = Microsoft.Bot.Builder.IBot;
+using MyCode_Backend_Server.Data.Service;
 
 namespace MyCode_Backend_Server
 {
@@ -56,7 +60,13 @@ namespace MyCode_Backend_Server
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+
+            services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>();
+            services.AddTransient<IBot, FAQBot>();
             services.AddTransient<IEmailSender, EmailSender>();
+
+            services.AddScoped<FAQBotData>();
+            services.AddScoped<DummyData>();
 
             if (_environment.IsEnvironment("Test"))
             {
@@ -138,8 +148,7 @@ namespace MyCode_Backend_Server
 
                             options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
                             options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-                            options.ClaimActions.MapJsonKey("urn:github:name", "name");
-                            options.ClaimActions.MapJsonKey("urn:github:email", "email", ClaimValueTypes.Email);
+                            options.ClaimActions.MapJsonKey(ClaimValueTypes.Email, "email");
                         }
                     })
                     .AddJwtBearer(options =>
@@ -240,14 +249,16 @@ namespace MyCode_Backend_Server
                 var context = services.GetRequiredService<DataContext>();
                 var userManager = services.GetRequiredService<UserManager<User>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+                var faqData = services.GetRequiredService<FAQBotData>();
+                var dummyData = services.GetRequiredService<DummyData>();
 
                 if (_environment.IsEnvironment("Test"))
                 {
-                    testDbInitializer.Initialize(dataContext, userManager, roleManager).Wait();
+                    testDbInitializer.Initialize(dataContext, userManager, roleManager, faqData, dummyData).Wait();
                 }
                 else if (_environment.IsEnvironment("Development"))
                 {
-                    dbInitializer.Initialize(dataContext, userManager, roleManager).Wait();
+                    dbInitializer.Initialize(dataContext, userManager, roleManager, faqData, dummyData).Wait();
                 }
             }
             catch (Exception ex)
@@ -259,6 +270,17 @@ namespace MyCode_Backend_Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map("/api/messages", async context =>
+                {
+                    var botAdapter = app.ApplicationServices.GetRequiredService<IBotFrameworkHttpAdapter>();
+                    var bot = app.ApplicationServices.GetRequiredService<IBot>();
+
+                    await botAdapter.ProcessAsync(context.Request, context.Response, bot);
+                });
             });
         }
     }
