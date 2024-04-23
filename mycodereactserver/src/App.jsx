@@ -22,6 +22,7 @@ import PwChange from "./Pages/PasswordChange";
 import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
 import AccDelPage from "./Pages/Services/AccDel";
+import ChatNorris from "./Components/ChatNorris";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -115,6 +116,7 @@ function App() {
         <UserProvider>
             <RouterProvider router={router} />
             <ToastContainer />
+            <ChatNorris />
         </UserProvider>
     );
 }

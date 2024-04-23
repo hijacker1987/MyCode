@@ -271,17 +271,6 @@ namespace MyCode_Backend_Server
             {
                 endpoints.MapControllers();
             });
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map("/api/messages", async context =>
-                {
-                    var botAdapter = app.ApplicationServices.GetRequiredService<IBotFrameworkHttpAdapter>();
-                    var bot = app.ApplicationServices.GetRequiredService<IBot>();
-
-                    await botAdapter.ProcessAsync(context.Request, context.Response, bot);
-                });
-            });
         }
     }
 }

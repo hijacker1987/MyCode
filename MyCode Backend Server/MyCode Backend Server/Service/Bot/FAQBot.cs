@@ -1,5 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Data;
 
 namespace MyCode_Backend_Server.Service.Bot
@@ -11,7 +12,8 @@ namespace MyCode_Backend_Server.Service.Bot
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var message = turnContext.Activity.Text;
-            var faq = _dataContext.BotDb!.FirstOrDefault(q => message.Contains(q.Question!));
+
+            var faq = await _dataContext.BotDb!.FirstOrDefaultAsync(q => message.Contains(q.Question!), cancellationToken: cancellationToken);
 
             if (faq != null)
             {
