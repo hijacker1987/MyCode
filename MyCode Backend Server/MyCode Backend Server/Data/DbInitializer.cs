@@ -53,7 +53,7 @@ namespace MyCode_Backend_Server.Data
             await dummyData.InitializeDummyDataAsync(userManager, context);
         }
 
-        private async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)
+        private static async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)
         {
             if (!await roleManager.RoleExistsAsync(role))
             {

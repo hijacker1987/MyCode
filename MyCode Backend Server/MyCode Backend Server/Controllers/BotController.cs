@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Schema;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace MyCode_Backend_Server.Controllers
 {
-    [Route("api/messages")]
+    [AllowAnonymous]
+    [Route("cncbot/messages")]
     [ApiController]
     public class BotController(IBotFrameworkHttpAdapter adapter, IBot bot) : ControllerBase
     {
@@ -13,9 +14,17 @@ namespace MyCode_Backend_Server.Controllers
         private readonly IBot _bot = bot;
 
         [HttpPost]
-        public async Task PostAsync()
+        public async Task<IActionResult> PostAsync()
         {
-            await _adapter.ProcessAsync(Request, Response, _bot);
+            try
+            {
+                await _adapter.ProcessAsync(Request, Response, _bot);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
         }
     }
 }
