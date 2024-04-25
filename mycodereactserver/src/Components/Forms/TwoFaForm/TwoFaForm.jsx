@@ -70,7 +70,7 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
         <FormColumn onSubmit={handleSubmit}>
             {!isReliableEnabled && (
                 <>
-                    <h3>Please provide Your trustworthy e-mail (like Gmail) here with external authentication:</h3>
+                    <h3>Please provide Your trustworthy e-mail (like Gmail) here, add an external account to prove it:</h3>
                     <button class="gsi-material-button" onClick={() => handleOnExternalLogin("Google")} style={{ width: "120px", marginLeft: "45%" }}>
                         <div class="gsi-material-button-content-wrapper">
                             <span class="gsi-material-button-icon" style={{ marginLeft: "-13%" }}></span>
@@ -93,14 +93,14 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
             )}
             {isReliableEnabled && !isDisableEnabled && (
                 <>
-                    <h3>Press the button if You would like to setup the two factor authentication</h3>
+                    <h3>Press the button if You would like to continue the authentication</h3>
                     <ButtonContainer type="button" onClick={handleEnable}>Enable Verification</ButtonContainer>
                 </>
             )}
             {isReliableEnabled && isCodeSubmitEnabled && (
                 <>
                     <h3>
-                        Please write Your unique two factor authentication code here:
+                        Please type Your unique authentication code here (You received it to Your thrustworty e-mail account):
                         <InputForm type="text" value={code} onChange={(e) => setCode(e.target.value)} />
                     </h3>
                     <ButtonContainer type="submit" onClick={handleSubmit}>Send</ButtonContainer>
@@ -108,7 +108,7 @@ function TwoFactorAuthenticationForm({ onEnable, onSubmit, onSubmitAddress, onDi
             )}
             {isReliableEnabled && isDisableEnabled && (
                 <>
-                    <h3>Press the button if You would like to revoke the two factor authentication</h3>
+                    <h3>Press the button if You would like to revoke Your multi-factor authentication</h3>
                     <ButtonContainer type="button" onClick={handleDisable}>Disable Verification</ButtonContainer>
                 </>
             )}

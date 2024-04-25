@@ -1,25 +1,31 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Service.Bot;
+using Newtonsoft.Json;
 
 namespace MyCode_Backend_Server.Controllers
 {
     [AllowAnonymous]
     [Route("cncbot/messages")]
     [ApiController]
-    public class BotController(IBotFrameworkHttpAdapter adapter, IBot bot) : ControllerBase
+    public class BotController(FAQBot bot) : ControllerBase
     {
-        private readonly IBotFrameworkHttpAdapter _adapter = adapter;
-        private readonly IBot _bot = bot;
+        private readonly FAQBot _bot = bot;
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync()
+        public async Task<IActionResult> PostAsync([FromBody] BotMessage message)
         {
             try
             {
-                await _adapter.ProcessAsync(Request, Response, _bot);
-                return Ok();
+                string result = "";
+
+                if (message != null)
+                {
+                    result = await _bot.OnMessageActivityAsync(message);
+                }
+
+                return Ok(JsonConvert.SerializeObject(result));
             }
             catch (Exception ex)
             {

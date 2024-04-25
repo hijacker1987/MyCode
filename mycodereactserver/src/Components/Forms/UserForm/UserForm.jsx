@@ -241,7 +241,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                 <ButtonContainer type="button">Password Change</ButtonContainer>
                             </Link>
                             <Link to={`${u2fa}${user.id}`} className="link">
-                                <ButtonContainer type="button">Two factor verification</ButtonContainer>
+                                <ButtonContainer type="button">Verification</ButtonContainer>
                             </Link>
                             <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>
                                 Delete Account

@@ -13,10 +13,8 @@ using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using MyCode_Backend_Server.Service.Bot;
-using IBot = Microsoft.Bot.Builder.IBot;
 using MyCode_Backend_Server.Data.Service;
+using MyCode_Backend_Server.Service.Bot;
 
 namespace MyCode_Backend_Server
 {
@@ -61,11 +59,11 @@ namespace MyCode_Backend_Server
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
 
-            services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>();
-            services.AddTransient<IBot, FAQBot>();
             services.AddTransient<IEmailSender, EmailSender>();
 
+            services.AddScoped<FAQBot>();
             services.AddScoped<FAQBotData>();
+
             services.AddScoped<DummyData>();
 
             if (_environment.IsEnvironment("Test"))
