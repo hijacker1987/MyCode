@@ -159,9 +159,7 @@ const Layout = () => {
                         <ButtonRowContainer style={{ marginTop: "5%" }}>
                             <ButtonRowButtonContainer>
                                 <ButtonContainer type="button" onClick={handleLogout}>Logout</ButtonContainer>
-                                <Link to={`${homePage}`} className="link">
-                                    <ButtonContainer type="button">MyCode Home</ButtonContainer>
-                                </Link>
+                                <ButtonContainer type="button" onClick={() => navigate(homePage)}>MyCode Home</ButtonContainer>
                                 {role === "Admin" ? (
                                     <>
                                         <Link to={`${uList}1`} className="link">

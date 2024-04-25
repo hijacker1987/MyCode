@@ -24,14 +24,16 @@ const Homepage = () => {
 
     useEffect(() => {
         const cookieDataSync = async () => {
-            const userId = Cookies.get("UI");
-            const userRole = Cookies.get("UR");
+            if (userid == null || userid == "" || userid == undefined) {
+                const userId = Cookies.get("UI");
+                const userRole = Cookies.get("UR");
 
-            if (userId != "" || userId != undefined) {
-                setUserData(userRole, userId);
+                if (userId != "" || userId != undefined) {
+                    setUserData(userRole, userId);
 
-                Cookies.remove("UI");
-                Cookies.remove("UR");
+                    Cookies.remove("UI");
+                    Cookies.remove("UR");
+                }
             }
         };
 
