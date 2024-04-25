@@ -20,7 +20,9 @@ namespace MyCode_Backend_Server.Data.Service
                 UserName = $"User{i}",
                 Email = $"user{i}@example.com",
                 DisplayName = $"{i}. example {userNames[random.Next(userNames.Count)]}",
-                PhoneNumber = "123"
+                PhoneNumber = "123",
+                TwoFactorEnabled = true,
+                EmailConfirmed = true
             }).ToArray();
 
             foreach (var user in users)
@@ -30,7 +32,31 @@ namespace MyCode_Backend_Server.Data.Service
                 if (userResult.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "User");
+
+                    var mfaUserResult = new Mfa
+                    {
+                        UserId = user.Id,
+                        ReliableEmail = $"{user.UserName}@reliable.com",
+                        SecondaryLoginMethod = true,
+                    };
+
+                    await context.MFADb!.AddAsync(mfaUserResult);
                 }
+            }
+
+            var justRegisteredUser = new User
+            {
+                UserName = "JustRegisteredUser",
+                Email = "user@justregistered.com",
+                DisplayName = "Newcomer",
+                PhoneNumber = "123456",
+            };
+
+            var justRegisteredUserResult = await userManager.CreateAsync(justRegisteredUser, "Password");
+
+            if (justRegisteredUserResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(justRegisteredUser, "User");
             }
 
             var gUser = new User
