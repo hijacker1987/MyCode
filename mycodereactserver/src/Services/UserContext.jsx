@@ -6,10 +6,10 @@ import { deleteApi } from "./Api";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const [userData, setUserData] = useState({ role: "", userid: "" });
+    const [userData, setUserData] = useState({ role: "", userid: "", username: "" });
 
-    const updateUserData = (role, userid) => {
-        setUserData({ role, userid });
+    const updateUserData = (role, userid, username) => {
+        setUserData({ role, userid, username });
     };
 
     return (

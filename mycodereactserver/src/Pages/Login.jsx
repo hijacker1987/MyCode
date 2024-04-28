@@ -22,10 +22,15 @@ const UserLogin = () => {
             await postStatApi(userLogin, user);
 
             const userId = Cookies.get("UI");
+            const userName = Cookies.get("UD");
             const userRole = Cookies.get("UR");
 
             if (userId != "" || userId != undefined) {
-                setUserData(userRole, userId);
+                setUserData(userRole, userId, userName);
+
+                Cookies.remove("UI");
+                Cookies.remove("UD");
+                Cookies.remove("UR");
 
                 Notify("Success", "Successful Login!");
                 navigate(homePage);

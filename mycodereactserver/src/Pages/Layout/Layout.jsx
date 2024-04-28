@@ -75,9 +75,10 @@ const Layout = () => {
 
             const userId = Cookies.get("UI");
             const userRole = Cookies.get("UR");
+            const userName = Cookies.get("UD");
 
             if (userId != "" || userId != undefined) {
-                setUserData(userRole, userId);
+                setUserData(userRole, userId, userName);
 
                 Notify("Success", `Successful Login via ${ext}!`);
             } else {
@@ -89,6 +90,7 @@ const Layout = () => {
 
             Cookies.remove("UI");
             Cookies.remove("UR");
+            Cookies.remuve("UD");
 
             setLoading(false);
         }
