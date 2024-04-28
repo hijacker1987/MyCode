@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
+using System;
 
 namespace MyCode_Backend_Server.Service.Bot
 {
@@ -52,6 +53,7 @@ namespace MyCode_Backend_Server.Service.Bot
             int maxMatchCount = 0;
 
             var matchingFAQs = await _dataContext.BotDb!.ToListAsync();
+            List<string> faqData = [];
 
             foreach (var faq in matchingFAQs)
             {
@@ -61,6 +63,10 @@ namespace MyCode_Backend_Server.Service.Bot
                     if (faq.Question!.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
                     {
                         matchCount++;
+                        if (!faqData.Contains(keyword))
+                        {
+                            faqData.Add(keyword);
+                        }
                     }
                 }
 
@@ -71,7 +77,55 @@ namespace MyCode_Backend_Server.Service.Bot
                 }
             }
 
+            var result = ScoreAndSelectAnswer(keywords, faqData);
+
+            if (result != null)
+            {
+                if (bestMatchAnswer != result)
+                {
+                    bestMatchAnswer = result;
+                }
+            }
+
             return bestMatchAnswer;
+        }
+
+        private static string ScoreAndSelectAnswer(List<string> keywords, List<string> faqDatabase)
+        {
+            List<string> bestAnswers = [];
+            int maxScore = 0;
+
+            foreach (string faq in faqDatabase)
+            {
+                int score = 0;
+                foreach (string keyword in keywords)
+                {
+                    if (faq.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        score++;
+                    }
+                }
+
+                if (score > maxScore)
+                {
+                    maxScore = score;
+                    bestAnswers.Clear();
+                    bestAnswers.Add(faq);
+                }
+                else if (score == maxScore)
+                {
+                    bestAnswers.Add(faq);
+                }
+            }
+
+            if (bestAnswers.Count == 1)
+            {
+                return bestAnswers[0];
+            }
+            else
+            {
+                return null!;
+            }
         }
     }
 }
