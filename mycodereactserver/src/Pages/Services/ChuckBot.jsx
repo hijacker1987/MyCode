@@ -12,6 +12,7 @@ const ChuckBot = () => {
     const [displayName, setDisplayName] = useState("Guest");
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState("");
+    const [typingAnimation, setTypingAnimation] = useState(".");
     const [isTyping, setIsTyping] = useState(false);
     const [botOpen, setBotOpen] = useState(false);
 
@@ -22,8 +23,27 @@ const ChuckBot = () => {
             setDisplayName(username);
         } else {
             setDisplayName("Guest");
+            setMessages([]);
+            setBotOpen(false);
         }
     }, [username]);
+
+    useEffect(() => {
+        const typingInterval = setInterval(() => {
+            setTypingAnimation(prevAnimation => {
+                switch (prevAnimation) {
+                    case ".":
+                        return "..";
+                    case "..":
+                        return "...";
+                    default:
+                        return ".";
+                }
+            });
+        }, 500);
+
+        return () => clearInterval(typingInterval);
+    }, []);
 
     const toggleBot = () => {
         setBotOpen(!botOpen);
@@ -56,7 +76,7 @@ const ChuckBot = () => {
                     { text: `${botName}: ${responseData}`, mine: false }
                 ]);
                 setIsTyping(false);
-            }, 2000);
+            }, 2500);
         } catch (error) {
             console.error("Error sending message:", error);
         }
@@ -79,7 +99,7 @@ const ChuckBot = () => {
                     ))}
                     {isTyping && (
                         <div style={{ textAlign: "left", color: "rebeccapurple" }}>
-                            Chuck is typing...
+                            Chuck is typing{typingAnimation}
                         </div>
                     )}
                 </div>
