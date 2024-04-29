@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
-using System;
 
 namespace MyCode_Backend_Server.Service.Bot
 {
