@@ -85,6 +85,22 @@ namespace MyCode_Backend_Server.Data.Service
 
             await context.MFADb!.AddAsync(mfaResult);
 
+            var cSupport = new User
+            {
+                UserName = "CusSupport",
+                Email = "customersupport@mycode.com",
+                DisplayName = "Customer Support",
+                PhoneNumber = "12345678",
+                EmailConfirmed = true
+            };
+
+            var cSupportResult = await userManager.CreateAsync(cSupport, "Password");
+
+            if (cSupportResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(cSupport, "Support");
+            }
+
             foreach (var user in users)
             {
                 int numberOfCodes = random.Next(1, 6);
