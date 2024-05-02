@@ -1,0 +1,72 @@
+.customer-chat-container {
+    position: fixed;
+    bottom: 40px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    max-height: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: linear-gradient(-45deg, rgb(76, 255, 0) 10%, rgb(0, 47, 43) 70%);
+    background-size: 400% 400%;
+    animation: wave 30s infinite linear;
+}
+
+@keyframes wave {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.customer-chat-input {
+    position: fixed;
+    top: 89%;
+    width: 16.3%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.customer-chat-container input[type="text"] {
+    background: lightgrey;
+    height: 30px;
+    width: 212px;
+    font-family: Vancouver, sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.customer-chat-container button {
+    position: fixed;
+    top: 90%;
+    right: -12px;
+    height: 38px;
+    width: 80px;
+    margin-right: 2%;
+    background-color: rgba(40, 10, 50, 1.8);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-family: Vancouver, sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.customer-chat-container button:hover {
+    background-color: #0056b3;
+}

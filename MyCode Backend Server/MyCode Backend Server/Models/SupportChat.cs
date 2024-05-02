@@ -6,7 +6,7 @@ namespace MyCode_Backend_Server.Models
     {
         [Key]
         public Guid SupportId { get; set; }
-        public string? Text { get; set; }
+        public virtual string? Text { get; set; }
         public DateTime When { get; set; }
         public Guid With { get; set; }
 

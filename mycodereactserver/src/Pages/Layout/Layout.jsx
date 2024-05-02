@@ -9,12 +9,13 @@ import { useUser, logoutUser } from "../../Services/UserContext";
 import { uReg, uLogin, uPwChange, uUpdateOwn, cReg, cOwn, cOthers, uList, cList, homePage, priPol } from "../../Services/Frontend.Endpoints";
 import { facebookLogin, gitHubLogin, googleLogin, recentChuckNorris, revoke } from "../../Services/Backend.Endpoints";
 import { backendUrl } from "../../Services/Config";
+import CustomerChat from "../../Pages/Services/CustomerChat";
 import Loading from "../../Components/Loading/index";
 
 import { ButtonRowContainer, ButtonRowButtonContainer, ButtonColumnContainer } from "../../Components/Styles/ButtonRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
 import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
-import { CenteredContainer, ColumnTextWrapper, TextWrapper } from "../../Components/Styles/TextContainer.styled";
+import { CenteredContainer, ColumnTextWrapper } from "../../Components/Styles/TextContainer.styled";
 import { TextContainer } from "../../Components/Styles/TextContainer.styled";
 import "../../Components/Styles/CustomCss/google.css";
 import "../../index.css";
@@ -190,7 +191,8 @@ const Layout = () => {
                                         </Link>
                                     </>
                                 )}
-                            </ButtonRowButtonContainer>
+                                </ButtonRowButtonContainer>
+                            <CustomerChat />
                         </ButtonRowContainer>
                     )}
                 </nav>
