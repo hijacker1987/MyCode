@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace MyCode_Backend_Server.Controllers
 {
     [AllowAnonymous]
-    [Route("cncbot/messages")]
+    [Route("cncbot/botio")]
     [ApiController]
     public class BotController(FAQBot bot) : ControllerBase
     {

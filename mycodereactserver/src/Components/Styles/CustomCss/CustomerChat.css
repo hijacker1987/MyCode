@@ -1,4 +1,4 @@
-.ChuckBot {
+.customer-chat-container {
     position: fixed;
     bottom: 40px;
     right: 20px;
@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     padding: 10px;
-    background: linear-gradient(45deg, rgba(40, 10, 50, 2.8) 5%, rgb(0, 47, 43) 75%);
+    background: linear-gradient(-45deg, rgb(76, 255, 0) 10%, rgb(0, 47, 43) 70%);
     background-size: 400% 400%;
     animation: wave 30s infinite linear;
 }
@@ -31,23 +31,7 @@
     }
 }
 
-    .ChuckBot.closed {
-        height: 0;
-        width: 0;
-        opacity: 0;
-        overflow: hidden;
-    }
-
-.output-container {
-    color: aliceblue;
-    font-family: Vancouver, sans-serif;
-    font-size: 17px;
-    font-weight: bold;
-    margin-bottom: 45px;
-    overflow-y: scroll;
-}
-
-.input-container {
+.customer-chat-input {
     position: fixed;
     top: 89%;
     width: 16.3%;
@@ -57,18 +41,21 @@
     margin-top: 10px;
 }
 
-.ChuckBot input[type="text"] {
+.customer-chat-container input[type="text"] {
     background: lightgrey;
     height: 30px;
-    width: calc(70% - 10px);
+    width: 212px;
     font-family: Vancouver, sans-serif;
     font-size: 17px;
     font-weight: bold;
 }
 
-.ChuckBot button {
+.customer-chat-container button {
+    position: fixed;
+    top: 90%;
+    right: -12px;
     height: 38px;
-    width: calc(29% - 5px);
+    width: 80px;
     margin-right: 2%;
     background-color: rgba(40, 10, 50, 1.8);
     color: white;
@@ -80,14 +67,6 @@
     font-weight: bold;
 }
 
-.ChuckBot button:hover {
+.customer-chat-container button:hover {
     background-color: #0056b3;
-}
-
-.ChuckBot .output-container .user-message {
-    color: aquamarine;
-}
-
-.ChuckBot .output-container .bot-message {
-    color: steelblue;
 }

@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using MyCode_Backend_Server.Data.Service;
 using MyCode_Backend_Server.Service.Bot;
+using System.Net.WebSockets;
+using Microsoft.AspNet.SignalR.WebSockets;
+using MyCode_Backend_Server.Hubs;
 
 namespace MyCode_Backend_Server
 {
@@ -60,6 +63,8 @@ namespace MyCode_Backend_Server
             services.AddScoped<ITokenService, TokenService>();
 
             services.AddTransient<IEmailSender, EmailSender>();
+
+            services.AddSignalR();
 
             services.AddScoped<FAQBot>();
             services.AddScoped<FAQBotData>();
@@ -218,7 +223,11 @@ namespace MyCode_Backend_Server
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext, IDbInitializer dbInitializer, IDbInitializer testDbInitializer)
+        public void Configure(IApplicationBuilder app,
+                              IWebHostEnvironment env,
+                              DataContext dataContext,
+                              IDbInitializer dbInitializer,
+                              IDbInitializer testDbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -265,9 +274,13 @@ namespace MyCode_Backend_Server
                 logger.LogError(ex, "Error when initializing the Database!");
             }
 
+            app.UseWebSockets(new() { KeepAliveInterval = TimeSpan.FromSeconds(30) });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapHub<MessageHub>("/message");
             });
         }
     }

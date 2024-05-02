@@ -10,6 +10,7 @@ namespace MyCode_Backend_Server.Data
         public DbSet<Code>? CodesDb { get; set; }
         public DbSet<Mfa>? MFADb { get; set; }
         public DbSet<BotModel>? BotDb { get; set; }
+        public DbSet<SupportChat>? SupportDb { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

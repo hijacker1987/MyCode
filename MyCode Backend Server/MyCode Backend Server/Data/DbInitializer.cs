@@ -12,7 +12,7 @@ namespace MyCode_Backend_Server.Data
         {
             context.Database.EnsureCreated();
 
-            var roleList = new List<string> { "Admin", "User" };
+            var roleList = new List<string> { "Admin", "User", "Support" };
 
             foreach (var role in roleList)
             {

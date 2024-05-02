@@ -26,14 +26,14 @@ const Homepage = () => {
         const cookieDataSync = async () => {
             if (userid == null || userid == "" || userid == undefined) {
                 const userId = Cookies.get("UI");
+                const userName = Cookies.get("UD");
                 const userRole = Cookies.get("UR");
 
-                if (userId != "" || userId != undefined) {
-                    setUserData(userRole, userId);
+                setUserData(userRole, userId, userName);
 
-                    Cookies.remove("UI");
-                    Cookies.remove("UR");
-                }
+                Cookies.remove("UI");
+                Cookies.remove("UD");
+                Cookies.remove("UR");
             }
         };
 

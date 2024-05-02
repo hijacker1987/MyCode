@@ -11,7 +11,7 @@ namespace MyCode_Backend_Server.Data
             context.Database.EnsureCreated();
 
             var random = new Random();
-            var roleList = new List<string> { "Admin", "User" };
+            var roleList = new List<string> { "Admin", "User", "Support" };
             var userNames = new List<string>() { "John Doe", "Jane Doe" };
             var codeTypes = new List<string>() { "Batch", "C", "C#", "C++", "CoffeeScript", "CSS", "Diff", "Elm", "F#", "Go",
                                                  "Handlebars", "Haskell", "HTML", "Java", "JavaScript", "JSON", "Kotlin", "LESS", "Lua", "Markdown",
@@ -33,6 +33,19 @@ namespace MyCode_Backend_Server.Data
                 if (adminCreated.Succeeded)
                 {
                     await userManager.AddToRoleAsync(testAdmin, "Admin");
+                }
+            }
+
+            var testCustomerSupportInDbExist = await userManager.FindByEmailAsync("support@test.com");
+
+            if (testCustomerSupportInDbExist == null)
+            {
+                var testSupport = new User { UserName = "testSupport", Email = "support@test.com", DisplayName = "Test Support", PhoneNumber = "010101" };
+                var supportCreated = await userManager.CreateAsync(testSupport, "SupportPassword");
+
+                if (supportCreated.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(testSupport, "Support");
                 }
             }
 

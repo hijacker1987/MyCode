@@ -152,6 +152,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
             response.Cookies.Append("UI", userId, TokenAndCookieHelper.GetCookieOptions(request, 3));
             response.Cookies.Append("UR", role!, TokenAndCookieHelper.GetCookieOptions(request, 3));
+            response.Cookies.Append("UD", approvedUser.DisplayName!, TokenAndCookieHelper.GetCookieOptions(request, 3));
         }
 
         public async Task<User?> TryGetUser(string email)

@@ -285,6 +285,7 @@ namespace MyCode_Backend_Server.Controllers
                     Response.Cookies.Delete("RefreshAuthorization");
                     Response.Cookies.Delete("UI");
                     Response.Cookies.Delete("UR");
+                    Response.Cookies.Delete("UD");
 
                     await _dataContext.SaveChangesAsync();
 

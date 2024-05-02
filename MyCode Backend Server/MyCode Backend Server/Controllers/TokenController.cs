@@ -32,6 +32,7 @@ namespace MyCode_Backend_Server.Controllers
             Response.Cookies.Delete("RefreshAuthorization");
             Response.Cookies.Delete("UI");
             Response.Cookies.Delete("UR");
+            Response.Cookies.Delete("UD");
             user.RefreshToken = null;
 
             await _userManager.UpdateAsync(user);
