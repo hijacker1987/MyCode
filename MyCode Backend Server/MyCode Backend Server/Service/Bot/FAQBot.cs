@@ -62,7 +62,7 @@ namespace MyCode_Backend_Server.Service.Bot
                     if (faq.Question!.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
                     {
                         matchCount++;
-                        if (!faqData.Contains(keyword))
+                        if (faqData.Contains(keyword))
                         {
                             faqData.Add(keyword);
                         }
