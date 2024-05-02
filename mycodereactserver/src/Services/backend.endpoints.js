@@ -63,3 +63,4 @@ const u = "users/";
     export const gitHubAddon = `${ac}github-addon`;
     export const googleAddon = `${ac}google-addon`;
     export const facebookAddon = `${ac}facebook-addon`;
+    export const chatBot = `cncbot/botio`;

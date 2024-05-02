@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 
 import { useUser } from "../../Services/UserContext";
+import { chatBot } from "../../Services/Backend.Endpoints";
+import { postApi } from "../../Services/Api";
 
 import "../../Components/Styles/CustomCss/ChuckBot.css";
 import "../../Components/Styles/CustomCss/CBButton.css";
@@ -60,20 +62,12 @@ const ChuckBot = () => {
             ]);
             setInputText("");
 
-            const response = await fetch(`https://localhost:7001/cncbot/messages`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(newMessage)
-            });
-
-            const responseData = await response.json();
+            const response = await postApi(`${chatBot}`, newMessage);
 
             setTimeout(() => {
                 setMessages(prevMessages => [
                     ...prevMessages,
-                    { text: `${botName}: ${responseData}`, mine: false }
+                    { text: `${botName}: ${response}`, mine: false }
                 ]);
                 setIsTyping(false);
             }, 2500);
@@ -105,6 +99,7 @@ const ChuckBot = () => {
                 </div>
                 <div className="input-container">
                     <input
+                        className="chuckText"
                         type="text"
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
