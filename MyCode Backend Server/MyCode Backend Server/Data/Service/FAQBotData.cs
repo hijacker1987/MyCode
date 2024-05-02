@@ -8,6 +8,8 @@ namespace MyCode_Backend_Server.Data.Service
         {
             var faqDatabase = new Dictionary<string, string>
             {
+                { "hi hello greetings good morning afternoon evening", "Howdy! How may I'll be at your service?!" },
+                { "bye see you later good night", "Cheers, behave yourself, I'll be watching You!" },
                 { "can't cannot unable add codes", "Before at all You have to verify Yourself! Please go to My Account and press on VERIFICATION." },             
                 { "verify verification auth authentication", "The app is using multi-factor authentication, if You wish to verify it, You'll receive a verification code via E-mail to Your externally attached e-mail address. Just prove Yourself in My Account/Verification" },
                 { "set setup change password", "Through the My Account look for the PASSWORD CHANGE button." },   
