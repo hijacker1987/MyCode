@@ -74,7 +74,6 @@ const UserUpdate = () => {
         postApi(changeRole, requestData)
             .then((data) => {
                 setLoading(false);
-                console.log(data);
                 if (data === "Unauthorized") {
                     handleResponse(data, navigate, setUserData);
                 } else if (data.status == 404) {
