@@ -7,7 +7,7 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
 **ONGOING Project!**
 
 ## Backend Installation Instructions
-  - Install the .NET SDK 8.0.204 (.NET 8.0.4)
+  - Install the .NET SDK 8.0.300 (.NET 8.0.5)
   - Install dependencies.
   - Set up the database connections, and other needs through the `secrets.json`, and `appsettings.json` files.
      
@@ -17,7 +17,7 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
   - Explore codes by visibility or user to extend Your knowledge.
   - Now able to login via GitHub, Google and Facebook accounts
   - Local storage in use for Monaco Editor setups (for each logged in user)
-  - Chatbot for customer assistance
+  - Chatbot and Live chat service for customer assistance
 
 The backend is built on the ASP.NET 8 framework, with the main goals of being/having:
   - Secure /for example: mfa (which obsolete 2fa)/
@@ -25,6 +25,7 @@ The backend is built on the ASP.NET 8 framework, with the main goals of being/ha
   - Easy to use
   - Object-Oriented
   - MSSQL database /Testing uses separate MSSQL database/
+  - SignalR websocket connection
 
 The frontend is powered by React using VITE to provide a fast and an interactive user interface:
   - also Transparent
@@ -33,6 +34,7 @@ The frontend is powered by React using VITE to provide a fast and an interactive
   - Easy to use: for example -> Centralized data structure in the Services folder
   - Monaco Editor
   - Interactive chatbot
+  - Live chat with support (SignalR)
   - Easter eggs
   
 ## Security
