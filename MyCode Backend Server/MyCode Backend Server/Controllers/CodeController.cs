@@ -18,7 +18,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
 
-        [HttpGet("by-user"), Authorize(Roles = "Admin, User")]
+        [HttpGet("by-user"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<List<Code>> GetAllCodesByUser()
         {
             try
@@ -55,7 +55,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("by-visibility"), Authorize(Roles = "Admin, User")]
+        [HttpGet("by-visibility"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<List<Code>> GetAllCodesByVisibility()
         {
             try
@@ -102,7 +102,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("code-{id}"), Authorize(Roles = "Admin, User")]
+        [HttpGet("code-{id}"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<Code> GetCodeById([FromRoute] Guid id)
         {
             try
@@ -127,7 +127,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPost("register"), Authorize(Roles = "Admin, User")]
+        [HttpPost("register"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<CodeRegResponse> CreateCode([FromBody] CodeRegRequest codeRequest)
         {
             try
@@ -200,7 +200,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("cupdate-{id}"), Authorize(Roles = "Admin, User")]
+        [HttpPut("cupdate-{id}"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<CodeRegResponse> UpdateCode([FromRoute] Guid id, [FromBody] CodeRegRequest updatedCode)
         {
             try
@@ -282,7 +282,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("cdelete-{id}"), Authorize(Roles = "User")]
+        [HttpDelete("cdelete-{id}"), Authorize(Roles = "User, Support")]
         public ActionResult DeleteCodeByUser([FromRoute] Guid id)
         {
             try
