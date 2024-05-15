@@ -109,7 +109,7 @@ namespace MyCode_Backend_Server.Controllers
             return Ok("Successfully logged in");
         }
 
-        [HttpGet("getUser"), Authorize(Roles = "Admin, User")]
+        [HttpGet("getUser"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<UserRegResponse> GetUser()
         {
             try
@@ -144,7 +144,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("getUserId"), Authorize(Roles = "Admin, User")]
+        [HttpGet("getUserId"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult<UserRegResponse> GetUserId()
         {
             try
@@ -179,7 +179,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("user-{id}"), Authorize(Roles = "User")]
+        [HttpPut("user-{id}"), Authorize(Roles = "User, Support")]
         public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
         {
             try
@@ -218,7 +218,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPatch("changePassword"), Authorize(Roles = "Admin, User")]
+        [HttpPatch("changePassword"), Authorize(Roles = "Admin, Support, User")]
         public async Task<ActionResult<ChangePassResponse>> ChangePasswordAsync([FromBody] ChangePassRequest request)
         {
             try
@@ -252,7 +252,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("delete-{id}"), Authorize(Roles = "User")]
+        [HttpDelete("delete-{id}"), Authorize(Roles = "User, Support")]
         public async Task<ActionResult> DeleteAccountAsync([FromRoute] Guid id)
         {
             if (id == Guid.Empty)
