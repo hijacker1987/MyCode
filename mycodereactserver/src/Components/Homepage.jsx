@@ -23,7 +23,7 @@ const Homepage = () => {
     const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
 
     useEffect(() => {
-        const cookieDataSync = async () => {
+        const cookieDataASync = async () => {
             if (userid == null || userid == "" || userid == undefined) {
                 const userId = Cookies.get("UI");
                 const userName = Cookies.get("UD");
@@ -37,7 +37,7 @@ const Homepage = () => {
             }
         };
 
-        cookieDataSync();
+        cookieDataASync();
     }, []);
 
     useEffect(() => {
@@ -98,8 +98,8 @@ const Homepage = () => {
                     <p>Please login or register</p>
                 </MidContainer>
             ) : (
-                randomCodeIndex !== null && visibleCodes.length > 0 && (
-                    <MidContainer className="random-code">
+                role === "User" && randomCodeIndex !== null && visibleCodes.length > 0 && (
+                        <MidContainer style={{marginTop:"10px"}} className="random-code">
                         <div>
                             Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
                             <h4>Title:</h4>
