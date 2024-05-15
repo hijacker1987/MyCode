@@ -18,7 +18,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly ILogger<AdminController> _logger = logger;
         private readonly DataContext _dataContext = dataContext;
 
-        [HttpGet("getUsers"), Authorize(Roles = "Admin")]
+        [HttpGet("getUsers"), Authorize(Roles = "Admin, Support")]
         public async Task<ActionResult<List<UserWithRole>>> GetAllUsersAsync()
         {
             try
@@ -39,7 +39,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 foreach ( var user in usersList )
                 {
-                    var result = new UserWithRole(user, await _authService.GetRoleStatusAsync(user));
+                    var result = new UserWithRole(user, await _authService.GetRoleStatusByUserAsync(user));
                     returnList.Add(result);
                 }
 
@@ -52,7 +52,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("user-by-{id}"), Authorize(Roles = "Admin")]
+        [HttpGet("user-by-{id}"), Authorize(Roles = "Admin, Support")]
         public async Task<ActionResult<UserRegResponse>> GetUserById([FromRoute] Guid id)
         {
             try
@@ -67,7 +67,7 @@ namespace MyCode_Backend_Server.Controllers
                     return NotFound(new { ErrorMessage = $"User with ID {id} not found." });
                 }
 
-                var role = await _authService.GetRoleStatusAsync(user);
+                var role = await _authService.GetRoleStatusByUserAsync(user);
 
                 var response = new UserRegResponse(id.ToString(), user.Email!, user.UserName!, user.DisplayName!, user.PhoneNumber!, role);
 
@@ -80,7 +80,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpGet("getCodes"), Authorize(Roles = "Admin")]
+        [HttpGet("getCodes"), Authorize(Roles = "Admin, Support")]
         public ActionResult<List<Code>> GetAllCodes()
         {
             try

@@ -169,7 +169,7 @@ export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                     {updatedCodes &&
                         updatedCodes
                             .filter((code) => {
-                                if (!isAllowed && kind !== "visible Codes" || role === "Admin") {
+                                if (!isAllowed && kind !== "visible Codes" || role === "Admin" || role === "Support") {
                                     return code.codeTitle && code.codeTitle.toLowerCase().includes(codeTitleFilter.toLowerCase().slice(0, 3));
                                 } else {
                                     return code.displayName && code.displayName.toLowerCase().includes(displayNameFilter.toLowerCase().slice(0, 3));
@@ -201,7 +201,7 @@ export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
 
                                     <StyledTd>{code.whatKindOfCode}</StyledTd>
                                     <StyledTd>{code.isBackend ? "Backend" : "Frontend"}</StyledTd>
-                                    {isAllowed && kind === "visible Codes" || role === "Admin" && (
+                                    {isAllowed && kind === "visible Codes" || (role === "Admin" || role === "Support") && (
                                         <StyledTd>{code.isVisible ? "Yes" : "Hidden"}</StyledTd>
                                     )}
 
@@ -240,7 +240,7 @@ export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                         <td colSpan={headers.length}>
                             <ConstructPagination
                                 element={codes}
-                                url={isAllowed && role === "Admin" ? cList : (!isAllowed && kind !== "visible Codes" ? cOwn : cOthers)}
+                                url={isAllowed && (role === "Admin" || role === "Support") ? cList : (!isAllowed && kind !== "visible Codes" ? cOwn : cOthers)}
                                 page={Number(page)}
                                 recordPerPage={recordPerPage}
                                 setRecordPerPage={setRecordPerPage}

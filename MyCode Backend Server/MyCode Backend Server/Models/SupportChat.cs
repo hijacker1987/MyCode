@@ -7,8 +7,11 @@ namespace MyCode_Backend_Server.Models
         [Key]
         public Guid SupportId { get; set; }
         public virtual string? Text { get; set; }
+        public bool IsUser { get; set; } = true;
         public DateTime When { get; set; }
         public Guid With { get; set; }
+        public bool IsActive { get; set; }
+        public byte[] VersionForOptimisticLocking { get; set; } = [];
 
         public SupportChat(string text)
         {
@@ -19,6 +22,7 @@ namespace MyCode_Backend_Server.Models
         {
             SupportId = Guid.NewGuid();
             When = DateTime.UtcNow;
+            IsActive = true;
         }
 
         public Guid UserId { get; set; }

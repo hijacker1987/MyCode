@@ -15,9 +15,8 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using MyCode_Backend_Server.Data.Service;
 using MyCode_Backend_Server.Service.Bot;
-using System.Net.WebSockets;
-using Microsoft.AspNet.SignalR.WebSockets;
 using MyCode_Backend_Server.Hubs;
+using MyCode_Backend_Server.Service.Chat;
 
 namespace MyCode_Backend_Server
 {
@@ -65,6 +64,8 @@ namespace MyCode_Backend_Server
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddSignalR();
+            services.AddSingleton<IDictionary<string, ChatRooms>>(options => new Dictionary<string, ChatRooms>());
+            services.AddScoped<IChatService, ChatService>();
 
             services.AddScoped<FAQBot>();
             services.AddScoped<FAQBotData>();

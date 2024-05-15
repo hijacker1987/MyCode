@@ -141,7 +141,7 @@ namespace MyCode_Backend_Server.Service.Authentication
 
         public async Task ApprovedAccLogin(User approvedUser, HttpRequest request, HttpResponse response)
         {
-            var role = await GetRoleStatusAsync(approvedUser);
+            var role = await GetRoleStatusByUserAsync(approvedUser);
 
             approvedUser.LastTimeLogin = DateTime.UtcNow;
 
@@ -191,23 +191,36 @@ namespace MyCode_Backend_Server.Service.Authentication
             return managedUser;
         }
 
-        public async Task<string> GetRoleStatusAsync(User user)
+        public async Task<string> GetRoleStatusByUserAsync(User user)
         {
             var result = await _userManager.GetRolesAsync(user);
 
             return result.FirstOrDefault()!;
         }
 
+
+        public async Task<string> GetRoleStatusByIdAsync(string id)
+        {
+            var user = await TryGetUserById(id);
+            return await GetRoleStatusByUserAsync(user!);
+        }
+
         public async Task<string> SetRoleStatusAsync(User user)
         {
-            var userRole = await GetRoleStatusAsync(user);
+            var userRole = await GetRoleStatusByUserAsync(user);
 
             if (userRole == "User")
             {
                 await _userManager.RemoveFromRoleAsync(user, "User");
+                await _userManager.AddToRoleAsync(user, "Support");
+                _logger.LogInformation("Successfully set S role");
+            }
+            else if (userRole == "Support")
+            {
+                await _userManager.RemoveFromRoleAsync(user, "Support");
                 await _userManager.AddToRoleAsync(user, "Admin");
                 _logger.LogInformation("Successfully set A role");
-            } 
+            }
             else
             {
                 await _userManager.RemoveFromRoleAsync(user, "Admin");

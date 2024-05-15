@@ -146,12 +146,16 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                     <StyledTd>{user.email}</StyledTd>
                                     <StyledTd>{user.phoneNumber}</StyledTd>
                                     <StyledTd>{user.role}</StyledTd>
-                                    <StyledTd>
-                                        <Link to={`${uUpdate}${user.id}`} >
-                                            <ButtonContainer type="button">Edit</ButtonContainer>
-                                        </Link>
-                                        <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>Delete</ButtonContainer>
-                                    </StyledTd>
+                                    {role === "Admin" && (
+                                    <>
+                                        <StyledTd>
+                                            <Link to={`${uUpdate}${user.id}`} >
+                                                <ButtonContainer type="button">Edit</ButtonContainer>
+                                            </Link>
+                                            <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>Delete</ButtonContainer>
+                                        </StyledTd>
+                                    </>
+                                    )}
                                 </StyledTr>
                                 <RowSpacer />
                             </React.Fragment>

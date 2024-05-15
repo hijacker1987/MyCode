@@ -184,7 +184,7 @@ export const CenteredContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 3%;
+  top: 7%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: auto;

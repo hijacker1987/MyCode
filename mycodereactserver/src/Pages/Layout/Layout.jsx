@@ -117,13 +117,13 @@ const Layout = () => {
         <div className="Layout">
             {errorMessage === "" ? (
                 <nav>
-                    <CenteredContainer>
+                    <CenteredContainer style={{ marginTop: "-1.5%" }}>
                         {chuckNorrisFact}
                     </CenteredContainer>
                     {!role && !userid ? (
-                        <ButtonRowContainer style={{ marginTop: "5%" }}>
+                        <ButtonRowContainer style={{ marginTop: "10.5%" }}>
                             {location.pathname !== uLogin && location.pathname !== uReg && (
-                                <ButtonRowButtonContainer style={{ marginLeft: "17%" }}>
+                                <ButtonRowButtonContainer style={{ marginLeft: "22.5%" }}>
                                     <Link to={uLogin} className="link">
                                         <ButtonContainer type="button">Login</ButtonContainer>
                                     </Link>
@@ -159,11 +159,11 @@ const Layout = () => {
                             )}
                         </ButtonRowContainer>
                     ) : (
-                        <ButtonRowContainer style={{ marginTop: "5%" }}>
+                        <ButtonRowContainer style={{ marginTop: "5%", marginLeft: "7%" }}>
                             <ButtonRowButtonContainer>
                                 <ButtonContainer type="button" onClick={handleLogout}>Logout</ButtonContainer>
                                 <ButtonContainer type="button" onClick={() => navigate(homePage)}>MyCode Home</ButtonContainer>
-                                {role === "Admin" ? (
+                                {role === "Admin" || role === "Support" ? (
                                     <>
                                         <Link to={`${uList}1`} className="link">
                                             <ButtonContainer type="button">List Users</ButtonContainer>
