@@ -15,6 +15,7 @@ namespace MyCode_Backend_Server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<SupportChat>().Property<byte[]>("VersionForOptimisticLocking").IsRowVersion();
         }
     }
 }
