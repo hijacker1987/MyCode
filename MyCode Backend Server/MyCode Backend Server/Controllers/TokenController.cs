@@ -12,7 +12,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly UserManager<User> _userManager = userManager;
         private readonly ILogger<TokenController> _logger = logger;
 
-        [HttpDelete("revoke"), Authorize(Roles = ("Admin, User"))]
+        [HttpDelete("revoke"), Authorize(Roles = ("Admin, Support, User"))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
