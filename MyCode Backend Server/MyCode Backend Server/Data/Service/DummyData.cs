@@ -85,20 +85,24 @@ namespace MyCode_Backend_Server.Data.Service
 
             await context.MFADb!.AddAsync(mfaResult);
 
-            var cSupport = new User
+            var cSupports = Enumerable.Range(1, 2).Select(i => new User
             {
-                UserName = "CusSupport",
-                Email = "customersupport@mycode.com",
-                DisplayName = "Customer Support",
+                UserName = $"CusSupport{i}",
+                Email = $"customersupport{i}@mycode.com",
+                DisplayName = $"{i}. Support {userNames[random.Next(userNames.Count)]}",
                 PhoneNumber = "12345678",
                 EmailConfirmed = true
-            };
+            }).ToArray();
 
-            var cSupportResult = await userManager.CreateAsync(cSupport, "Password");
-
-            if (cSupportResult.Succeeded)
+            foreach (var cSupport in cSupports)
             {
-                await userManager.AddToRoleAsync(cSupport, "Support");
+
+                var cSupportResult = await userManager.CreateAsync(cSupport, "Password");
+
+                if (cSupportResult.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(cSupport, "Support");
+                }
             }
 
             foreach (var user in users)
