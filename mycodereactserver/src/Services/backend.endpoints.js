@@ -1,15 +1,17 @@
 const a = "admin/";
-const au = "auth/";
 const ac = "account/";
+const au = "auth/";
+const b = "cncbot/";
 const c = "codes/";
-const u = "users/";
 const s = "ws/message/";
+const t = "token/";
+const u = "users/";
 
 //USERS
     //GET
     export const recentChuckNorris = `https://api.chucknorris.io/jokes/random`;
-    export const getUser = `${u}getUser`;                        //Authorized to admin too
-    export const getUserId = `${u}getUserId`;                    //Authorized to admin too
+    export const getUser = `${u}getUser`;
+    export const getUserId = `${u}getUserId`;
 
     //POST
     export const userLogin = `${u}login`;
@@ -17,19 +19,19 @@ const s = "ws/message/";
 
     //PATCH
     export const userUpdate = `${u}user-`;                  //{id}
-    export const changePassword = `${u}changePassword`;          //Authorized to admin too
+    export const changePassword = `${u}changePassword`;
 
     //DELETE
     export const deleteAccount = `${u}delete-`;             //{id}
 
 //CODES
     //GET
-    export const getCodesByUser = `${c}by-user`;                 //Authorized to admin too
-    export const getCodesByVisibility = `${c}by-visibility`;     //Authorized to admin too
-    export const getCodesByUserId = `${c}code-`;            //{id} Authorized to admin too
+    export const getCodesByUser = `${c}by-user`;
+    export const getCodesByVisibility = `${c}by-visibility`;
+    export const getCodesByUserId = `${c}code-`;            //{id}
 
     //POST
-    export const codeRegistration = `${c}register`;              //Authorized to admin too
+    export const codeRegistration = `${c}register`;
 
     //PUT
     export const codeUpdate = `${c}cupdate-`;               //{id}
@@ -53,18 +55,23 @@ const s = "ws/message/";
     export const deleteSuperCode = `${a}adcode-`;           //{id}
 
 //CHAT
-    export const chatBot = `cncbot/botio`;
+    //BOT - POST
+    export const chatBot = `${b}botio`;
 
+    //LIVE - GET
     export const getRoom = `${s}get-room`;
+    export const getActRoom = `${s}get-active-room`;
+    export const getAnyArc = `${s}getAnyArchived`;
     export const getOwn = `${s}getOwnArchived`;
+    export const getMessage = `${s}getArchived-`;           //{id}
+    export const getActive = `${s}getActive-`;              //{id}
+
+    //PUT
+    export const dropBack = `${s}uActive-`;                 //{id}
 
 //SERVICE
-    export const revoke = `token/revoke`;
-
+    //GET
     export const primary2fa = `${au}basicsTwoFactor`;
-    export const enable2fa = `${au}enableTwoFactor`;
-    export const verify2fa = `${au}verifyTwoFactor`;
-    export const disable2fa = `${au}disableTwoFactor`;
 
     export const gitHubLogin = `${ac}github-login`;
     export const googleLogin = `${ac}google-login`;
@@ -72,3 +79,11 @@ const s = "ws/message/";
     export const gitHubAddon = `${ac}github-addon`;
     export const googleAddon = `${ac}google-addon`;
     export const facebookAddon = `${ac}facebook-addon`;
+
+    //POST
+    export const enable2fa = `${au}enableTwoFactor`;
+    export const verify2fa = `${au}verifyTwoFactor`;
+    export const disable2fa = `${au}disableTwoFactor`;
+
+    //DELETE
+    export const revoke = `${t}revoke`;

@@ -118,6 +118,22 @@ export const putApi = async (endpoint, user) => {
     }
 };
 
+export const putStatApi = async (endpoint, user) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(user)
+    });
+    if (response.status === 401) {
+        return "Unauthorized";
+    } else {
+        return response.status;
+    }
+};
+
 export const deleteApi = async (endpoint) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "DELETE",

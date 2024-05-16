@@ -19,13 +19,13 @@ const UserLogin = () => {
     const handleOnLogin = async (user) => {
         setLoading(true);
         try {
-            await postStatApi(userLogin, user);
+            const response = await postStatApi(userLogin, user);
 
             const userId = Cookies.get("UI");
             const userName = Cookies.get("UD");
             const userRole = Cookies.get("UR");
 
-            if (userId != "" || userId != undefined) {
+            if ((userId != "" || userId != undefined) && response === 200) {
                 setUserData(userRole, userId, userName);
 
                 Cookies.remove("UI");

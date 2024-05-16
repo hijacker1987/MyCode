@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 
 import { Notify } from "./../../../Pages/Services";
-import { formatElapsedTime } from "../../../Services/ElapsedTime";
+import { formatElapsedTime, formattedTime } from "../../../Services/ElapsedTime";
+import { getApi } from "../../../Services/Api";
 import { uList, uUpdate } from "../../../Services/Frontend.Endpoints";
-import { deleteSuperUser } from "../../../Services/Backend.Endpoints";
+import { getAnyArc, getMessage, deleteSuperUser } from "../../../Services/Backend.Endpoints";
 import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/index";
 
@@ -18,6 +19,9 @@ import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styl
 
 export const UsersTable = ({ users, headers, role, page }) => {
     const [updatedUsers, setUpdatedUsers] = useState(users);
+    const [selectedUserMessages, setSelectedUserMessages] = useState([]);
+    const [showMessagesModal, setShowMessagesModal] = useState(false);
+    const [usersWithMessagesId, setUsersWithMessagesId] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [recordPerPage, setRecordPerPage] = useState(5);
@@ -39,6 +43,36 @@ export const UsersTable = ({ users, headers, role, page }) => {
             setUpdatedUsers(updatedUsers);
         }
     }, [users]);
+
+    useEffect(() => {
+        const getOldMessages = async () => {
+            if (users != null) {
+                try {
+                    const response = await getApi(getAnyArc);
+                    setUsersWithMessagesId(response);
+                } catch (error) {
+                    console.error("Failed to get data: ", error);
+                }
+            }
+        }
+
+        getOldMessages();
+    }, [users]);
+
+    const getOldMessagesByIdModal = async (id) => {
+        try {
+            const data = await getApi(`${getMessage}${id}`);
+            if (selectedUserMessages.length != 0) {
+                setSelectedUserMessages([]);
+            }
+            data.forEach(item => {
+                setSelectedUserMessages(prevMessages => [...prevMessages, { user: item.whom, message: item.text, time: item.when }]);
+            });
+            setShowMessagesModal(true);
+        } catch (error) {
+            console.error("Failed to get data: ", error);
+        }
+    }
 
     if (!updatedUsers || updatedUsers.length === 0) {
         return <p>No user data available.</p>;
@@ -156,6 +190,14 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                         </StyledTd>
                                     </>
                                     )}
+                                        <StyledTd>
+                                            {usersWithMessagesId.includes(user.id.toUpperCase())
+                                            ?
+                                                <ButtonContainer type="button" onClick={() => getOldMessagesByIdModal(user.id)}>
+                                                    Available
+                                                </ButtonContainer>
+                                            : ""}
+                                        </StyledTd>
                                 </StyledTr>
                                 <RowSpacer />
                             </React.Fragment>
@@ -186,17 +228,43 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                 <Modal.Header closeButton>
                                     <Modal.Title>Delete Confirmation</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body>
-                                    Are you sure you want to delete this user?
+                                
+                            </TextContainer>
+                            <Modal.Footer>
+                                <ButtonRowContainer>
+                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
+                                        Cancel
+                                    </ButtonContainer>
+                                </ButtonRowContainer>
+                            </Modal.Footer>
+                        </StyledModal>
+                    </ModalContainer>
+                </BlurredOverlay>
+            )}
+            {showMessagesModal && (
+                <BlurredOverlay>
+                    <ModalContainer>
+                        <StyledModal size="lg">
+                            <TextContainer>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Chat History</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
+                                    {selectedUserMessages
+                                        .map((message, index) => (
+                                            <React.Fragment key={index}>
+                                                <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
+                                                    <StyledTd>{index + 1}</StyledTd>
+                                                    <StyledTd>{message.user} - {message.message} at {formattedTime(message.time)}</StyledTd>
+                                                </StyledTr>
+                                                <RowSpacer />
+                                            </React.Fragment>))}
                                 </Modal.Body>
                             </TextContainer>
                             <Modal.Footer>
                                 <ButtonRowContainer>
-                                    <ButtonContainer onClick={confirmDelete}>
-                                        Delete
-                                    </ButtonContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
-                                        Cancel
+                                    <ButtonContainer onClick={() => setShowMessagesModal(false)}>
+                                        Back
                                     </ButtonContainer>
                                 </ButtonRowContainer>
                             </Modal.Footer>

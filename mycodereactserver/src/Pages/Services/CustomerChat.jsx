@@ -1,14 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
+import Modal from "react-bootstrap/Modal";
 
 import { useUser } from "../../Services/UserContext";
-import { getApi } from "../../Services/Api";
+import { getApi, putStatApi } from "../../Services/Api";
 import { backendUrl } from "../../Services/Config";
-import { getRoom, getOwn } from "../../Services/Backend.endpoints";
-import { formatElapsedTime } from "../../Services/ElapsedTime";
+import { getActive, getAnyArc, getOwn, getRoom, getActRoom, dropBack } from "../../Services/Backend.endpoints";
+import { formatElapsedTime, formattedTime } from "../../Services/ElapsedTime";
+import { Notify } from "./../../Pages/Services/Index";
 
+import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
+import { MidContainer, TextContainer } from "../../Components/Styles/TextContainer.styled";
+import { StyledTr, StyledTd, RowSpacer } from "../../Components/Styles/TableRow.styled";
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
-import { MidContainer } from "../../Components/Styles/TextContainer.styled";
+import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
+
 import "../../Components/Styles/CustomCss/CustomerChat.css";
 
 const CustomerChat = () => {
@@ -22,10 +28,17 @@ const CustomerChat = () => {
     const [userAddedToGroup, setUserAddedToGroup] = useState(false);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState("");
+    const [selectedUserMessages, setSelectedUserMessages] = useState([]);
+    const [showMessagesModal, setShowMessagesModal] = useState(false);
     const [showChat, setShowChat] = useState(false);
     const [inputDisabled, setInputDisabled] = useState(false);
     const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
     const [getButtonHidden, setGetButtonHidden] = useState(false);
+    const [isSyncRoomsOpen, setIsSyncRoomsOpen] = useState(false);
+
+    const toggleSyncRooms = () => {
+        setIsSyncRoomsOpen(prevState => !prevState);
+    };
 
     const sendMessage = async () => {
         if (inputMessage.trim() !== "") {
@@ -54,9 +67,53 @@ const CustomerChat = () => {
         }
     };
 
+    const getActiveGroups = async () => {
+        try {
+            const data = await getApi(getActRoom);
+            setRequests(data);
+        } catch (error) {
+            console.error("Failed to get groups: ", error);
+        }
+    };
+
+    const handleObserveRoom = async (id) => {
+        try {
+            setRoom(id);
+            const data = await getApi(`${getActive}${id}`);
+
+            if (selectedUserMessages.length != 0) {
+                setSelectedUserMessages([]);
+            }
+            data.forEach(item => {
+                setSelectedUserMessages(prevMessages => [...prevMessages, { user: item.whom, message: item.text, time: item.when }]);
+            });
+            setShowMessagesModal(true);
+        } catch (error) {
+            console.error("Failed to get groups: ", error);
+        }
+    };
+
+    const handleDropBackRoom = async (id) => {
+        try {
+            const data = await putStatApi(`${dropBack}${id}`);
+            if (data === 200) {
+                Notify("Success", "New support member can choose it now!")
+            } else {
+                Notify("Error", "Something went wrong!")
+            }
+            getGroups();
+            setShowMessagesModal(false);
+        } catch (error) {
+            console.error("Failed to get groups: ", error);
+        }
+    }
+
     const getOldMessages = async () => {
         try {
             const data = await getApi(getOwn);
+            if (messages.length != 0) {
+                setMessages([]);
+            }
             data.forEach(item => {
                 setMessages(prevMessages => [...prevMessages, { user: item.whom, message: item.text, time: item.when }]);
             });
@@ -69,6 +126,7 @@ const CustomerChat = () => {
         setRoom(setRoomId);
         await connection.invoke("JoinRoom", { user: userid, chatroom: setRoomId })
             .catch((error) => console.error("Failed to add user to group: ", error));
+        Notify("Success", "Successfully joined!");
         setUserAddedToGroup(true);
         setConnection(connection);
     };
@@ -83,9 +141,11 @@ const CustomerChat = () => {
             setRoom(null);
             setConnection(null);
             setConnectedUsers([]);
+            Notify("Success", "Successfully archived!");
         }
         if (response.statuscode === 409) {
             console.log("Failed to remove and archive properly.")
+            Notify("Error", "Something went wrong!");
         }
     }
 
@@ -127,6 +187,7 @@ const CustomerChat = () => {
 
             newConnection.onclose(() => {
                 console.log("Connection closed, trying to reconnect...");
+                Notify("Error", "Chat connection lost, trying to reconnect!");
                 setTimeout(startConnection, 5000);
             });
 
@@ -143,11 +204,16 @@ const CustomerChat = () => {
         const connect = async () => {
             const connection = await startConnection();
             setConnection(connection);
+            Notify("Success", "Connection to support is live, but try Chat Norris first!!!");
 
-            const response = await getApi(getOwn);
-
-            if (response.status === 404) {
-                setGetButtonHidden(true);
+            try {
+                const response = await getApi(getAnyArc);
+                
+                if (response.status === 404) {
+                    setGetButtonHidden(true);
+                }
+            } catch (error) {
+                console.error("Failed to get data: ", error);
             }
         };
 
@@ -195,22 +261,38 @@ const CustomerChat = () => {
     return (
         <div>
             <div>
-                {role === "Support" && (
-                    <MidContainer style={{ marginTop: "-10%", marginLeft: "-35.2%", width: "500px" }}>
-                        <button onClick={getGroups}>Sync Active Rooms</button>
+                {role === "Admin" && (
+                    <MidContainer className={isSyncRoomsOpen ? "sync-rooms-open" : "sync-rooms-closed"} style={{ marginTop: "-10%", marginLeft: "-35.2%", width: "500px" }}>
+                        <button onClick={getActiveGroups}>Sync Active Rooms</button>
                         <ul>
                             {requests.map((room, index) => (
                                 <li key={index}>
-                                    <button onClick={() => handleJoinRoom(room)}>Join Room {room}</button>
-                                    <button onClick={() => handleLeaveRoom(room)}>Close Room</button>
+                                    <button onClick={() => handleObserveRoom(room)}>Observe Room {room}</button>
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={toggleChat}>
-                            {showChat ? "Hide Chat" : "Show Chat Window"}
-                        </button>
+                        <button onClick={toggleSyncRooms}>Minimize</button>
                     </MidContainer>
                 )}
+                <div>
+                    {role === "Support" && (
+                        <MidContainer className={isSyncRoomsOpen ? "sync-rooms-open" : "sync-rooms-closed"} style={{ marginTop: "-10%", marginLeft: "-35.2%", width: "500px" }}>
+                            <button onClick={getGroups}>Sync Active Rooms</button>
+                            <ul>
+                                {requests.map((room, index) => (
+                                    <li key={index}>
+                                        <button onClick={() => handleJoinRoom(room)}>Join Room {room}</button>
+                                        <button onClick={() => handleLeaveRoom(room)}>Close Room</button>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={toggleChat}>
+                                {showChat ? "Hide Chat" : "Show Chat Window"}
+                            </button>
+                            <button onClick={toggleSyncRooms}>Minimize</button>
+                        </MidContainer>
+                    )}
+                </div>
                 <div>
                     {showChat && (
                         <div ref={chatContainerRef} className="customer-chat-container">
@@ -248,7 +330,43 @@ const CustomerChat = () => {
                         </>
                     )}
                 </div>
-            </div> 
+            </div>
+            <div>
+                {showMessagesModal && (
+                    <BlurredOverlay>
+                        <ModalContainer>
+                            <StyledModal size="lg">
+                                <TextContainer>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Currently stored Chat</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
+                                        {selectedUserMessages
+                                            .map((message, index) => (
+                                                <React.Fragment key={index}>
+                                                    <StyledTr className={index % 2 === 1 ? "even-row" : "odd-row"}>
+                                                        <StyledTd>{index + 1}</StyledTd>
+                                                        <StyledTd>{message.user} - {message.message} at {formattedTime(message.time)}</StyledTd>
+                                                    </StyledTr>
+                                                    <RowSpacer />
+                                                </React.Fragment>))}
+                                    </Modal.Body>
+                                </TextContainer>
+                                <Modal.Footer>
+                                    <ButtonRowContainer>
+                                        <ButtonContainer onClick={() => setShowMessagesModal(false)}>
+                                            Back
+                                        </ButtonContainer>
+                                        <ButtonContainer onClick={() => handleDropBackRoom(room)}>
+                                            Drop back to support
+                                        </ButtonContainer>
+                                    </ButtonRowContainer>
+                                </Modal.Footer>
+                            </StyledModal>
+                        </ModalContainer>
+                    </BlurredOverlay>
+                )}
+            </div>
         </div>
     );
 };

@@ -5,7 +5,7 @@ import { GenericList } from "./index";
 export const UsersList = () => {
     const { userData } = useUser();
     const { role } = userData;
-    let headers = ["Counter", "Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number", "Role", ...(role === "Admin" ? ["Modify"] : [])];
+    let headers = ["Counter", "Display Name", "Last Time Logged in", "User Name", "E-mail address", "Phone Number", "Role", ...(role === "Admin" ? ["Modify"] : []), "Archived Chat"];
 
     return <GenericList
         endpoint={getAllUsers}
