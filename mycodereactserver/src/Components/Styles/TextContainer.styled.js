@@ -251,6 +251,15 @@ export const MidContainer = styled.div`
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
+
+  &.sync-rooms-open {
+    transform: translateX(-500px);
+  }
+
+  &.sync-rooms-closed {
+    transform: translateX(-300px);
+  }
+
 `;
 
 export const MidTextContainer = styled.div`
