@@ -3,6 +3,7 @@ const au = "auth/";
 const ac = "account/";
 const c = "codes/";
 const u = "users/";
+const s = "ws/message/";
 
 //USERS
     //GET
@@ -51,16 +52,23 @@ const u = "users/";
     export const deleteSuperUser = `${a}aduser-`;           //{id}
     export const deleteSuperCode = `${a}adcode-`;           //{id}
 
+//CHAT
+    export const chatBot = `cncbot/botio`;
+
+    export const getRoom = `${s}get-room`;
+    export const getOwn = `${s}getOwnArchived`;
+
 //SERVICE
     export const revoke = `token/revoke`;
+
     export const primary2fa = `${au}basicsTwoFactor`;
     export const enable2fa = `${au}enableTwoFactor`;
     export const verify2fa = `${au}verifyTwoFactor`;
     export const disable2fa = `${au}disableTwoFactor`;
+
     export const gitHubLogin = `${ac}github-login`;
     export const googleLogin = `${ac}google-login`;
     export const facebookLogin = `${ac}facebook-login`;
     export const gitHubAddon = `${ac}github-addon`;
     export const googleAddon = `${ac}google-addon`;
     export const facebookAddon = `${ac}facebook-addon`;
-    export const chatBot = `cncbot/botio`;

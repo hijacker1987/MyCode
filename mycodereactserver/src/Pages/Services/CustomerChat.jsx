@@ -4,6 +4,7 @@ import * as signalR from "@microsoft/signalr";
 import { useUser } from "../../Services/UserContext";
 import { getApi } from "../../Services/Api";
 import { backendUrl } from "../../Services/Config";
+import { getRoom, getOwn } from "../../Services/Backend.endpoints";
 import { formatElapsedTime } from "../../Services/ElapsedTime";
 
 import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
@@ -24,6 +25,7 @@ const CustomerChat = () => {
     const [showChat, setShowChat] = useState(false);
     const [inputDisabled, setInputDisabled] = useState(false);
     const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
+    const [getButtonHidden, setGetButtonHidden] = useState(false);
 
     const sendMessage = async () => {
         if (inputMessage.trim() !== "") {
@@ -45,8 +47,19 @@ const CustomerChat = () => {
 
     const getGroups = async () => {
         try {
-            const data = await getApi("ws/message/get-room");
+            const data = await getApi(getRoom);
             setRequests(data);
+        } catch (error) {
+            console.error("Failed to get groups: ", error);
+        }
+    };
+
+    const getOldMessages = async () => {
+        try {
+            const data = await getApi(getOwn);
+            data.forEach(item => {
+                setMessages(prevMessages => [...prevMessages, { user: item.whom, message: item.text, time: item.when }]);
+            });
         } catch (error) {
             console.error("Failed to get groups: ", error);
         }
@@ -130,6 +143,12 @@ const CustomerChat = () => {
         const connect = async () => {
             const connection = await startConnection();
             setConnection(connection);
+
+            const response = await getApi(getOwn);
+
+            if (response.status === 404) {
+                setGetButtonHidden(true);
+            }
         };
 
         connect();
@@ -217,9 +236,16 @@ const CustomerChat = () => {
                         </div>
                     )}
                     {role === "User" && (
-                        <ButtonContainer type="button" style={{ marginLeft: "100%" }} onClick={toggleChat}>
-                            {showChat ? "Hide Chat" : "Cus. Service Chat"}
-                        </ButtonContainer>
+                        <>
+                            <ButtonContainer type="button" style={{ marginLeft: "100%" }} onClick={toggleChat}>
+                                {showChat ? "Hide Chat" : "Cus. Service Chat"}
+                            </ButtonContainer>
+                            {!getButtonHidden && (
+                                <ButtonContainer type="button" style={{ marginTop: "480%", marginLeft: "100%" }} onClick={getOldMessages}>
+                                    Show Closed Chat
+                                </ButtonContainer>
+                            )}
+                        </>
                     )}
                 </div>
             </div> 
