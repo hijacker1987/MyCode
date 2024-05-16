@@ -66,13 +66,13 @@ namespace MyCode_Backend_Server.Hubs
                 await Clients.Caller.SendAsync("ReceiveMessage", currentUser.DisplayName, $"{sendMessage}", DateTime.Now);
 
                 var messagesInRoom = await _dataContext.SupportDb!
-                                                       .Where(msg => msg.UserId.ToString() == userConnection.ChatRoom && msg.IsActive && msg.With != Guid.Empty)
+                                                       .Where(msg => msg.UserId.ToString() == userConnection.ChatRoom && msg.IsActive)
                                                        .OrderBy(msg => msg.When)
                                                        .ToListAsync();
 
                 if (messagesInRoom.Count != 0)
                 {
-                    var messages = await _chatService.SendActiveStoredMessages(currentUser.DisplayName!, userRole, messagesInRoom);
+                    var messages = userRole == "User" ? await _chatService.GetStoredMessagesByUser(true, messagesInRoom) : await _chatService.GetStoredMessagesByUser(false, messagesInRoom);
                     foreach (var message in messages)
                     {
                         await Clients.Caller.SendAsync("ReceiveMessage", message.Whom, $"{message.Text}", message.When);
@@ -105,11 +105,7 @@ namespace MyCode_Backend_Server.Hubs
                                                    .Where(msg => msg.UserId.ToString() == room.ChatRoom && msg.IsActive)
                                                    .ToListAsync();
 
-            foreach (var msg in messagesInRoom)
-            {
-                msg.IsActive = false;
-            }
-
+            foreach (var msg in messagesInRoom) { msg.IsActive = false; }
             await _dataContext.SaveChangesAsync();
 
             var remainingParticipants = await _dataContext.SupportDb!
@@ -121,7 +117,6 @@ namespace MyCode_Backend_Server.Hubs
             if (remainingParticipants == 0)
             {
                 await Clients.Group(room.ChatRoom!.ToLower()).SendAsync("ConnectedUser", new Dictionary<string, string>());
-
                 _connections.Remove(Context.ConnectionId);
 
                 return new StatusCodeResult(200);
@@ -155,29 +150,25 @@ namespace MyCode_Backend_Server.Hubs
 
                     if (activeMessages.Count != 0)
                     {
-                        var recentChat = new SupportChat { Text = request.Message, With = activeMessages.First().With, UserId = new Guid(request.UserId) };
-                        await _dataContext.SupportDb!.AddAsync(recentChat);
+                        await _dataContext.SupportDb!.AddAsync(new SupportChat { Text = request.Message, With = activeMessages.First().With, UserId = new Guid(request.UserId) });
                     }
                     else
                     {
-                        var newChat = new SupportChat { Text = request.Message, UserId = new Guid(request.UserId) };
-                        await _dataContext.SupportDb!.AddAsync(newChat);
+                        await _dataContext.SupportDb!.AddAsync(new SupportChat { Text = request.Message, UserId = new Guid(request.UserId) });
                     }
                 }
                 else if (await _authService.GetRoleStatusByIdAsync(request.UserId) == "Support")
                 {
                     var activeMessages = await _dataContext.SupportDb!
-                                    .Where(msg => msg.UserId.ToString() == roomConnection.ChatRoom! && msg.IsActive && msg.With.ToString() != request.UserId)
-                                    .ToListAsync();
+                                                           .Where(msg => msg.UserId.ToString() == roomConnection.ChatRoom! && msg.IsActive && msg.With.ToString() != request.UserId)
+                                                           .ToListAsync();
 
                     if (activeMessages.Count != 0)
                     {
                         await Clients.Caller.SendAsync("FailedToJoinRoom", "Already in progress!", DateTime.Now);
                         return;
                     }
-
-                    var newChat = new SupportChat { Text = request.Message, IsUser = false, With = new Guid(request.UserId), UserId = new Guid(request.RoomId) };
-                    await _dataContext.SupportDb!.AddAsync(newChat);
+                    await _dataContext.SupportDb!.AddAsync(new SupportChat { Text = request.Message, IsUser = false, With = new Guid(request.UserId), UserId = new Guid(request.RoomId) });
                 }
 
                 await _dataContext.SaveChangesAsync();
@@ -195,9 +186,7 @@ namespace MyCode_Backend_Server.Hubs
                 var user = await _authService.TryGetUserById(roomConnection.User!);
 
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomConnection.ChatRoom!);
-
                 await Clients.Group(roomConnection.ChatRoom!).SendAsync("UserDisconnected", user!.DisplayName, " has left the room!", DateTime.Now);
-
                 _connections.Remove(Context.ConnectionId);
 
                 await SendConnectedUser(roomConnection.ChatRoom!);
