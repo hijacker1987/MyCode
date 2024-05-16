@@ -28,31 +28,28 @@ namespace MyCode_Backend_Server.Service.Chat
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<StoredMessage>> SendActiveStoredMessages(string currentUser, string userRole, List<SupportChat> messages)
+        public async Task<List<StoredMessage>> GetStoredMessagesByUser(bool ownRequest, List<SupportChat> messagesInConversation)
         {
-            List<StoredMessage> storedMessages = [];
+            List<StoredMessage> messages = [];
+            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == messagesInConversation[0].UserId);
+            string? userName = ownRequest ? "Me" : user!.DisplayName;
 
-            foreach (var message in messages)
+            var support = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == messagesInConversation[0].With);
+            string? supportName = support == null || messagesInConversation[0].With == Guid.Empty ? "Customer Service" : support!.DisplayName;
+
+            foreach (var msg in messagesInConversation)
             {
-                var whom = "";
-
-                if (userRole == "User")
+                if (msg.IsUser)
                 {
-                    var support = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == message.With)!;
-
-                    whom = message.IsUser ? currentUser : support!.DisplayName;
+                    messages.Add(new StoredMessage { Whom = userName, Text = msg.Text!, When = msg.When });
                 }
                 else
                 {
-                    var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == message.UserId)!;
-
-                    whom = !message.IsUser ? currentUser : user!.DisplayName;
+                    messages.Add(new StoredMessage { Whom = supportName, Text = msg.Text!, When = msg.When });
                 }
-
-                storedMessages.Add(new StoredMessage { Whom = whom, Text = message.Text, When = message.When });
             }
 
-            return storedMessages;
+            return messages;
         }
     }
 }

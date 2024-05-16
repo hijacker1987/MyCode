@@ -6,6 +6,6 @@ namespace MyCode_Backend_Server.Service.Chat
     {
         Task ConnectToRoom(string connectWho, string connectTo);
         Task JoinRoomAndAttachMessagesToUser(User currentUser, List<SupportChat> messages);
-        Task<List<StoredMessage>> SendActiveStoredMessages(string currentUser, string userRole, List<SupportChat> messages);
+        Task<List<StoredMessage>> GetStoredMessagesByUser(bool ownRequest, List<SupportChat> messagesInConversation);
     }
 }
