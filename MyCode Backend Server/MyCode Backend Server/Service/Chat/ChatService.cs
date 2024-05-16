@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Hubs;
@@ -50,6 +51,16 @@ namespace MyCode_Backend_Server.Service.Chat
             }
 
             return messages;
+        }
+
+        public async Task<List<SupportChat>> GetStoredActiveMessagesByRoom(string room)
+        {
+            var activeMessages = await _dataContext.SupportDb!
+                                                   .Where(msg => msg.UserId.ToString() == room && msg.IsActive && msg.With != Guid.Empty)
+                                                   .OrderBy(msg => msg.When)
+                                                   .ToListAsync();
+
+            return activeMessages;
         }
     }
 }

@@ -144,9 +144,7 @@ namespace MyCode_Backend_Server.Hubs
             {
                 if (await _authService.GetRoleStatusByIdAsync(request.UserId) == "User")
                 {
-                    var activeMessages = await _dataContext.SupportDb!
-                                                           .Where(msg => msg.UserId.ToString() == request.RoomId && msg.IsActive && msg.With != Guid.Empty)
-                                                           .ToListAsync();
+                    List<SupportChat> activeMessages = await _chatService.GetStoredActiveMessagesByRoom(request.RoomId);
 
                     if (activeMessages.Count != 0)
                     {
