@@ -22,3 +22,17 @@ export const formatElapsedTime = (lastTimeLogin) => {
 
     return result;
 };
+
+export const formattedTime = (timeToFormat) => {
+    const parsedDateTime = new Date(timeToFormat);
+
+    const year = parsedDateTime.getFullYear().toString();
+    const month = (parsedDateTime.getMonth() + 1).toString().padStart(2, '0');
+    const day = parsedDateTime.getDate().toString().padStart(2, '0');
+    const hours = parsedDateTime.getHours().toString().padStart(2, '0');
+    const minutes = parsedDateTime.getMinutes().toString().padStart(2, '0');
+
+    const result = `${year}-${month}-${day} ${hours}:${minutes}`;
+
+    return result;
+};
