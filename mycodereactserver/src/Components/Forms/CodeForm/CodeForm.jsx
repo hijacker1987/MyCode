@@ -5,16 +5,18 @@ import { useUser } from "../../../Services/UserContext";
 import { ErrorPage, codeTypeOptions, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
 import Loading from "../../Loading/index";
 
-import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
-import { ButtonRowButtonContainer, ButtonRowContainer } from "../../Styles/ButtonRow.styled";
-import { InputForm, InputWrapper } from "../../Styles/Input.styled";
-import { TextContainer } from "../../Styles/TextContainer.styled";
-import { Form, FormColumn } from "../../Styles/Form.styled";
+import { Heading3, Heading4 } from "../../Styles/InputOutput.styled";
+import { StyledButton } from "../../Styles/Buttons/InternalButtons.styled";
+import { CodeFormStyle, FormColumn, InputForm } from "../../Styles/Forms.styled";
+import { CodeTextContainer } from "../../Styles/Containers/ComplexContainers.styled";
+import { InputWrapper, ButtonRowWrapper } from "../../Styles/Containers/Wrappers.styled";
+import { AddCodeButtonRowContainer, AddCodeButtonRowButtonContainer, RowButtonContainer } from "../../Styles/Containers/Containers.styled";
+import { EditorRowButtonContainer, EditorLabel, EditorCheckbox, EditorSelect, EditorOption } from "../../Styles/CustomBoxes/Editor.styled";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
-    const originalEditorMeasure = ["25vh", "90vh"];
-    const { userData, setUserData } = useUser();
+    const originalEditorMeasure = ["30vh", "90vh"];
+    const { userData } = useUser();
     const { userid } = userData;
     const [loading, setLoading] = useState(false);
     const [codeTitle, setCodeTitle] = useState(code?.codeTitle ?? "");
@@ -80,51 +82,50 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     }
 
     return (
-        <div>
+        <>
             {errorMessage === "" ? (
-                <Form onSubmit={onSubmit}>
-                    <>
-                        <ButtonRowButtonContainer className="control">
-                            <h3>Code Title:</h3>
-                            <InputWrapper>
-                                <InputForm
-                                    value={codeTitle}
-                                    onChange={(e) => setCodeTitle(e.target.value)}
-                                    name="title"
-                                    id="title"
-                                    placeholder="Your Code's Title"
-                                    autoComplete="off"
-                                />
-                            </InputWrapper>
-
-                            <h3>What kind of code:</h3>
-                            <InputWrapper>
-                                <select
-                                    value={whatKindOfCode}
-                                    onChange={(e) => setWhatKindOfCode(e.target.value)}
-                                    name="codetype"
-                                    id="codetype"
-                                >
-                                    {codeTypeOptions.map(option => (
-                                        <option key={option} value={option}>{option}</option>
-                                    ))}
-                                    <option value="Other">Other</option>
-                                </select>
-                                {whatKindOfCode === "Other" && (
+                <>
+                    <CodeFormStyle onSubmit={onSubmit}>
+                        <FormColumn>
+                            <AddCodeButtonRowButtonContainer>
+                                <Heading3>Code Title:</Heading3>
+                                <InputWrapper>
                                     <InputForm
-                                        value={otherCodeType}
-                                        onChange={(e) => setOtherCodeType(e.target.value)}
-                                        name="othercodetype"
-                                        id="othercodetype"
-                                        placeholder="Specify other code type"
+                                        value={codeTitle}
+                                        onChange={(e) => setCodeTitle(e.target.value)}
+                                        name="title"
+                                        id="title"
+                                        placeholder="Your Code's Title"
                                         autoComplete="off"
                                     />
-                                )}
-                            </InputWrapper>
-                        </ButtonRowButtonContainer>
+                                </InputWrapper>
 
-                        <FormColumn>
-                            <TextContainer>The Code Itself
+                                <Heading3>What kind of code:</Heading3>
+                                <InputWrapper>
+                                    <EditorSelect
+                                        value={whatKindOfCode}
+                                        onChange={(e) => setWhatKindOfCode(e.target.value)}
+                                        name="codetype"
+                                        id="codetype"
+                                    >
+                                        {codeTypeOptions.map(option => (
+                                            <EditorOption key={option} value={option}>{option}</EditorOption>
+                                        ))}
+                                        <EditorOption value="Other">Other</EditorOption>
+                                    </EditorSelect>
+                                    {whatKindOfCode === "Other" && (
+                                        <InputForm
+                                            value={otherCodeType}
+                                            onChange={(e) => setOtherCodeType(e.target.value)}
+                                            name="othercodetype"
+                                            id="othercodetype"
+                                            placeholder="Specify other code type"
+                                            autoComplete="off"
+                                        />
+                                    )}
+                                </InputWrapper>
+                            </AddCodeButtonRowButtonContainer>
+                            <CodeTextContainer>The Code Itself
                                 <>
                                     <Editor
                                         height={editorMeasure[0]}
@@ -139,30 +140,30 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                         options={{ readOnly: false, fontSize: fontSize }}
                                         theme={theme}
                                     />
-                                    <div>
-                                        <label htmlFor="fontSizeSelector"> Font Size: </label>
-                                        <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
+                                    <EditorRowButtonContainer>
+                                        <EditorLabel htmlFor="fontSizeSelector"> Font Size: </EditorLabel>
+                                        <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
                                             {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                                 <option key={size} value={size}>{size}</option>
                                             ))}
-                                        </select>
-                                        <label htmlFor="themeSelector"> Change Theme: </label>
-                                        <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
-                                            <option value="vs">Light</option>
-                                            <option value="vs-dark">Dark</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <button onClick={handleCopyToClipboard}>Copy to Clipboard</button>
-                                        <button onClick={handleToggleFullscreen}>Fullscreen</button>
-                                    </div>
+                                        </EditorSelect>
+                                        <ButtonRowWrapper>
+                                            <StyledButton onClick={handleCopyToClipboard}>Copy to Clipboard</StyledButton>
+                                            <StyledButton onClick={handleToggleFullscreen}>Fullscreen</StyledButton>
+                                        </ButtonRowWrapper>
+                                        <EditorLabel htmlFor="themeSelector"> Change Theme: </EditorLabel>
+                                        <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
+                                            <EditorOption value="vs">Light</EditorOption>
+                                            <EditorOption value="vs-dark">Dark</EditorOption>
+                                        </EditorSelect>
+                                    </EditorRowButtonContainer>
                                 </>
-                            </TextContainer>
+                            </CodeTextContainer>
 
-                            <ButtonRowButtonContainer>
-                                <h4>Backend Code?</h4>
+                            <RowButtonContainer>
+                                <Heading4>Backend Code?</Heading4>
                                 <InputWrapper>
-                                    <input
+                                    <EditorCheckbox
                                         type="checkbox"
                                         checked={isBackend}
                                         onChange={(e) => setIsBackend(e.target.checked)}
@@ -171,9 +172,9 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                     />
                                 </InputWrapper>
 
-                                <h4>Can others see it?</h4>
+                                <Heading4>Can others see it?</Heading4>
                                 <InputWrapper>
-                                    <input
+                                    <EditorCheckbox
                                         type="checkbox"
                                         checked={isVisible}
                                         onChange={(e) => setIsVisible(e.target.checked)}
@@ -181,24 +182,24 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                         id="visible"
                                     />
                                 </InputWrapper>
-                            </ButtonRowButtonContainer>
+                            </RowButtonContainer>
 
-                            <ButtonRowContainer>
-                                <ButtonContainer type="submit">
+                            <AddCodeButtonRowContainer>
+                                <StyledButton type="submit">
                                     {code ? "Update Code" : "Add Code"}
-                                </ButtonContainer>
-                                <ButtonContainer type="button" onClick={onCancel}>
+                                </StyledButton>
+                                <StyledButton type="button" onClick={onCancel}>
                                     Cancel
-                                </ButtonContainer>
-                            </ButtonRowContainer>
+                                </StyledButton>
+                            </AddCodeButtonRowContainer>
                         </FormColumn>
-                    </>
-                </Form>
+                    </CodeFormStyle>
+                </>
             ) : (
                 <ErrorPage errorMessage={errorMessage} />
             )}
             {loading && <Loading />}
-        </div>
+        </>
     );
 };
 
