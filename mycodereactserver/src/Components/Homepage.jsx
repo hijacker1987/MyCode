@@ -8,7 +8,11 @@ import { getApi, handleResponse } from "../Services/Api";
 import { handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "../Pages/Services";
 import { getCodesByVisibility } from "../Services/Backend.Endpoints";
 
-import { MidContainer } from "./Styles/TextContainer.styled";
+import { StyledButton } from "../Components/Styles/Buttons/InternalButtons.styled";
+import { ButtonRowWrapper } from "../Components/Styles/Containers/Wrappers.styled";
+import { Heading2, Heading3, Heading4 } from "../Components/Styles/InputOutput.styled";
+import { EditorContainer, MidContainer } from "../Components/Styles/Containers/ComplexContainers.styled";
+import { EditorRowButtonContainer, EditorMiddleLabel, EditorSelect, EditorOption } from "../Components/Styles/CustomBoxes/Editor.styled";
 
 const Homepage = () => {
     const navigate = useNavigate();
@@ -99,11 +103,12 @@ const Homepage = () => {
                 </MidContainer>
             ) : (
                 role === "User" && randomCodeIndex !== null && visibleCodes.length > 0 && (
-                        <MidContainer style={{marginTop:"10px"}} className="random-code">
+                        <EditorContainer className="random-code">
                         <div>
-                            Random Code of <h3>{visibleCodes[randomCodeIndex].displayName}</h3>
-                            <h4>Title:</h4>
-                            <h2>{visibleCodes[randomCodeIndex].codeTitle}</h2>
+                            <Heading4>Random Code of</Heading4>
+                            <Heading3>{visibleCodes[randomCodeIndex].displayName}</Heading3>
+                            <Heading4>Title:</Heading4>
+                            <Heading2>{visibleCodes[randomCodeIndex].codeTitle}</Heading2>
                         </div>
 
                         <Editor
@@ -120,25 +125,24 @@ const Homepage = () => {
                             theme={theme}
                         />
 
-                        <div>
-                            <label htmlFor="fontSizeSelector"> Font Size: </label>
-                            <select id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
+                        <EditorRowButtonContainer>
+                            <EditorMiddleLabel htmlFor="fontSizeSelector"> Font Size: </EditorMiddleLabel>
+                            <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
                                 {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                     <option key={size} value={size}>{size}</option>
                                 ))}
-                            </select>
-                            <label htmlFor="themeSelector"> Change Theme: </label>
-                            <select id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
-                                <option value="vs">Light</option>
-                                <option value="vs-dark">Dark</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <button onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</button>
-                            <button onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</button>
-                        </div>
-                    </MidContainer>
+                            </EditorSelect>
+                            <ButtonRowWrapper>
+                                <StyledButton onClick={() => copyContentToClipboard(editorRef)}>Copy to Clipboard</StyledButton>
+                                <StyledButton onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</StyledButton>
+                            </ButtonRowWrapper>
+                            <EditorMiddleLabel htmlFor="themeSelector"> Change Theme: </EditorMiddleLabel>
+                            <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
+                                <EditorOption value="vs">Light</EditorOption>
+                                <EditorOption value="vs-dark">Dark</EditorOption>
+                            </EditorSelect>
+                        </EditorRowButtonContainer>
+                    </EditorContainer>
                 )
             )}
         </div>

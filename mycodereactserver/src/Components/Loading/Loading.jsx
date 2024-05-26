@@ -1,5 +1,5 @@
-import "./Loading.css";
+import { LoadingSpinner } from '../Styles/Loading/Loading.styled';
 
-const Loading = () => <div className="Loading" />;
+export const Loading = () => <LoadingSpinner />;
 
 export default Loading;
