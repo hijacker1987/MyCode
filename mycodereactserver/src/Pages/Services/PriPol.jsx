@@ -1,18 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Form, FormRow } from "../../Components/Styles/Form.styled";
-import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
-import { TextContainerWhite, MidTextContainer } from "../../Components/Styles/TextContainer.styled";
+import { Form, FormRow } from "../../Components/Styles/Forms.styled";
+import { StyledButton } from "../../Components/Styles/Buttons/InternalButtons.styled";
+import { MidTextContainer, TextContainerWhite } from "../../Components/Styles/Containers/ComplexContainers.styled";
 
 const PriPolPage = () => {
     return (
-        <div>
+        <>
             <Form>
                 <FormRow>
                     <MidTextContainer>
+                        <h2>Privacy Policy</h2>
                         <TextContainerWhite>
-                            <h2>Privacy Policy</h2>
                             <h3>
                                 Welcome to MyCode!
                             </h3>
@@ -54,13 +54,13 @@ const PriPolPage = () => {
                             </p>
                             <h5>This privacy policy was last updated on April 16, 2024.</h5>
                         </TextContainerWhite>
+                        <Link to="#" className="link" onClick={() => window.history.back()} >
+                            <StyledButton>Back</StyledButton>
+                        </Link>
                     </MidTextContainer>
-                    <Link to="#" className="link" onClick={() => window.history.back()} >
-                        <ButtonContainer type="button" style={{ marginTop: "140%", marginLeft: "17%" }}>Back</ButtonContainer>
-                    </Link>
                 </FormRow>
             </Form>
-        </div>
+        </>
     );
 };
 
