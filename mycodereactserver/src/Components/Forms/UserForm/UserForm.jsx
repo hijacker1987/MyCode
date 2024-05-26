@@ -9,12 +9,13 @@ import { deleteAccount } from "../../../Services/Backend.Endpoints";
 import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
 
-import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import { ButtonContainer, ButtonRegContainerWrapper, ButtonContainerWrapper } from "../../Styles/ButtonContainer.styled";
-import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
-import { InputForm, InputWrapper } from "../../Styles/Input.styled";
-import { TextContainer } from "../../Styles/TextContainer.styled";
-import { Form, FormRow } from "../../Styles/Form.styled";
+import { InputForm, Form, FormRow } from "../../Styles/Forms.styled";
+import { InputWrapper } from "../../Styles/Containers/Wrappers.styled";
+import { StyledButton } from "../../Styles/Buttons/InternalButtons.styled";
+import { RowButtonWithTopMarginContainer } from "../../Styles/Containers/Containers.styled";
+import { SmallTextContainer, TextContainer } from "../../Styles/Containers/ComplexContainers.styled";
+import { ModalContainer, StyledModalContainer, ModalBody, ModalTitle } from "../../Styles/CustomBoxes/Modal.styled";
+import { BlurredOverlayWrapper, ButtonContainerWrapper, ButtonToRightContainerWrapper } from "../../Styles/Containers/Wrappers.styled";
 
 const UserForm = ({ onSave, onRole, user, onCancel }) => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [displayname, setDisplayname] = useState(user?.displayName ?? "");
     const [phoneNumber, setPhone] = useState(user?.phoneNumber ?? "");
-    const [isRegistration, setIsRegistration] = useState(!user);
+    const [isRegistration, setIsRegistration] = useState(!user || !user.emailConfirmed);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDeleteId, setUserToDeleteId] = useState(null);
     const [errorMessage, setError] = useState("");
@@ -139,11 +140,11 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
     }
 
     return (
-        <div>
+        <>
             {errorMessage === "" ? (
                 <Form onSubmit={onSubmit}>
                     <FormRow className="control">
-                        <TextContainer>E-mail:</TextContainer>
+                        <SmallTextContainer>E-mail:</SmallTextContainer>
                         <InputWrapper>
                             <InputForm
                                 value={email}
@@ -155,7 +156,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                             />
                         </InputWrapper>
 
-                        <TextContainer>Username:</TextContainer>
+                        <SmallTextContainer>Username:</SmallTextContainer>
                         <InputWrapper>
                             <InputForm
                                 value={username}
@@ -167,7 +168,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                             />
                         </InputWrapper>
 
-                        <TextContainer>Displayname:</TextContainer>
+                        <SmallTextContainer>Displayname:</SmallTextContainer>
                         <InputWrapper>
                             <InputForm
                                 value={displayname}
@@ -179,7 +180,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                             />
                         </InputWrapper>
 
-                        <TextContainer>Phone number:</TextContainer>
+                        <SmallTextContainer>Phone number:</SmallTextContainer>
                         <InputWrapper>
                             <InputForm
                                 value={phoneNumber}
@@ -193,7 +194,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
 
                         {isRegistration && (
                             <>
-                                <TextContainer>Password:</TextContainer>
+                                <SmallTextContainer>Password:</SmallTextContainer>
                                 <InputWrapper>
                                     <InputForm
                                         value={password}
@@ -204,16 +205,18 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                         autoComplete="off"
                                         type={showPassword ? "text" : "password"}
                                     />
+                                    <ButtonToRightContainerWrapper>
+                                        <StyledButton type="button" onClick={() => setShowPassword(!showPassword)}>
+                                            Show Password
+                                        </StyledButton>
+                                    </ButtonToRightContainerWrapper>
                                 </InputWrapper>
-                                <ButtonRegContainerWrapper>
-                                    <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
-                                </ButtonRegContainerWrapper>
                             </>
                         )}
 
                         {user && role === "Admin" && (
                             <>
-                                <TextContainer>Role:</TextContainer>
+                                <SmallTextContainer>Role:</SmallTextContainer>
                                 <InputWrapper>
                                     <InputForm
                                         value={userRole}
@@ -224,42 +227,43 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                         autoComplete="on"
                                         readOnly
                                     />
-                                    <ButtonContainerWrapper>
-                                        <ButtonContainer type="button" onClick={() => onRole(user.email)}>
+                                    <ButtonToRightContainerWrapper>
+                                        <StyledButton type="button" onClick={() => onRole(user.email)}>
                                             Change Role
-                                        </ButtonContainer>
-                                    </ButtonContainerWrapper>
+                                        </StyledButton>
+                                    </ButtonToRightContainerWrapper>
                                 </InputWrapper>
                             </>
                         )}
 
+                        {user && role === "User" && (
+                            <RowButtonWithTopMarginContainer>
+                                <Link to={uPwChange} className="link">
+                                    <StyledButton type="button">Password Change</StyledButton>
+                                </Link>
+                                <Link to={`${u2fa}${user.id}`} className="link">
+                                    <StyledButton type="button">Verification</StyledButton>
+                                </Link>
+                                <StyledButton type="button" onClick={() => handleDelete(user.id)}>
+                                    Delete Account
+                                </StyledButton>
+                            </RowButtonWithTopMarginContainer>
+                        )}
+
                     </FormRow>
-
-                    {user && role === "User" && (
-                        <ButtonRowContainer>
-                            <Link to={uPwChange} className="link">
-                                <ButtonContainer type="button">Password Change</ButtonContainer>
-                            </Link>
-                            <Link to={`${u2fa}${user.id}`} className="link">
-                                <ButtonContainer type="button">Verification</ButtonContainer>
-                            </Link>
-                            <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>
-                                Delete Account
-                            </ButtonContainer>
-                        </ButtonRowContainer>
-                    )}
-
-                    <ButtonRowContainer>
-                        <ButtonContainer type="submit">
-                            {user ? "Update User" : "Register"}
-                        </ButtonContainer>
-                        <ButtonContainer type="button">
-                            <Link to={priPol} className="link">Privacy Policy</Link>
-                        </ButtonContainer>
-                        <ButtonContainer type="button" onClick={onCancel}>
-                            Cancel
-                        </ButtonContainer>
-                    </ButtonRowContainer>
+                    <FormRow>
+                        <RowButtonWithTopMarginContainer>
+                            <StyledButton type="submit">
+                                {user ? "Update User" : "Register"}
+                            </StyledButton>
+                            <StyledButton type="button">
+                                <Link to={priPol} className="link">Privacy Policy</Link>
+                            </StyledButton>
+                            <StyledButton type="button" onClick={onCancel}>
+                                Cancel
+                            </StyledButton>
+                        </RowButtonWithTopMarginContainer>
+                    </FormRow>
                 </Form>
             ) : (
             <ErrorPage errorMessage={errorMessage} />
@@ -267,35 +271,37 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
 
             {loading && <Loading />}
             {showDeleteModal && (
-                <BlurredOverlay>
+                <BlurredOverlayWrapper>
                     <ModalContainer>
-                        <StyledModal>
+                        <StyledModalContainer>
                             <TextContainer>
                                 <Modal.Header closeButton>
-                                    <Modal.Title>Delete Confirmation</Modal.Title>
+                                    <ModalTitle>Delete Confirmation</ModalTitle>
                                 </Modal.Header>
-                                <Modal.Body>
-                                    Are you sure you want to delete your Account?
-                                </Modal.Body>
-                                <ButtonContainer type="button" style={{ textAlign: "center", marginLeft: "8%" }}>
-                                    <Link to={accDel} className="link">Click for more information</Link>
-                                </ButtonContainer>
+                                <ModalBody>
+                                    Are you sure you want to delete this code?
+                                </ModalBody>
                             </TextContainer>
+                            <ButtonContainerWrapper>
+                                <Link to={`${accDel}`} className="link">
+                                    <StyledButton type="button">More Info</StyledButton>
+                                </Link>
+                            </ButtonContainerWrapper>
                             <Modal.Footer>
-                                <ButtonRowContainer>
-                                    <ButtonContainer onClick={confirmDelete}>
+                                <RowButtonWithTopMarginContainer>
+                                    <StyledButton onClick={confirmDelete}>
                                         Delete
-                                    </ButtonContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
+                                    </StyledButton>
+                                    <StyledButton onClick={() => setShowDeleteModal(false)}>
                                         Cancel
-                                    </ButtonContainer>
-                                </ButtonRowContainer>
+                                    </StyledButton>
+                                </RowButtonWithTopMarginContainer>
                             </Modal.Footer>
-                        </StyledModal>
+                        </StyledModalContainer>
                     </ModalContainer>
-                </BlurredOverlay>
+                </BlurredOverlayWrapper>                
             )}
-        </div>
+        </>
     );
 };
 

@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 
 import Loading from "../Loading/index";
 
-import { ButtonContainer, ButtonContainerWrapper } from "../../Components/Styles/ButtonContainer.styled";
-import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
-import { InputForm, InputWrapper } from "../Styles/Input.styled";
-import { TextContainer } from "../Styles/TextContainer.styled";
-import { Form, FormRow } from "../Styles/Form.styled";
+import { InputForm, Form, FormRow } from "../Styles/Forms.styled";
+import { StyledButton } from "../Styles/Buttons/InternalButtons.styled";
+import { SmallTextContainer } from "../Styles/Containers/ComplexContainers.styled";
+import { RowButtonWithTopMarginContainer } from "../Styles/Containers/Containers.styled";
+import { ButtonContainerWrapper, InputWrapper } from "../Styles/Containers/Wrappers.styled";
 
 export const PassChange = ({ onPassChange, user, onCancel }) => {
     const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
         <div>
             <Form onSubmit={handlePasswordChange}>
                 <FormRow className="control">
-                    <TextContainer>E-mail:</TextContainer>
+                    <SmallTextContainer>E-mail:</SmallTextContainer>
                     <InputWrapper>
                         <InputForm
                             value={email}
@@ -60,7 +60,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                         />
                     </InputWrapper>
 
-                    <TextContainer>Current Password:</TextContainer>
+                    <SmallTextContainer>Current Password:</SmallTextContainer>
                     <InputWrapper>
                         <InputForm
                             value={currentPassword}
@@ -73,7 +73,7 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                         />
                     </InputWrapper>
 
-                    <TextContainer>New Password:</TextContainer>
+                    <SmallTextContainer>New Password:</SmallTextContainer>
                     <InputWrapper>
                         <InputForm
                             value={newPassword}
@@ -85,7 +85,8 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             type={showPassword ? "text" : "password"}
                         />
                     </InputWrapper>
-                    <TextContainer>Confirm Password:</TextContainer>
+
+                    <SmallTextContainer>Confirm Password:</SmallTextContainer>
                     <InputWrapper>
                         <InputForm
                             value={confirmPassword}
@@ -97,19 +98,19 @@ export const PassChange = ({ onPassChange, user, onCancel }) => {
                             type={showPassword ? "text" : "password"}
                         />
                     <ButtonContainerWrapper>
-                        <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                        <StyledButton type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</StyledButton>
                     </ButtonContainerWrapper>
                     </InputWrapper>
-                </FormRow>
 
-                <ButtonRowContainer>
-                    <ButtonContainer type="submit">
-                        Change Password
-                    </ButtonContainer>
-                    <ButtonContainer type="button" onClick={onCancel}>
-                        Cancel
-                    </ButtonContainer>
-                </ButtonRowContainer>
+                    <RowButtonWithTopMarginContainer>
+                        <StyledButton type="submit">
+                            Change Password
+                        </StyledButton>
+                        <StyledButton type="button" onClick={onCancel}>
+                            Cancel
+                        </StyledButton>
+                    </RowButtonWithTopMarginContainer>
+                </FormRow>
             </Form>
             {loading && <Loading />}
 

@@ -7,6 +7,8 @@ import { getUserId, codeRegistration, primary2fa } from "../Services/Backend.End
 import CodeForm from "../Components/Forms/CodeForm/index";
 import Loading from "../Components/Loading/index";
 
+import { RelHeading3 } from "../Components/Styles/InputOutput.styled";
+
 const CodeRegister = () => {
     const navigate = useNavigate();
     const [isEmailConfirmed, setEmailConfirmed] = useState(false);
@@ -76,11 +78,11 @@ const CodeRegister = () => {
         <div>
             {errorMessage === "" ? (
                 !isEmailConfirmed || !isTwoFactorEnabled ? (
-                    <h3>
+                    <RelHeading3>
                         {!isEmailConfirmed && isTwoFactorEnabled && "Reliable email provider required!"}
                         {!isEmailConfirmed && !isTwoFactorEnabled && "Reliable email provider and two-factor authentication required!"}
                         {isEmailConfirmed && !isTwoFactorEnabled && "Two-factor authentication required!"}
-                    </h3>
+                    </RelHeading3>
                 ) : (
                     <CodeForm onSave={handleCreateCode} onCancel={handleCancel} />
                 )

@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { homePage } from "../../Services/Frontend.Endpoints";
 
-import { Form, FormRow } from "../../Components/Styles/Form.styled";
-import { ErrorTextContainerRed, ErrorTextContainerWhite, ColumnTextWrapper } from "../../Components/Styles/TextContainer.styled";
+import { Form, FormRow } from "../../Components/Styles/Forms.styled";
+import { ColumnTextWrapper } from "../../Components/Styles/Containers/Wrappers.styled";
+import { ErrorTextContainerRed, ErrorTextContainerWhite } from "../../Components/Styles/Containers/ComplexContainers.styled";
 
 const ErrorPage = ({ errorMessage }) => {
     const navigate = useNavigate();

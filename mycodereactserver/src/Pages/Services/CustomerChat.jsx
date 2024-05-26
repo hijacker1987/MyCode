@@ -9,13 +9,13 @@ import { getActive, getAnyArc, getOwn, getRoom, getActRoom, dropBack } from "../
 import { formatElapsedTime, formattedTime } from "../../Services/ElapsedTime";
 import { Notify } from "./../../Pages/Services/Index";
 
-import { BlurredOverlay, ModalContainer, StyledModal } from "../../Components/Styles/Background.styled";
-import { MidContainer, TextContainer } from "../../Components/Styles/TextContainer.styled";
-import { StyledTr, StyledTd, RowSpacer } from "../../Components/Styles/TableRow.styled";
-import { ButtonContainer } from "../../Components/Styles/ButtonContainer.styled";
-import { ButtonRowContainer } from "../../Components/Styles/ButtonRow.styled";
-
-import "../../Components/Styles/CustomCss/CustomerChat.css";
+import { BlurredOverlayWrapper } from "../../Components/Styles/Containers/Wrappers.styled";
+import { StyledTr, StyledTd, RowSpacer } from "../../Components/Styles/CustomBoxes/Table.styled";
+import { CustomerChatButton, StyledButton } from "../../Components/Styles/Buttons/InternalButtons.styled";
+import { ChatModalBody, ModalContainer, StyledModalContainer } from "../../Components/Styles/CustomBoxes/Modal.styled";
+import { CustomerChatTextInput, MessageText, MessageColorPicker, MessagesList } from "../../Components/Styles/InputOutput.styled";
+import { ChatContainer, CustomerChatContainer, TextContainer } from "../../Components/Styles/Containers/ComplexContainers.styled";
+import { CustomerChatInputContainer, RowButtonContainer, RowButtonWithTopMarginContainer } from "../../Components/Styles/Containers/Containers.styled";
 
 const CustomerChat = () => {
     const chatContainerRef = useRef(null);
@@ -111,14 +111,14 @@ const CustomerChat = () => {
     const getOldMessages = async () => {
         try {
             const data = await getApi(getOwn);
-            if (messages.length != 0) {
-                setMessages([]);
-            }
-            data.forEach(item => {
-                setMessages(prevMessages => [...prevMessages, { user: item.whom, message: item.text, time: item.when }]);
-            });
+            const loadedMessages = data.map(item => ({
+                user: item.whom,
+                message: item.text,
+                time: item.when,
+            }));
+            setMessages(loadedMessages);
         } catch (error) {
-            console.error("Failed to get groups: ", error);
+            console.error("Failed to get archived messages: ", error);
         }
     };
 
@@ -258,11 +258,23 @@ const CustomerChat = () => {
         }
     }, [messages]);
 
+    useEffect(() => {
+        const scrollToBottom = () => {
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+        };
+
+        if (showChat) {
+            scrollToBottom();
+        }
+    }, [showChat]);
+
     return (
-        <div>
-            <div>
+        <>
+            <>
                 {role === "Admin" && (
-                    <MidContainer className={isSyncRoomsOpen ? "sync-rooms-open" : "sync-rooms-closed"} style={{ marginTop: "-10%", marginLeft: "-35.2%", width: "500px" }}>
+                    <ChatContainer className={isSyncRoomsOpen ? "sync-rooms-open" : "sync-rooms-closed"}>
                         <button onClick={getActiveGroups}>Sync Active Rooms</button>
                         <ul>
                             {requests.map((room, index) => (
@@ -272,11 +284,11 @@ const CustomerChat = () => {
                             ))}
                         </ul>
                         <button onClick={toggleSyncRooms}>Minimize</button>
-                    </MidContainer>
+                    </ChatContainer>
                 )}
-                <div>
+                <>
                     {role === "Support" && (
-                        <MidContainer className={isSyncRoomsOpen ? "sync-rooms-open" : "sync-rooms-closed"} style={{ marginTop: "-10%", marginLeft: "-35.2%", width: "500px" }}>
+                        <ChatContainer className={isSyncRoomsOpen ? "sync-rooms-open" : "sync-rooms-closed"}>
                             <button onClick={getGroups}>Sync Active Rooms</button>
                             <ul>
                                 {requests.map((room, index) => (
@@ -290,57 +302,56 @@ const CustomerChat = () => {
                                 {showChat ? "Hide Chat" : "Show Chat Window"}
                             </button>
                             <button onClick={toggleSyncRooms}>Minimize</button>
-                        </MidContainer>
+                        </ChatContainer>
                     )}
-                </div>
-                <div>
+                </>
+                <>
                     {showChat && (
-                        <div ref={chatContainerRef} className="customer-chat-container">
-                            <ul>
+                        <CustomerChatContainer ref={chatContainerRef}>
+                            <MessagesList>
                                 {messages.map((msg, index) => (
-                                    <li key={index}>
+                                    <MessageColorPicker key={index} own={msg.user === "Me"}>
                                         <h4>{msg.user}: </h4>
-                                        <strong>{msg.message} - </strong>
-                                        {formatElapsedTime(msg.time)}
-                                    </li>
+                                        <MessageText>{msg.message} - </MessageText>
+                                        <MessageText>{formatElapsedTime(msg.time)}</MessageText>
+                                    </MessageColorPicker>
                                 ))}
-                                <div>
-                                    <input
-                                        className="customer-chat-input"
+                                <CustomerChatInputContainer>
+                                    <CustomerChatTextInput
                                         type="text"
                                         value={inputMessage}
                                         onChange={(e) => setInputMessage(e.target.value)}
                                         disabled={inputDisabled}
                                     />
-                                <button onClick={sendMessage} disabled={sendButtonDisabled}>Send</button>
-                                </div>
-                            </ul>
-                        </div>
+                                <CustomerChatButton onClick={sendMessage} disabled={sendButtonDisabled}>Send</CustomerChatButton>
+                                </CustomerChatInputContainer>
+                            </MessagesList>
+                        </CustomerChatContainer>
                     )}
                     {role === "User" && (
-                        <>
-                            <ButtonContainer type="button" style={{ marginLeft: "100%" }} onClick={toggleChat}>
+                        <RowButtonContainer>
+                            <StyledButton onClick={toggleChat}>
                                 {showChat ? "Hide Chat" : "Cus. Service Chat"}
-                            </ButtonContainer>
+                            </StyledButton>
                             {!getButtonHidden && (
-                                <ButtonContainer type="button" style={{ marginTop: "480%", marginLeft: "100%" }} onClick={getOldMessages}>
-                                    Show Closed Chat
-                                </ButtonContainer>
+                                <StyledButton onClick={getOldMessages}>
+                                    Load Archieved Chat
+                                </StyledButton>
                             )}
-                        </>
+                        </RowButtonContainer>
                     )}
-                </div>
-            </div>
-            <div>
+                </>
+            </>
+            <>
                 {showMessagesModal && (
-                    <BlurredOverlay>
+                    <BlurredOverlayWrapper>
                         <ModalContainer>
-                            <StyledModal size="lg">
+                            <StyledModalContainer size="lg">
                                 <TextContainer>
                                     <Modal.Header closeButton>
                                         <Modal.Title>Currently stored Chat</Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
+                                    <ChatModalBody>
                                         {selectedUserMessages
                                             .map((message, index) => (
                                                 <React.Fragment key={index}>
@@ -350,24 +361,24 @@ const CustomerChat = () => {
                                                     </StyledTr>
                                                     <RowSpacer />
                                                 </React.Fragment>))}
-                                    </Modal.Body>
+                                    </ChatModalBody>
                                 </TextContainer>
                                 <Modal.Footer>
-                                    <ButtonRowContainer>
-                                        <ButtonContainer onClick={() => setShowMessagesModal(false)}>
+                                    <RowButtonWithTopMarginContainer>
+                                        <StyledButton onClick={() => setShowMessagesModal(false)}>
                                             Back
-                                        </ButtonContainer>
-                                        <ButtonContainer onClick={() => handleDropBackRoom(room)}>
+                                        </StyledButton>
+                                        <StyledButton onClick={() => handleDropBackRoom(room)}>
                                             Drop back to support
-                                        </ButtonContainer>
-                                    </ButtonRowContainer>
+                                        </StyledButton>
+                                    </RowButtonWithTopMarginContainer>
                                 </Modal.Footer>
-                            </StyledModal>
+                            </StyledModalContainer>
                         </ModalContainer>
-                    </BlurredOverlay>
+                    </BlurredOverlayWrapper>
                 )}
-            </div>
-        </div>
+            </>
+        </>
     );
 };
 

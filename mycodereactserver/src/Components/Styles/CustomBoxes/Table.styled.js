@@ -1,9 +1,10 @@
 import styled from "styled-components";
 
 export const StyledTable = styled.table`
-  width: 100%;
+  width: 70%;
   border-collapse: collapse;
   margin-top: 10px;
+  margin-left: 15%;
 `;
 
 export const StyledTh = styled.th`
@@ -24,7 +25,8 @@ export const StyledTr = styled.tr`
 `;
 
 export const StyledTd = styled.td`
-  padding: 10px;
+  padding: 10px 20px;
+  text-align: center;
   border-bottom: 1px solid #ddd;
 `;
 
@@ -39,4 +41,22 @@ export const OddRow = styled(StyledTr)`
 export const RowSpacer = styled.tr`
   height: 10px;
   background-color: transparent;
+`;
+
+export const TableContainer = styled.div`
+  position: flex;
+  margin-top: 30px;
+  overflow-x: auto;
+`;
+
+export const StyledUl = styled.ul`
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`
+
+export const StyledLi = styled.li`
+  margin-left: auto;
 `;

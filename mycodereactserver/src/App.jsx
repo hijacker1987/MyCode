@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "./App.css";
 
 import { ErrorPage, PriPolPage } from "./Pages/Services";
 import reportWebVitals from "./reportWebVitals";
@@ -23,6 +21,9 @@ import CodeRegister from "./Pages/CodeRegister";
 import CodeUpdate from "./Pages/CodeUpdate";
 import AccDelPage from "./Pages/Services/AccDel";
 import ChuckBot from "./Pages/Services/ChuckBot";
+
+import GlobalStyles from "./Components/Styles/Global.styled";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -114,6 +115,7 @@ function App() {
 
     return (
         <UserProvider>
+            <GlobalStyles />
             <RouterProvider router={router} />
             <ToastContainer />
             <ChuckBot />

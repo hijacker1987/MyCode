@@ -4,8 +4,10 @@ import { useUser } from "../../Services/UserContext";
 import { chatBot } from "../../Services/Backend.Endpoints";
 import { postApi } from "../../Services/Api";
 
-import "../../Components/Styles/CustomCss/ChuckBot.css";
-import "../../Components/Styles/CustomCss/CBButton.css";
+import { ChuckBotInput, MessageColorPicker } from "../../Components/Styles/InputOutput.styled";
+import { CBToggleButton, ChuckBotButton, } from "../../Components/Styles/Buttons/InternalButtons.styled";
+import { CBInputContainer, CBOutputContainer } from "../../Components/Styles/Containers/Containers.styled";
+import { ChuckBotClosed, ChuckBotContainer } from "../../Components/Styles/Containers/ComplexContainers.styled";
 
 const ChuckBot = () => {
     const outputRef = useRef(null);
@@ -82,33 +84,35 @@ const ChuckBot = () => {
         }
     }, [messages, isTyping]);
 
+    const Form = botOpen ? ChuckBotContainer : ChuckBotClosed;
+
     return (
-        <div>
-            <div className={botOpen ? "ChuckBot" : "ChuckBot closed"}>
-                <div className="output-container" ref={outputRef}>
-                    {messages.map((message, index) => (
-                        <div key={index} className={message.mine ? "user-message" : "bot-message"} style={{ textAlign: message.mine ? "right" : "left" }}>
+        <>
+            <Form>
+                <CBOutputContainer ref={outputRef}>
+                    {messages.map((message, index) => ( 
+                        <MessageColorPicker key={index} own={message.mine}>
                             {message.text}
-                        </div>
+                        </MessageColorPicker>
                     ))}
                     {isTyping && (
-                        <div style={{ textAlign: "left", color: "rebeccapurple" }}>
+                        <div style={{ textAlign: "right", color: "rebeccapurple" }}>
                             Chuck is typing{typingAnimation}
                         </div>
                     )}
-                </div>
-                <div className="input-container">
-                    <input
+                </CBOutputContainer>
+                <CBInputContainer>
+                    <ChuckBotInput
                         className="chuckText"
                         type="text"
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                     />
-                    <button onClick={handleMessageSend}>Send</button>
-                </div>
-            </div>
-            <button className="toogle" onClick={toggleBot}>Chat Norris</button>
-        </div>
+                    <ChuckBotButton onClick={handleMessageSend}>Send</ChuckBotButton>
+                </CBInputContainer>
+            </Form>
+            <CBToggleButton className="toogle" onClick={toggleBot}>Chat Norris</CBToggleButton>
+        </>
     );
 };
 

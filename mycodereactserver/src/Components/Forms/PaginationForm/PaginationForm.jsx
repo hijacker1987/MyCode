@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { StyledUl, StyledLi } from "../../Styles/Pagination.styled";
+import { StyledUl, StyledLi } from "../../Styles/CustomBoxes/Table.styled";
 
 const ConstructPagination = ({ element, url, page, recordPerPage, setRecordPerPage, paginationSlice, setPaginationSlice }) => {
     const [availablePages, setAvailablePages] = useState([]);

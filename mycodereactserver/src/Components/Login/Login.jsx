@@ -2,11 +2,11 @@ import { useState } from "react";
 
 import Loading from "../Loading/index";
 
-import { ButtonContainer, ButtonContainerWrapper } from "../Styles/ButtonContainer.styled";
-import { InputForm, InputWrapper } from "../Styles/Input.styled";
-import { ButtonRowContainer } from "../Styles/ButtonRow.styled";
-import { TextContainer } from "../Styles/TextContainer.styled";
-import { Form, FormRow } from "../Styles/Form.styled";
+import { InputForm, Form, FormRow } from "../Styles/Forms.styled";
+import { StyledButton } from "../Styles/Buttons/InternalButtons.styled";
+import { SmallTextContainer } from "../Styles/Containers/ComplexContainers.styled";
+import { RowButtonWithTopMarginContainer } from "../Styles/Containers/Containers.styled";
+import { ButtonContainerWrapper, InputWrapper } from "../Styles/Containers/Wrappers.styled";
 
 const Login = ({ onLogin, user, onCancel }) => {
 
@@ -44,11 +44,11 @@ const Login = ({ onLogin, user, onCancel }) => {
     }
 
     return (
-        <div>
+        <>
             <Form onSubmit={onSubmit}>
 
                 <FormRow>
-                    <TextContainer>E-mail:</TextContainer>
+                    <SmallTextContainer>E-mail:</SmallTextContainer>
                     <InputWrapper>
                         <InputForm
                             value={email}
@@ -59,7 +59,7 @@ const Login = ({ onLogin, user, onCancel }) => {
                         />
                     </InputWrapper>
 
-                    <TextContainer>Password:</TextContainer>
+                    <SmallTextContainer>Password:</SmallTextContainer>
                     <InputWrapper>
                         <InputForm
                             value={password}
@@ -74,23 +74,22 @@ const Login = ({ onLogin, user, onCancel }) => {
                             type={showPassword ? "text" : "password"}
                         />
                         <ButtonContainerWrapper>
-                            <ButtonContainer type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</ButtonContainer>
+                            <StyledButton type="button" onClick={() => setShowPassword(!showPassword)}>Show Password</StyledButton>
                         </ButtonContainerWrapper>
                     </InputWrapper>
+
+                    <RowButtonWithTopMarginContainer>
+                        <StyledButton type="submit">
+                            Login
+                        </StyledButton>
+                        <StyledButton type="button" onClick={onCancel}>
+                            Cancel
+                        </StyledButton>
+                    </RowButtonWithTopMarginContainer>
                 </FormRow>
-
-                <ButtonRowContainer>
-                    <ButtonContainer type="submit">
-                        Login
-                    </ButtonContainer>
-
-                    <ButtonContainer type="button" onClick={onCancel}>
-                        Cancel
-                    </ButtonContainer>
-                </ButtonRowContainer>
             </Form>
             {loading && <Loading />}
-        </div>
+        </>
     );
 };
 

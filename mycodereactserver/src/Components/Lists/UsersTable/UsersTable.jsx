@@ -10,12 +10,12 @@ import { getAnyArc, getMessage, deleteSuperUser } from "../../../Services/Backen
 import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/index";
 
-import { TextContainer } from "../../Styles/TextContainer.styled";
-import { ButtonRowContainer } from "../../Styles/ButtonRow.styled";
-import { TableContainer } from "../../Styles/TableContainer.styled";
-import { ButtonContainer } from "../../Styles/ButtonContainer.styled";
-import { BlurredOverlay, ModalContainer, StyledModal } from "../../Styles/Background.styled";
-import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer } from "../../Styles/TableRow.styled";
+import { StyledButton } from "../../Styles/Buttons/InternalButtons.styled";
+import { TextContainer } from "../../Styles/Containers/ComplexContainers.styled";
+import { RowButtonWithTopMarginContainer } from "../../Styles/Containers/Containers.styled";
+import { ModalContainer, StyledModalContainer } from "../../Styles/CustomBoxes/Modal.styled";
+import { BlurredOverlayWrapper, ButtonContainerWrapper } from "../../Styles/Containers/Wrappers.styled";
+import { StyledTable, StyledTh, StyledTr, StyledTd, RowSpacer, TableContainer } from "../../Styles/CustomBoxes/Table.styled";
 
 export const UsersTable = ({ users, headers, role, page }) => {
     const [updatedUsers, setUpdatedUsers] = useState(users);
@@ -184,18 +184,18 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                     <>
                                         <StyledTd>
                                             <Link to={`${uUpdate}${user.id}`} >
-                                                <ButtonContainer type="button">Edit</ButtonContainer>
+                                                <StyledButton type="button">Edit</StyledButton>
                                             </Link>
-                                            <ButtonContainer type="button" onClick={() => handleDelete(user.id)}>Delete</ButtonContainer>
+                                            <StyledButton type="button" onClick={() => handleDelete(user.id)}>Delete</StyledButton>
                                         </StyledTd>
                                     </>
                                     )}
                                         <StyledTd>
                                             {usersWithMessagesId.includes(user.id.toUpperCase())
                                             ?
-                                                <ButtonContainer type="button" onClick={() => getOldMessagesByIdModal(user.id)}>
+                                                <StyledButton type="button" onClick={() => getOldMessagesByIdModal(user.id)}>
                                                     Available
-                                                </ButtonContainer>
+                                                </StyledButton>
                                             : ""}
                                         </StyledTd>
                                 </StyledTr>
@@ -221,9 +221,9 @@ export const UsersTable = ({ users, headers, role, page }) => {
                 </tfoot>
             </StyledTable>
             {showDeleteModal && (
-                <BlurredOverlay>
+                <BlurredOverlayWrapper>
                     <ModalContainer>
-                        <StyledModal>
+                        <StyledModalContainer>
                             <TextContainer>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Delete Confirmation</Modal.Title>
@@ -231,20 +231,20 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                 
                             </TextContainer>
                             <Modal.Footer>
-                                <ButtonRowContainer>
-                                    <ButtonContainer onClick={() => setShowDeleteModal(false)}>
+                                <RowButtonWithTopMarginContainer>
+                                    <StyledButton onClick={() => setShowDeleteModal(false)}>
                                         Cancel
-                                    </ButtonContainer>
-                                </ButtonRowContainer>
+                                    </StyledButton>
+                                </RowButtonWithTopMarginContainer>
                             </Modal.Footer>
-                        </StyledModal>
+                        </StyledModalContainer>
                     </ModalContainer>
-                </BlurredOverlay>
+                </BlurredOverlayWrapper>
             )}
             {showMessagesModal && (
-                <BlurredOverlay>
+                <BlurredOverlayWrapper>
                     <ModalContainer>
-                        <StyledModal size="lg">
+                        <StyledModalContainer size="lg">
                             <TextContainer>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Chat History</Modal.Title>
@@ -261,16 +261,16 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                             </React.Fragment>))}
                                 </Modal.Body>
                             </TextContainer>
-                            <Modal.Footer>
-                                <ButtonRowContainer>
-                                    <ButtonContainer onClick={() => setShowMessagesModal(false)}>
+                            <ButtonContainerWrapper>
+                                <RowButtonWithTopMarginContainer>
+                                    <StyledButton onClick={() => setShowMessagesModal(false)}>
                                         Back
-                                    </ButtonContainer>
-                                </ButtonRowContainer>
-                            </Modal.Footer>
-                        </StyledModal>
+                                    </StyledButton>
+                                </RowButtonWithTopMarginContainer>
+                            </ButtonContainerWrapper>
+                        </StyledModalContainer>
                     </ModalContainer>
-                </BlurredOverlay>
+                </BlurredOverlayWrapper>
             )}
         </TableContainer>
     );
