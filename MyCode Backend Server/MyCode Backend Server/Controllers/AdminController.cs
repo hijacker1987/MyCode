@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Models.MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 
