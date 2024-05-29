@@ -105,6 +105,12 @@ namespace MyCode_Backend_Server
                         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         options.Cookie.SameSite = SameSiteMode.None;
                         options.Cookie.HttpOnly = true;
+
+                        options.Events.OnRedirectToLogin = context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        };
                     })
                     .AddGoogle("Google", options =>
                     {
