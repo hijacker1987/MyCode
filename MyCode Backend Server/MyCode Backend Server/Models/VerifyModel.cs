@@ -1,9 +1,9 @@
 ﻿namespace MyCode_Backend_Server.Models
 {
-    public class VerifyModel
+    public class VerifyModel(string userId, string attachment, bool external = false)
     {
-        public required string UserId { get; set; }
-        public required string Attachment { get; set; }
-        public required bool External { get; set; } = false;
+        public string UserId { get; set; } = userId ?? throw new ArgumentNullException(nameof(userId));
+        public string Attachment { get; set; } = attachment ?? throw new ArgumentNullException(nameof(attachment));
+        public bool External { get; set; } = external;
     }
 }
