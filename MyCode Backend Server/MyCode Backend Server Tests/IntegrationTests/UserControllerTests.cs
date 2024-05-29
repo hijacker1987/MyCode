@@ -4,7 +4,6 @@ using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server_Tests.Services;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
@@ -164,17 +163,17 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task Get_UserEndpoint_WithoutAuthorization_ReturnsNotFound()
+        public async Task Get_UserEndpoint_WithoutAuthorization_ReturnsUnauthorized()
         {
             // Act
             var response = await _client.GetAsync("/users/getUser");
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
-        public async Task Put_UpdateUserEndpoint_InvalidData_ReturnsNotFound()
+        public async Task Put_UpdateUserEndpoint_InvalidData_ReturnsUnauthorized()
         {
             // Arrange
             var invalidUserData = new User { /* invalid or missing data */ };
@@ -183,11 +182,11 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await _client.PutAsJsonAsync($"/users/user-{Guid.NewGuid()}", invalidUserData);
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
-        public async Task Patch_ChangePasswordEndpoint_InvalidData_ReturnsNotFound()
+        public async Task Patch_ChangePasswordEndpoint_InvalidData_ReturnsUnauthorized()
         {
             // Arrange
             var invalidPasswordChangeRequest = new ChangePassRequest("", "cheese", "breeze", "breeze");
@@ -196,11 +195,11 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await _client.PatchAsJsonAsync("/users/changePassword", invalidPasswordChangeRequest);
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
-        public async Task Delete_DeleteAccountEndpoint_InvalidData_ReturnsNotFound()
+        public async Task Delete_DeleteAccountEndpoint_InvalidData_ReturnsUnauthorized()
         {
             // Arrange
             Guid invalidUserId = Guid.NewGuid();
@@ -209,7 +208,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await _client.DeleteAsync($"/users/delete-{invalidUserId}");
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -291,15 +290,15 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        /*[Fact]
+        [Fact]
         public async Task Put_UpdateUserEndpoint_ValidData_ReturnsOk()
         {
             // Arrange
             Random rdm = new();
 
             var authRequest = new AuthRequest("tester8@test.com", "Password", "Password");
-            var (authToken, cookies, result) = await TestLogin.Login_With_Test_User(authRequest, _client);
-            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == result.Id);
+            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
             var updatedUser = new User { DisplayName = existingUser!.DisplayName,
                                          UserName = existingUser.UserName,
                                          NormalizedUserName = existingUser.UserName,
@@ -307,19 +306,14 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                                          NormalizedEmail = existingUser.UserName,
                                          PhoneNumber = rdm.Next(100, 10000).ToString() };
 
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/users/user-{result.Id}", updatedUser);
+            var response = await _client.PutAsJsonAsync($"/users/user-{user.Id}", updatedUser);
             await _dataContext.SaveChangesAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }*/
+        }
 
         [Fact]
         public async Task Post_LoginEndpoint_InvalidEmail_ReturnsNotFound()

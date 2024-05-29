@@ -5,6 +5,8 @@ using Xunit;
 using Assert = Xunit.Assert;
 using User = MyCode_Backend_Server.Models.User;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server_Tests.Services;
+using MyCode_Backend_Server.Contracts.Services;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
