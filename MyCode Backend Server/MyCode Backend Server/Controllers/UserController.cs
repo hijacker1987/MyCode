@@ -22,7 +22,8 @@ namespace MyCode_Backend_Server.Controllers
         ITokenService tokenService,
         IEmailSender emailSender,
         DataContext dataContext,
-        UserManager<User> userManager) : ControllerBase
+        UserManager<User> userManager,
+        IWebHostEnvironment environment) : ControllerBase
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<UserController> _logger = logger;
@@ -31,6 +32,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly IEmailSender _emailSender = emailSender;
         private readonly DataContext _dataContext = dataContext;
         private readonly UserManager<User> _userManager = userManager;
+        private readonly IWebHostEnvironment _environment = environment;
 
         [HttpPost("register")]
         public async Task<ActionResult<UserRegResponse>> RegisterUserAsync(UserRegRequest request)
@@ -61,11 +63,14 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var subject = "Welcome to My Code!!!";
+                if (_environment.IsDevelopment())
+                {
+                    var subject = "Welcome to My Code!!!";
 
-                var message = $"{request.DisplayName} Thank You very much to use my application, ENJOY IT!";
+                    var message = $"{request.DisplayName} Thank You very much to use my application, ENJOY IT!";
 
-                await _emailSender.SendEmailAsync(request.Email, subject, message);
+                    await _emailSender.SendEmailAsync(request.Email, subject, message);
+                }
 
                 return Ok(new UserRegResponse(result.Id!, result.Email!, result.UserName!, result.DisplayName!, result.PhoneNumber!, ""));
             }
