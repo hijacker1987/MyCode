@@ -9,9 +9,9 @@ namespace MyCode_Backend_Server.Controllers
     [AllowAnonymous]
     [Route("cncbot/botio")]
     [ApiController]
-    public class BotController(FAQBot bot) : ControllerBase
+    public class BotController(IFAQBot bot) : ControllerBase
     {
-        private readonly FAQBot _bot = bot;
+        private readonly IFAQBot _bot = bot;
 
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] BotMessage message)

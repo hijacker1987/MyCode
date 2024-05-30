@@ -4,7 +4,7 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Service.Bot
 {
-    public class FAQBot(DataContext dataContext)
+    public class FAQBot(DataContext dataContext) : IFAQBot
     {
         private readonly DataContext _dataContext = dataContext;
 
