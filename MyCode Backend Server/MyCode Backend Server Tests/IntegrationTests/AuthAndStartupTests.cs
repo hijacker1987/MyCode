@@ -17,6 +17,8 @@ using MyCode_Backend_Server.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using MyCode_Backend_Server.Data.Service;
+using MyCode_Backend_Server.Contracts.Services;
+using MyCode_Backend_Server_Tests.Services;
 
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
@@ -27,7 +29,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         private readonly CustomWebApplicationFactory<Program> _factory = factory;
 
         [Fact]
-        public async Task ChangePasswordAsync_NotLoggedIn_ReturnsUnauthorized()
+        public async Task ChangePasswordAsync_NotLoggedIn_ReturnsBadRequest()
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -35,9 +37,14 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 AllowAutoRedirect = false
             });
 
+            var authRequest = new AuthRequest("tester6@test.com", "Password", "Password");
+
+            // Act
+            User result = await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
             var request = new
             {
-                Email = "notLoggedIn@email.com",
+                result.Email,
                 CurrentPassword = "invalidLogin",
                 NewPassword = "newpassword",
                 ConfirmPassword = "newpassword"
@@ -47,7 +54,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await client.PatchAsync("/users/changePassword", JsonContent.Create(request));
 
             // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]

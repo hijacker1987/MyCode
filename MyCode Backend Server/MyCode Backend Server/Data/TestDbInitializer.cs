@@ -93,6 +93,12 @@ namespace MyCode_Backend_Server.Data
                 }
                 context.SaveChanges();
             }
+
+            if (!context.BotDb!.Any(b => b.BotId != Guid.Empty))
+            {
+                await fAQBotData.InitializeFAQBBotDataAsync(context);
+            }
+            context.SaveChanges();
         }
 
         public async Task CreateRole(RoleManager<IdentityRole<Guid>> roleManager, string role)

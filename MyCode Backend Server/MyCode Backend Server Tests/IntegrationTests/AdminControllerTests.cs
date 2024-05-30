@@ -5,13 +5,29 @@ using Xunit;
 using Assert = Xunit.Assert;
 using User = MyCode_Backend_Server.Models.User;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server_Tests.Services;
+using MyCode_Backend_Server.Contracts.Services;
+using MyCode_Backend_Server.Models.MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Data;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Moq;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+using System;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
     [Collection("firstSequence")]
-    public class AdminControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory) : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
+    public class AdminControllerTests : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
     {
-        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
+        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
+        private readonly DataContext _dataContext;
+
+        public AdminControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
+        {
+            _factory = factory;
+            _dataContext = _factory.Services.GetRequiredService<DataContext>();
+        }
 
         [Theory]
         [InlineData("/getUsers")]
@@ -247,6 +263,242 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAllUsersAsync_Returns_OK_With_Users_When_Authenticated_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var users = await response.Content.ReadFromJsonAsync<List<UserWithRole>>();
+            Assert.NotNull(users);
+            Assert.NotEmpty(users);
+        }
+
+        [Fact]
+        public async Task GetAllUsersAsync_Returns_Forbidden_When_Authenticated_As_Non_Admin_User()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+            var authRequest = new AuthRequest("tester1@test.com", "Password", "Password");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAllUsersAsync_Returns_Unauthorized_When_Not_Authenticated()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteUser_Returns_NotFound_When_User_Deleted_Successfully_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            var userId = Guid.NewGuid();
+
+            // Act
+            var response = await client.DeleteAsync($"/admin/aduser-{userId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteUser_Returns_Forbidden_When_Authenticated_As_Non_Admin_User()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+            var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            var userId = Guid.NewGuid();
+
+            // Act
+            var response = await client.DeleteAsync($"/admin/aduser-{userId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteUser_Returns_Unauthorized_When_Not_Authenticated()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+            var userId = Guid.NewGuid();
+
+            // Act
+            var response = await client.DeleteAsync($"/admin/aduser-{userId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateUser_Returns_Ok_When_User_Updated_Successfully_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+            
+            // Act
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id != admin.Id);
+            var updatedUser = new User()
+            {
+                DisplayName = user!.DisplayName,
+                UserName = "Test",
+                Email = user!.Email,
+                PhoneNumber = user!.PhoneNumber,
+            };
+
+            var response = await client.PutAsJsonAsync($"/admin/aupdate-{user!.Id}", updatedUser);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var updatedUserResponse = await response.Content.ReadFromJsonAsync<User>();
+            Assert.NotNull(updatedUserResponse);
+        }
+
+        [Fact]
+        public async Task UpdateUser_Returns_NotFound_When_Invalid_Data_Provided_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            var userId = Guid.NewGuid();
+            var updatedUser = new User()
+            {
+                Email = null
+            };
+
+            // Act
+            var response = await client.PutAsJsonAsync($"/admin/aupdate-{userId}", updatedUser);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateUser_Returns_BadRequest_When_Invalid_Data_Provided_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            // Act
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id != admin.Id);
+            var updatedUser = new User()
+            {
+                DisplayName = "Support User",
+                UserName = "support user",
+                Email = "supportuser@mycodetest.com",
+                PhoneNumber = "987654321"
+            };
+
+            // Act
+            var response = await client.PutAsJsonAsync($"/admin/aupdate-{user!.Id}", updatedUser);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateCode_Returns_Ok_When_Code_Updated_Successfully_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            var code = _dataContext.CodesDb!.FirstOrDefault();
+            var updatedCode = new Code()
+            {
+                CodeTitle = code!.CodeTitle + '*',
+                MyCode = code.MyCode + '*',
+                WhatKindOfCode = code.WhatKindOfCode + '*',
+                IsBackend = !code.IsBackend,
+                IsVisible = !code.IsVisible,
+            };
+
+            var resultVis = !code.IsVisible;
+            var resultBe = !code.IsBackend;
+
+            // Act
+            var response = await client.PutAsJsonAsync($"/admin/acupdate-{code.Id}", updatedCode);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var updatedCodeResponse = await response.Content.ReadFromJsonAsync<Code>();
+            Assert.NotNull(updatedCodeResponse);
+            Assert.Equal(updatedCodeResponse.IsVisible, resultVis);
+            Assert.Equal(updatedCodeResponse.IsBackend, resultBe);
+            Assert.Contains('*', updatedCodeResponse.CodeTitle!);
+            Assert.Contains('*', updatedCodeResponse.MyCode!);
+            Assert.Contains('*', updatedCodeResponse.WhatKindOfCode!);
         }
     }
 }

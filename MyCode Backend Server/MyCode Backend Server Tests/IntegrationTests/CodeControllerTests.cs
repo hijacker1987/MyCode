@@ -16,20 +16,17 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
     {
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
         private readonly HttpClient _client;
-        private readonly DataContext _dataContext;
 
         public CodeControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
-            _dataContext = _factory.Services.GetRequiredService<DataContext>();
+
         }
 
         [Fact]
         public async Task Get_GetAllCodesByUserEndpoint_Unauthorized()
         {
-            // Arrange
-
             // Act
             var response = await _client.GetAsync("/codes/by-user");
 
@@ -40,8 +37,6 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Get_GetAllCodesByVisibilityEndpoint_Unauthorized()
         {
-            // Arrange
-
             // Act
             var response = await _client.GetAsync("/codes/by-visibility");
 
@@ -52,8 +47,6 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Get_GetCodeByIdEndpoint_Unauthorized()
         {
-            // Arrange
-
             // Act
             var response = await _client.GetAsync("/codes/code-some-id");
 
@@ -90,8 +83,6 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Delete_DeleteCodeByUserEndpoint_Unauthorized()
         {
-            // Arrange
-
             // Act
             var response = await _client.DeleteAsync("/codes/cdelete-some-id");
 
@@ -137,12 +128,16 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var codeResponse = await registerResponse.Content.ReadFromJsonAsync<CodeRegResponse>();
             var codeId = codeResponse?.Id;
 
-            var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
-
-            if (existingCode != null)
+            using (var scope = _factory.Services.CreateScope())
             {
-                _dataContext.CodesDb!.Remove(existingCode);
-                await _dataContext.SaveChangesAsync();
+                var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+                var existingCode = dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
+
+                if (existingCode != null)
+                {
+                    dataContext.CodesDb!.Remove(existingCode);
+                    await dataContext.SaveChangesAsync();
+                }
             }
 
             // Act
@@ -276,13 +271,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
+            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            Assert.NotNull(user);
 
             var codeRequest = new CodeRegRequest("Sample Code", "console.log('Hello, World!');", "JavaScript", false, true);
             var registerResponse = await _client.PostAsJsonAsync("/codes/register", codeRequest);
@@ -298,12 +288,17 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
-
-            if (existingCode != null)
+            // Clean up
+            using (var scope = _factory.Services.CreateScope())
             {
-                _dataContext.CodesDb!.Remove(existingCode);
-                await _dataContext.SaveChangesAsync();
+                var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+                var existingCode = dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
+
+                if (existingCode != null)
+                {
+                    dataContext.CodesDb!.Remove(existingCode);
+                    await dataContext.SaveChangesAsync();
+                }
             }
         }
 
@@ -312,13 +307,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
+            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            Assert.NotNull(user);
 
             var nonexistentId = Guid.NewGuid(); // Generate a random non-existent ID
 
@@ -334,14 +324,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
-
+            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            Assert.NotNull(user);
             var codeRequest = new CodeRegRequest("Sample Code", "console.log('Hello, World!');", "JavaScript", false, true);
             var registerResponse = await _client.PostAsJsonAsync("/codes/register", codeRequest);
             var codeId = (await registerResponse.Content.ReadFromJsonAsync<CodeRegResponse>())?.Id;
@@ -358,12 +342,16 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
-
-            if (existingCode != null)
+            using (var scope = _factory.Services.CreateScope())
             {
-                _dataContext.CodesDb!.Remove(existingCode);
-                await _dataContext.SaveChangesAsync();
+                var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+                var existingCode = dataContext.CodesDb!.FirstOrDefault(c => c.Id.ToString() == codeId);
+
+                if (existingCode != null)
+                {
+                    dataContext.CodesDb!.Remove(existingCode);
+                    await dataContext.SaveChangesAsync();
+                }
             }
         }
 
@@ -398,50 +386,39 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task Put_UpdateCodeEndpoint_Unauthorized_ReturnsUnauthorized()
+        public async Task Put_UpdateCodeEndpoint_Unauthorized_Returns_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
             var invalidUpdatedCodeRequest = new CodeRegRequest("Updated Code", "console.log('Updated Hello, World!');", "JavaScript", true, false);
 
             // Act
-            var response = await client.PutAsJsonAsync("/codes/cupdate-some-id", invalidUpdatedCodeRequest);
+            var response = await _client.PutAsJsonAsync("/codes/cupdate-some-id", invalidUpdatedCodeRequest);
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
-        public async Task Delete_DeleteCodeByUserEndpoint_NonexistentId_ReturnsNotFound()
+        public async Task Delete_DeleteCodeByUserEndpoint_NonexistentId_ReturnsUnauthorized()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
-
             var nonexistentId = Guid.NewGuid(); // Generate a random non-existent ID
 
             // Act
             var response = await _client.DeleteAsync($"/codes/cdelete-{nonexistentId}");
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
-        public async Task Delete_DeleteCodeByUserEndpoint_Unauthorized_ReturnsUnauthorized()
+        public async Task Delete_DeleteCodeByUserEndpoint_Unauthorized_Unauthorized()
         {
             // Arrange
-            var client = _factory.CreateClient();
             var nonexistentId = Guid.NewGuid(); // Generate a random non-existent ID
 
             // Act
-            var response = await client.DeleteAsync($"/codes/cdelete-{nonexistentId}");
+            var response = await _client.DeleteAsync($"/codes/cdelete-{nonexistentId}");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Models.MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 
@@ -127,9 +128,23 @@ namespace MyCode_Backend_Server.Controllers
                 }
 
                 existingUser.DisplayName = updatedUser.DisplayName;
-                existingUser.UserName = updatedUser.UserName;
+                if (updatedUser.UserName != null && !updatedUser.UserName.Contains(' '))
+                {
+                    existingUser.UserName = updatedUser.UserName;
+                }
+                else
+                {
+                    return BadRequest();
+                }
                 existingUser.NormalizedUserName = updatedUser.UserName!.ToUpper();
-                existingUser.Email = updatedUser.Email;
+                if (updatedUser.Email != null && updatedUser.Email.Contains('@'))
+                {
+                    existingUser.Email = updatedUser.Email;
+                }
+                else
+                {
+                    return BadRequest();
+                }
                 existingUser.NormalizedEmail = updatedUser.Email!.ToUpper();
                 existingUser.PhoneNumber = updatedUser.PhoneNumber;
 
