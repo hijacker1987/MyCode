@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace MyCode_Backend_Server_Tests.Controllers
+namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
     public class BotControllerTests
     {
