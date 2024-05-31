@@ -10,7 +10,7 @@ import DeleteActions from "../../../Components/Delete/index";
 import Loading from "../../Loading/index";
 
 import { InputForm, Form, FormRow } from "../../Styles/Forms.styled";
-import { InputWrapper } from "../../Styles/Containers/Wrappers.styled";
+import { InputWrapper, ColumnTextWrapper } from "../../Styles/Containers/Wrappers.styled";
 import { StyledButton } from "../../Styles/Buttons/InternalButtons.styled";
 import { RowButtonWithTopMarginContainer } from "../../Styles/Containers/Containers.styled";
 import { SmallTextContainer, TextContainer } from "../../Styles/Containers/ComplexContainers.styled";
@@ -143,126 +143,134 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
         <>
             {errorMessage === "" ? (
                 <Form onSubmit={onSubmit}>
-                    <FormRow className="control">
-                        <SmallTextContainer>E-mail:</SmallTextContainer>
-                        <InputWrapper>
-                            <InputForm
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                name="email"
-                                id="email"
-                                placeholder="Your E-mail address"
-                                autoComplete="off"
-                            />
-                        </InputWrapper>
-
-                        <SmallTextContainer>Username:</SmallTextContainer>
-                        <InputWrapper>
-                            <InputForm
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                name="username"
-                                id="username"
-                                placeholder="Desired Username"
-                                autoComplete="off"
-                            />
-                        </InputWrapper>
-
-                        <SmallTextContainer>Displayname:</SmallTextContainer>
-                        <InputWrapper>
-                            <InputForm
-                                value={displayname}
-                                onChange={(e) => setDisplayname(e.target.value)}
-                                name="displayname"
-                                id="displayname"
-                                placeholder="Desired Displayname"
-                                autoComplete="off"
-                            />
-                        </InputWrapper>
-
-                        <SmallTextContainer>Phone number:</SmallTextContainer>
-                        <InputWrapper>
-                            <InputForm
-                                value={phoneNumber}
-                                onChange={(e) => setPhone(e.target.value)}
-                                name="phoneNumber"
-                                id="phoneNumber"
-                                placeholder="Add Your Phone Number"
-                                autoComplete="off"
-                            />
-                        </InputWrapper>
-
-                        {isRegistration && (
-                            <>
-                                <SmallTextContainer>Password:</SmallTextContainer>
-                                <InputWrapper>
-                                    <InputForm
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        name="password"
-                                        id="password"
-                                        placeholder="Set a Password"
-                                        autoComplete="off"
-                                        type={showPassword ? "text" : "password"}
-                                    />
-                                    <ButtonToRightContainerWrapper>
-                                        <StyledButton type="button" onClick={() => setShowPassword(!showPassword)}>
-                                            Show Password
-                                        </StyledButton>
-                                    </ButtonToRightContainerWrapper>
-                                </InputWrapper>
-                            </>
-                        )}
-
-                        {user && role === "Admin" && (
-                            <>
-                                <SmallTextContainer>Role:</SmallTextContainer>
-                                <InputWrapper>
-                                    <InputForm
-                                        value={userRole}
-                                        onChange={(e) => setUserRole(e.target.value)}
-                                        name="userrole"
-                                        id="userrole"
-                                        placeholder=""
-                                        autoComplete="on"
-                                        readOnly
-                                    />
-                                    <ButtonToRightContainerWrapper>
-                                        <StyledButton type="button" onClick={() => onRole(user.email)}>
-                                            Change Role
-                                        </StyledButton>
-                                    </ButtonToRightContainerWrapper>
-                                </InputWrapper>
-                            </>
-                        )}
-
-                        {user && role === "User" && (
+                    <FormRow>
+                        <ColumnTextWrapper>
                             <RowButtonWithTopMarginContainer>
-                                <Link to={uPwChange} className="link">
-                                    <StyledButton type="button">Password Change</StyledButton>
-                                </Link>
-                                <Link to={`${u2fa}${user.id}`} className="link">
-                                    <StyledButton type="button">Verification</StyledButton>
-                                </Link>
-                                <StyledButton type="button" onClick={() => handleDelete(user.id)}>
-                                    Delete Account
+                                <SmallTextContainer>E-mail:</SmallTextContainer>
+                                <InputWrapper>
+                                    <InputForm
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        name="email"
+                                        id="email"
+                                        placeholder="Your E-mail address"
+                                        autoComplete="off"
+                                    />
+                                </InputWrapper>
+                            </RowButtonWithTopMarginContainer>
+
+                            <RowButtonWithTopMarginContainer>
+                                <SmallTextContainer>Username:</SmallTextContainer>
+                                <InputWrapper>
+                                    <InputForm
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        name="username"
+                                        id="username"
+                                        placeholder="Desired Username"
+                                        autoComplete="off"
+                                    />
+                                </InputWrapper>
+                            </RowButtonWithTopMarginContainer>
+
+                            <RowButtonWithTopMarginContainer>
+                                <SmallTextContainer>Displayname:</SmallTextContainer>
+                                <InputWrapper>
+                                    <InputForm
+                                        value={displayname}
+                                        onChange={(e) => setDisplayname(e.target.value)}
+                                        name="displayname"
+                                        id="displayname"
+                                        placeholder="Desired Displayname"
+                                        autoComplete="off"
+                                    />
+                                </InputWrapper>
+                            </RowButtonWithTopMarginContainer>
+
+                            <RowButtonWithTopMarginContainer>
+                                <SmallTextContainer>Phone number:</SmallTextContainer>
+                                <InputWrapper>
+                                    <InputForm
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        name="phoneNumber"
+                                        id="phoneNumber"
+                                        placeholder="Add Your Phone Number"
+                                        autoComplete="off"
+                                    />
+                                </InputWrapper>
+                            </RowButtonWithTopMarginContainer>
+
+                            {isRegistration && (
+                                <RowButtonWithTopMarginContainer>
+                                    <SmallTextContainer>Password:</SmallTextContainer>
+                                    <InputWrapper>
+                                        <InputForm
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            name="password"
+                                            id="password"
+                                            placeholder="Set a Password"
+                                            autoComplete="off"
+                                            type={showPassword ? "text" : "password"}
+                                        />
+                                        <ButtonToRightContainerWrapper>
+                                            <StyledButton type="button" onClick={() => setShowPassword(!showPassword)}>
+                                                Show Password
+                                            </StyledButton>
+                                        </ButtonToRightContainerWrapper>
+                                    </InputWrapper>
+                                </RowButtonWithTopMarginContainer>
+                            )}
+
+                            {user && role === "Admin" && (
+                                <RowButtonWithTopMarginContainer>
+                                    <SmallTextContainer>Role:</SmallTextContainer>
+                                    <InputWrapper>
+                                        <InputForm
+                                            value={userRole}
+                                            onChange={(e) => setUserRole(e.target.value)}
+                                            name="userrole"
+                                            id="userrole"
+                                            placeholder=""
+                                            autoComplete="on"
+                                            readOnly
+                                        />
+                                        <ButtonToRightContainerWrapper>
+                                            <StyledButton type="button" onClick={() => onRole(user.email)}>
+                                                Change Role
+                                            </StyledButton>
+                                        </ButtonToRightContainerWrapper>
+                                    </InputWrapper>
+                                </RowButtonWithTopMarginContainer>
+                            )}
+
+                            {user && role === "User" && (
+                                <RowButtonWithTopMarginContainer>
+                                    <Link to={uPwChange} className="link">
+                                        <StyledButton type="button">Password Change</StyledButton>
+                                    </Link>
+                                    <Link to={`${u2fa}${user.id}`} className="link">
+                                        <StyledButton type="button">Verification</StyledButton>
+                                    </Link>
+                                    <StyledButton type="button" onClick={() => handleDelete(user.id)}>
+                                        Delete Account
+                                    </StyledButton>
+                                </RowButtonWithTopMarginContainer>
+                            )}
+
+                            <RowButtonWithTopMarginContainer>
+                                <StyledButton type="submit">
+                                    {user ? "Update User" : "Register"}
+                                </StyledButton>
+                                <StyledButton type="button">
+                                    <Link to={priPol} className="link">Privacy Policy</Link>
+                                </StyledButton>
+                                <StyledButton type="button" onClick={onCancel}>
+                                    Cancel
                                 </StyledButton>
                             </RowButtonWithTopMarginContainer>
-                        )}
-
-                    </FormRow>
-                    <FormRow>
-                        <RowButtonWithTopMarginContainer>
-                            <StyledButton type="submit">
-                                {user ? "Update User" : "Register"}
-                            </StyledButton>
-                            <StyledButton type="button">
-                                <Link to={priPol} className="link">Privacy Policy</Link>
-                            </StyledButton>
-                            <StyledButton type="button" onClick={onCancel}>
-                                Cancel
-                            </StyledButton>
-                        </RowButtonWithTopMarginContainer>
+                        </ColumnTextWrapper>
                     </FormRow>
                 </Form>
             ) : (
