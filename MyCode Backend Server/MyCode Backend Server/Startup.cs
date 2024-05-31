@@ -67,7 +67,7 @@ namespace MyCode_Backend_Server
             services.AddSingleton<IDictionary<string, ChatRooms>>(options => new Dictionary<string, ChatRooms>());
             services.AddScoped<IChatService, ChatService>();
 
-            services.AddScoped<FAQBot>();
+            services.AddScoped<IFAQBot, FAQBot>();
             services.AddScoped<FAQBotData>();
 
             services.AddScoped<DummyData>();

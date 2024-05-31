@@ -11,7 +11,7 @@ import { CodeFormStyle, FormColumn, InputForm } from "../../Styles/Forms.styled"
 import { CodeTextContainer } from "../../Styles/Containers/ComplexContainers.styled";
 import { InputWrapper, ButtonRowWrapper } from "../../Styles/Containers/Wrappers.styled";
 import { AddCodeButtonRowContainer, AddCodeButtonRowButtonContainer, RowButtonContainer } from "../../Styles/Containers/Containers.styled";
-import { EditorRowButtonContainer, EditorLabel, EditorCheckbox, EditorSelect, EditorOption } from "../../Styles/CustomBoxes/Editor.styled";
+import { EditorRowButtonContainer, EditorLabel, EditorCheckbox, EditorSelect, EditorSelectBig, EditorOption } from "../../Styles/CustomBoxes/Editor.styled";
 
 const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
@@ -102,7 +102,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
 
                                 <Heading3>What kind of code:</Heading3>
                                 <InputWrapper>
-                                    <EditorSelect
+                                    <EditorSelectBig
                                         value={whatKindOfCode}
                                         onChange={(e) => setWhatKindOfCode(e.target.value)}
                                         name="codetype"
@@ -112,7 +112,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                             <EditorOption key={option} value={option}>{option}</EditorOption>
                                         ))}
                                         <EditorOption value="Other">Other</EditorOption>
-                                    </EditorSelect>
+                                    </EditorSelectBig>
                                     {whatKindOfCode === "Other" && (
                                         <InputForm
                                             value={otherCodeType}
