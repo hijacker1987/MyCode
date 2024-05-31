@@ -40,6 +40,18 @@ export const EditorSelect = styled.select`
   border-radius: 8px;
 `;
 
+export const EditorSelectBig = styled.select`
+  margin-top: 3px;
+  margin-left: 4px;
+  width: 208px;
+  height: 40px;
+  font-size: 16px;
+  text-align: center;
+  background: black;
+  color: limegreen;
+  border-radius: 8px;
+`;
+
 export const EditorCheckbox = styled.input.attrs({ type: "checkbox" })`
   margin-left: 86px;
   width: 40px;
