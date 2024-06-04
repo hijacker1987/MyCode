@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Contracts.Services;
@@ -212,6 +213,47 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
+        public async Task Delete_DeleteAccountEndpoint_ReturnsOk()
+        {
+            // Pre Register
+                // Arrange
+                var registeredUser = new UserRegRequest("regtest2@test.com", "registeredthroughtest2", "Password", "Test Via Reg For Delete", "123456789");
+
+                var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == "regtest2@test.com");
+                if (existingUser != null)
+                {
+                    _dataContext.Users.Remove(existingUser);
+                    await _dataContext.SaveChangesAsync();
+                }
+
+                // Act
+                var response = await _client.PostAsJsonAsync("/users/register", registeredUser);
+
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var user = await response.Content.ReadFromJsonAsync<UserRegResponse>();
+                Assert.NotNull(user);
+                Assert.Equal("regtest2@test.com", user.Email);
+
+            // Deletion
+            // Arrange
+            var loginData = new AuthRequest("regtest2@test.com", "Password", "Password");
+
+            User loggedInUser = await TestLogin.Login_With_Test_User_Return_User(loginData, _client);
+            var userExists = await _dataContext.Users.AnyAsync(u => u.Id == loggedInUser.Id);
+            Assert.True(userExists, "User does not exist in the database.");
+
+            // Act
+            var delResponse = await _client.DeleteAsync($"/users/delete-{user.Id}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, delResponse.StatusCode);
+
+            userExists = await _dataContext.Users.AnyAsync(u => u.Id == loggedInUser.Id);
+            Assert.False(userExists, "User still exists in the database after deletion.");
+        }
+
+        [Fact]
         public async Task Put_UpdateUserEndpoint_WithInvalidData_ReturnsBadRequest()
         {
             // Arrange
@@ -306,6 +348,32 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                                          NormalizedEmail = existingUser.UserName,
                                          PhoneNumber = rdm.Next(100, 10000).ToString() };
 
+            // Act
+            var response = await _client.PutAsJsonAsync($"/users/user-{user.Id}", updatedUser);
+            await _dataContext.SaveChangesAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_ValidData_WithSupportRole_ReturnsOk()
+        {
+            // Arrange
+            Random rdm = new();
+
+            var authRequest = new AuthRequest("support@test.com", "SupportPassword", "SupportPassword");
+            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+            var updatedUser = new User
+            {
+                DisplayName = existingUser!.DisplayName,
+                UserName = existingUser.UserName,
+                NormalizedUserName = existingUser.UserName,
+                Email = existingUser.Email,
+                NormalizedEmail = existingUser.UserName,
+                PhoneNumber = rdm.Next(100, 10000).ToString()
+            };
 
             // Act
             var response = await _client.PutAsJsonAsync($"/users/user-{user.Id}", updatedUser);
@@ -417,6 +485,218 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             var newPasswordReq = new ChangePassRequest(existingUser!.Email!, "NewPassword", "Password", "Password");
             await _client.PatchAsJsonAsync("/users/changePassword", newPasswordReq);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_SuccessfulChange_ReturnsOk_WithSupportRole()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("support@test.com", "SupportPassword", "SupportPassword");
+            var result = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == result.Id);
+            var newPasswordRequest = new ChangePassRequest(existingUser!.Email!, "SupportPassword", "NewPassword", "NewPassword");
+
+            // Act
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", newPasswordRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var newPasswordReq = new ChangePassRequest(existingUser!.Email!, "NewPassword", "SupportPassword", "SupportPassword");
+            await _client.PatchAsJsonAsync("/users/changePassword", newPasswordReq);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_SuccessfulChange_ReturnsOk_WithAdminRole()
+        {
+            // Arrange
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            var result = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == result.Id);
+            var newPasswordRequest = new ChangePassRequest(existingUser!.Email!, "AdminPassword", "NewPassword", "NewPassword");
+
+            // Act
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", newPasswordRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var newPasswordReq = new ChangePassRequest(existingUser!.Email!, "NewPassword", "AdminPassword", "AdminPassword");
+            await _client.PatchAsJsonAsync("/users/changePassword", newPasswordReq);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_InvalidRequest_ReturnsBadRequest()
+        {
+            // Arrange
+            var invalidUserRegRequest = new UserRegRequest("invalidemail", "", "", "", "");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/users/register", invalidUserRegRequest);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Contains("The Email field is not a valid e-mail address.", responseContent);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_InvalidEmailFormat_ReturnsBadRequest()
+        {
+            var invalidEmailRequest = new UserRegRequest("invalid-email", "username", "Password", "Display Name", "123456789");
+
+            var response = await _client.PostAsJsonAsync("/users/register", invalidEmailRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_ShortPassword_ReturnsBadRequest()
+        {
+            var weakPasswordRequest = new UserRegRequest("user@example.com", "PassW", "123", "Display Name", "123456789");
+
+            var response = await _client.PostAsJsonAsync("/users/register", weakPasswordRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Get_UserEndpoint_Unauthorized_ReturnsUnauthorized()
+        {
+            var response = await _client.GetAsync("/users/getUser");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_Unauthorized_ReturnsUnauthorized()
+        {
+            var updateUserRequest = new User();
+            var id = _dataContext.Users.FirstOrDefault()!.Id;
+
+            var response = await _client.PutAsJsonAsync($"/users/user-{id}", updateUserRequest);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_NonExistingUser_ReturnsNotFound()
+        {
+            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+
+            var updateUserRequest = new User();
+
+            var response = await _client.PutAsJsonAsync($"/users/user-{new Guid()}", updateUserRequest);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_IncorrectCurrentPassword_ReturnsBadRequest()
+        {
+            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+
+            var changePasswordRequest = new ChangePassRequest("tester9@test.com", "IncorrectPassword", "NewPassword", "NewPassword");
+
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", changePasswordRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Delete_DeleteAccountEndpoint_AdminUser_ReturnsForbidden()
+        {
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+
+            var response = await _client.DeleteAsync($"/users/delete-{admin.Id}");
+
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_LoginEndpoint_EmptyPassword_ReturnsBadRequest()
+        {
+            var loginRequest = new AuthRequest("user@example.com", "", "");
+
+            var response = await _client.PostAsJsonAsync("/users/login", loginRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_LoginEndpoint_MissingConfirmPassword_ReturnsBadRequest()
+        {
+            var loginRequest = new AuthRequest("user@example.com", "Password", "");
+
+            var response = await _client.PostAsJsonAsync("/users/login", loginRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Get_UserIdEndpoint_ValidUser_ReturnsUserId()
+        {
+            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+
+            var response = await _client.GetAsync("/users/getUserId");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var userId = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(userId);
+        }
+
+        [Fact]
+        public async Task Get_UserIdEndpoint_ValidSupportUser_ReturnsUserId()
+        {
+            var authRequest = new AuthRequest("support@test.com", "SupportPassword", "SupportPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+
+            var response = await _client.GetAsync("/users/getUserId");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var userId = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(userId);
+        }
+
+        [Fact]
+        public async Task Get_UserIdEndpoint_ValidAdminUser_ReturnsUserId()
+        {
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+
+            var response = await _client.GetAsync("/users/getUserId");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var userId = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(userId);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_Admin_ReturnsMethodNotAllowed()
+        {
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            var loginRequest = new AuthRequest("user@example.com", "", "");
+
+            var response = await _client.PostAsJsonAsync($"/users/user-{admin.Id}", loginRequest);
+
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_UpdateUserEndpoint_Admin_ReturnsForbidden()
+        {
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            var loginRequest = new AuthRequest("user@example.com", "", "");
+
+            var response = await _client.PutAsJsonAsync($"/users/user-{admin.Id}", loginRequest);
+
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
     }
 }
