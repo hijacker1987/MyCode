@@ -277,9 +277,12 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest("User not found!");
                 }
 
-                if (_configuration!["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                if (_environment.IsDevelopment())
                 {
-                    return Unauthorized();
+                    if (_configuration!["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return Unauthorized();
+                    }
                 }
 
                 var result = await _userManager.DeleteAsync(user);
