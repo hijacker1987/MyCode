@@ -1,10 +1,12 @@
 ﻿using System.Net.Mail;
 using System.Net;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyCode_Backend_Server.Service.Email_Sender
 {
     public class EmailSender : IEmailSender
     {
+        [ExcludeFromCodeCoverage]
         public Task SendEmailAsync(string email, string subject, string message)
         {
             var client = new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
