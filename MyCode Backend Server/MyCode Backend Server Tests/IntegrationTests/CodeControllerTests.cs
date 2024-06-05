@@ -16,12 +16,13 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
     {
         private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
         private readonly HttpClient _client;
+        private readonly DataContext _dataContext;
 
         public CodeControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
-
+            _dataContext = _factory.Services.GetRequiredService<DataContext>();
         }
 
         [Fact]
@@ -170,25 +171,21 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task Put_UpdateCodeEndpoint_InvalidRequest_ReturnsBadRequest()
+        public async Task Put_UpdateCodeEndpoint_InvalidRequest_ReturnsUnauthorized()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _factory.CreateClient());
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
+            var authRequest = new AuthRequest("tester1@test.com", "Password", "Password");
+            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _factory.CreateClient());
 
             var invalidUpdatedCode = new CodeRegRequest("", "", "", false, true);
 
+            var code = _dataContext.CodesDb!.FirstOrDefault(c => c.UserId == user.Id);
+
             // Act
-            var response = await _client.PutAsJsonAsync("/codes/cupdate-valid_code_id", invalidUpdatedCode);
+            var response = await _client.PutAsJsonAsync($"/codes/cupdate-{code!.Id}", invalidUpdatedCode);
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -230,7 +227,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetAllCodesByVisibilityEndpoint_Authorized()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
             var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -270,7 +267,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetCodeByIdEndpoint_Authorized_ReturnsOk()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
             var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
             Assert.NotNull(user);
 
@@ -306,7 +303,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_GetCodeByIdEndpoint_NonexistentId_ReturnsNotFound()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
             var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
             Assert.NotNull(user);
 
@@ -323,7 +320,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Put_UpdateCodeEndpoint_Authorized_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
             var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
             Assert.NotNull(user);
             var codeRequest = new CodeRegRequest("Sample Code", "console.log('Hello, World!');", "JavaScript", false, true);
@@ -359,7 +356,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Put_UpdateCodeEndpoint_Authorized_InvalidRequest_ReturnsBadRequest()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
             var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
