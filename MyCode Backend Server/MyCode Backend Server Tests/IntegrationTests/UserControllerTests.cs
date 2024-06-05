@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNet.SignalR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MyCode_Backend_Server.Contracts.Registers;
 using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server_Tests.Services;
-using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.Intrinsics.Arm;
 using Xunit;
 using Assert = Xunit.Assert;
 using User = MyCode_Backend_Server.Models.User;
@@ -60,31 +59,19 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Get_UserEndpoint_AfterLogin_Returns_User()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies, result) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
+            var authRequest = new AuthRequest("tester4@test.com", "Password", "Password");
+            var returnedUser = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
 
             // Act
             var response = await _client.GetAsync("/users/getUser");
 
-            var content = await response.Content.ReadAsStringAsync();
-            var returnedUser = JsonConvert.DeserializeObject<User>(content);
-
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("Successfully logged in", result);
-            Assert.NotEqual("Successfully logged", result);
-            Assert.NotNull(result);
-            Assert.NotNull(content);
-            Assert.Equal("tester9@test.com", returnedUser!.Email);
-            Assert.Equal("TESTER9@TEST.COM", returnedUser!.NormalizedEmail);
-            Assert.Equal("Tester9", returnedUser!.UserName);
-            Assert.Equal("TESTER9", returnedUser!.NormalizedUserName);
+            Assert.NotNull(returnedUser);
+            Assert.Equal("tester4@test.com", returnedUser!.Email);
+            Assert.Equal("TESTER4@TEST.COM", returnedUser!.NormalizedEmail);
+            Assert.Equal("Tester4", returnedUser!.UserName);
+            Assert.Equal("TESTER4", returnedUser!.NormalizedUserName);
             Assert.Equal("123", returnedUser!.PhoneNumber);
         }
 
@@ -110,7 +97,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Post_RegisterUserEndpoint_AfterLogin_InvalidRequest_ReturnsBadRequest()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester4@test.com", "Password", "Password");
             var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -120,7 +107,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             }
 
             // Act
-            var invalidUserRegRequest = new UserRegRequest("tester9@test.com", "Tester9", "Password", "User 13", "123"); //already registered
+            var invalidUserRegRequest = new UserRegRequest("tester4@test.com", "Tester4", "Password", "User 13", "123"); //already registered
             var response = await _client.PostAsJsonAsync("/users/register", invalidUserRegRequest);
 
             // Assert
@@ -251,28 +238,6 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             userExists = await _dataContext.Users.AnyAsync(u => u.Id == loggedInUser.Id);
             Assert.False(userExists, "User still exists in the database after deletion.");
-        }
-
-        [Fact]
-        public async Task Put_UpdateUserEndpoint_WithInvalidData_ReturnsBadRequest()
-        {
-            // Arrange
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
-
-            var invalidUserData = new User { /* invalid or missing data */ };
-
-            // Act
-            var response = await _client.PutAsJsonAsync("/users/user-<valid_user_id>", invalidUserData);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
@@ -411,10 +376,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task Get_UserEndpoint_ExistingUser_ReturnsUser()
+        public async Task Get_UserEndpoint_ExistingUser_ReturnsOK()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester3@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
             var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -582,7 +547,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Put_UpdateUserEndpoint_NonExistingUser_ReturnsNotFound()
         {
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester1@test.com", "Password", "Password");
             await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
 
             var updateUserRequest = new User();
@@ -595,10 +560,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Patch_ChangePasswordEndpoint_IncorrectCurrentPassword_ReturnsBadRequest()
         {
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester1@test.com", "Password", "Password");
             await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
 
-            var changePasswordRequest = new ChangePassRequest("tester9@test.com", "IncorrectPassword", "NewPassword", "NewPassword");
+            var changePasswordRequest = new ChangePassRequest("tester1@test.com", "IncorrectPassword", "NewPassword", "NewPassword");
 
             var response = await _client.PatchAsJsonAsync("/users/changePassword", changePasswordRequest);
 
@@ -639,7 +604,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Get_UserIdEndpoint_ValidUser_ReturnsUserId()
         {
-            var authRequest = new AuthRequest("tester9@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester2@test.com", "Password", "Password");
             await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
 
             var response = await _client.GetAsync("/users/getUserId");
@@ -697,6 +662,98 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var response = await _client.PutAsJsonAsync($"/users/user-{admin.Id}", loginRequest);
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_ValidRequest_ReturnsOk()
+        {
+            var validUserRegRequest = new UserRegRequest("newuser@test.com", "newusername", "Password", "Test User", "123456789");
+
+            var exists = _dataContext.Users.FirstOrDefault(u => u.Email ==  validUserRegRequest.Email);
+
+            var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == "newuser@test.com");
+            if (existingUser != null)
+            {
+                _dataContext.Users.Remove(existingUser);
+                await _dataContext.SaveChangesAsync();
+            }
+
+            var response = await _client.PostAsJsonAsync("/users/register", validUserRegRequest);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var user = await response.Content.ReadFromJsonAsync<UserRegResponse>();
+            Assert.NotNull(user);
+            Assert.Equal("newuser@test.com", user.Email);
+        }
+
+        [Fact]
+        public async Task Patch_ChangePasswordEndpoint_ValidData_ReturnsOk()
+        {
+            var authRequest = new AuthRequest("tester8@test.com", "Password", "Password");
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            var validPasswordChangeRequest = new ChangePassRequest("tester8@test.com", "Password", "NewPassword", "NewPassword");
+
+            var response = await _client.PatchAsJsonAsync("/users/changePassword", validPasswordChangeRequest);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var validPasswordChangeRequestBackRoll = new ChangePassRequest("tester8@test.com", "NewPassword", "Password", "Password");
+
+            var responseBackRoll = await _client.PatchAsJsonAsync("/users/changePassword", validPasswordChangeRequestBackRoll);
+            Assert.Equal(HttpStatusCode.OK, responseBackRoll.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_RegisterUserEndpoint_DuplicateEmail_ReturnsBadRequest()
+        {
+            var duplicateUserRegRequest = new UserRegRequest("tester5@test.com", "duplicateuser", "Password", "Duplicate User", "123456789");
+
+            var response = await _client.PostAsJsonAsync("/users/register", duplicateUserRegRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_LogoutEndpoint_ReturnsOk()
+        {
+            var authRequest = new AuthRequest("tester6@test.com", "Password", "Password");
+            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
+
+            _client.DefaultRequestHeaders.Add("Authorization", authToken);
+            foreach (var cookie in cookies)
+            {
+                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
+            }
+
+            var response = await _client.DeleteAsync("/token/revoke");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Get_UserEndpoint_InvalidToken_ReturnsUnauthorized()
+        {
+            _client.DefaultRequestHeaders.Add("Authorization", "InvalidToken");
+
+            var response = await _client.GetAsync("/users/getUser");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_LoginEndpoint_WrongPassword_ReturnsNotFound()
+        {
+            var wrongPasswordAuthRequest = new AuthRequest("tester10@test.com", "WrongPassword", "WrongPassword");
+
+            var response = await _client.PostAsJsonAsync("/users/login", wrongPasswordAuthRequest);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
