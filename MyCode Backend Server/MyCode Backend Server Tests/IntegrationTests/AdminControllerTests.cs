@@ -10,10 +10,7 @@ using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server.Models.MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Data;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Moq;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
-using System;
+using System.Net.Http.Headers;
 
 namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
@@ -288,7 +285,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task GetAllUsersAsync_Returns_Forbidden_When_Authenticated_As_Non_Admin_User()
+        public async Task GetAllUsersAsync_Returns_Forbidden_When_Authenticated_As_Non_Admin_User_UserRole()
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -303,6 +300,24 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Assert
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAllUsersAsync_Returns_Ok_When_Authenticated_As_Non_Admin_User_SupportRole()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+            var authRequest = new AuthRequest("support@test.com", "SupportPassword", "SupportPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -499,6 +514,104 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.Contains('*', updatedCodeResponse.CodeTitle!);
             Assert.Contains('*', updatedCodeResponse.MyCode!);
             Assert.Contains('*', updatedCodeResponse.WhatKindOfCode!);
+        }
+
+        [Fact]
+        public async Task UpdateUser_With_Invalid_Data_Returns_Unauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var userId = Guid.NewGuid();
+            var updatedUser = new User()
+            {
+                Email = null // Invalid email format
+            };
+
+            // Act
+            var response = await client.PutAsJsonAsync($"/admin/aupdate-{userId}", updatedUser);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAllUsersAsync_Returns_Unauthorized_When_No_Users_In_Database()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Token_Expired_Returns_Unauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            // Simulate an expired token
+            var expiredToken = "ExpiredToken";
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", expiredToken);
+
+            // Act
+            var response = await client.GetAsync("/admin/getUsers");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAllCodes_Returns_OK_With_Codes_When_Authenticated_As_Admin()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+            var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+
+            // Act
+            var response = await client.GetAsync("/admin/getCodes");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var codes = await response.Content.ReadFromJsonAsync<List<Code>>();
+            Assert.NotNull(codes);
+            Assert.NotEmpty(codes);
+        }
+
+        [Fact]
+        public async Task UpdateCode_Returns_Unauthorized_When_Not_Authenticated()
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            var codeId = Guid.NewGuid();
+            var updatedCode = new Code();
+
+            // Act
+            var response = await client.PutAsJsonAsync($"/admin/acupdate-{codeId}", updatedCode);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 }
