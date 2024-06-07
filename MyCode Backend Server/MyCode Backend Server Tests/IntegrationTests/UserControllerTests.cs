@@ -6,7 +6,6 @@ using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server_Tests.Services;
 using System.Net;
 using System.Net.Http.Json;
-using System.Runtime.Intrinsics.Arm;
 using Xunit;
 using Assert = Xunit.Assert;
 using User = MyCode_Backend_Server.Models.User;
@@ -265,6 +264,22 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Delete_DeleteAccountEndpoint_WithInvalidData_ReturnsBadRequest()
         {
+            //Pre register
+                // Arrange
+                var registeredUser = new UserRegRequest("regtest@test.com", "registeredthroughtest", "Password", "Test Via Reg", "123456789");
+
+                var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == "regtest@test.com");
+                if (existingUser != null)
+                {
+                    _dataContext.Users.Remove(existingUser);
+                    await _dataContext.SaveChangesAsync();
+                }
+
+                // Act
+                var regResponse = await _client.PostAsJsonAsync("/users/register", registeredUser);
+
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, regResponse.StatusCode);
             // Arrange
             var authRequest = new AuthRequest("regtest@test.com", "Password", "Password");
             var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
