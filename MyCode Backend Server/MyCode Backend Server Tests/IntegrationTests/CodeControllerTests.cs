@@ -115,14 +115,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Post_CreateCodeEndpoint_ValidRequest_ReturnsCreated()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
 
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
             var codeRequest = new CodeRegRequest("Sample Code", "console.log('Hello, World!');", "JavaScript", false, true);
 
             var registerResponse = await _client.PostAsJsonAsync("/codes/register", codeRequest);
