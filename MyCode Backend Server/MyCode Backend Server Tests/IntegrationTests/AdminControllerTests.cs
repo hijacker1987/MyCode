@@ -514,6 +514,27 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.Contains('*', updatedCodeResponse.CodeTitle!);
             Assert.Contains('*', updatedCodeResponse.MyCode!);
             Assert.Contains('*', updatedCodeResponse.WhatKindOfCode!);
+
+            var backdatedCode = new Code()
+            {
+                CodeTitle = code!.CodeTitle,
+                MyCode = code.MyCode,
+                WhatKindOfCode = code.WhatKindOfCode,
+                IsBackend = !code.IsBackend,
+                IsVisible = !code.IsVisible,
+            };
+
+            var response2 = await client.PutAsJsonAsync($"/admin/acupdate-{code.Id}", backdatedCode);
+
+            // Assert
+            response2.EnsureSuccessStatusCode();
+            var backupdatedCodeResponse = await response2.Content.ReadFromJsonAsync<Code>();
+            Assert.NotNull(backupdatedCodeResponse);
+            Assert.Equal(backupdatedCodeResponse.IsVisible, resultVis);
+            Assert.Equal(backupdatedCodeResponse.IsBackend, resultBe);
+            Assert.DoesNotContain('*', backupdatedCodeResponse.CodeTitle!);
+            Assert.DoesNotContain('*', backupdatedCodeResponse.MyCode!);
+            Assert.DoesNotContain('*', backupdatedCodeResponse.WhatKindOfCode!);
         }
 
         [Fact]
