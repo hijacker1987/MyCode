@@ -19,7 +19,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly IEmailSender _emailSender = emailSender;
         private readonly ILogger<TokenController> _logger = logger;
 
-        [HttpGet("basicsTwoFactor"), Authorize(Roles = "Admin, User")]
+        [HttpGet("basicsTwoFactor"), Authorize(Roles = "Admin, Support, User")]
         public ActionResult BasicsTwoFactor(string userId)
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
@@ -46,7 +46,7 @@ namespace MyCode_Backend_Server.Controllers
             return CreatedAtAction("BasicsTwoFactor", basicInfo);
         }
 
-        [HttpPost("enableTwoFactor"), Authorize(Roles = "Admin, User")]
+        [HttpPost("enableTwoFactor"), Authorize(Roles = "Admin, Support, User")]
         public async Task<ActionResult> EnableTwoFactor([FromBody] string userId)
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
@@ -88,7 +88,7 @@ namespace MyCode_Backend_Server.Controllers
             return Ok();
         }
 
-        [HttpPost("verifyTwoFactor"), Authorize(Roles = "Admin, User")]
+        [HttpPost("verifyTwoFactor"), Authorize(Roles = "Admin, Support, User")]
         public async Task<ActionResult> VerifyTwoFactor([FromBody] VerifyModel request)
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
@@ -135,7 +135,7 @@ namespace MyCode_Backend_Server.Controllers
             return Ok();
         }
 
-        [HttpPost("disableTwoFactor"), Authorize(Roles = "Admin, User")]
+        [HttpPost("disableTwoFactor"), Authorize(Roles = "Admin, Support, User")]
         public async Task<ActionResult> DisableTwoFactor([FromBody] string userId)
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
