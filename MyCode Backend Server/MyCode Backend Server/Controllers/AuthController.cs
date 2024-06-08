@@ -6,9 +6,11 @@ using MyCode_Backend_Server.Data;
 using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Email_Sender;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyCode_Backend_Server.Controllers
 {
+    [ExcludeFromCodeCoverage]
     [ApiController]
     [Route("/auth")]
     public class AuthController(UserManager<User> userManager, DataContext dataContext, ITokenService tokenService, IEmailSender emailSender, ILogger<TokenController> logger) : Controller
