@@ -187,7 +187,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Delete_DeleteCodeByUserEndpoint_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var authRequest = new AuthRequest("tester10@test.com", "Password", "Password");
+            var authRequest = new AuthRequest("tester5@test.com", "Password", "Password");
             var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _factory.CreateClient());
 
             _client.DefaultRequestHeaders.Add("Authorization", authToken);
