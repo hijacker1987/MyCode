@@ -104,6 +104,34 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         }
 
         [Fact]
+        public async Task GetAnyArchived_WithValidRequestToo_ReturnsNotFound()
+        {
+            // Arrange
+            var (client, user) = await GetClientWithAuth("Admin");
+
+            // Act
+            var response = await client.GetAsync("/ws/message/getAnyArchived");
+
+            // Assert
+            Assert.NotNull(user);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetArchived_WithValidRequest_ReturnsNotFound()
+        {
+            // Arrange
+            var (client, user) = await GetClientWithAuth("Admin");
+
+            // Act
+            var response = await client.GetAsync($"/ws/message/getArchived-{user.Id}");
+
+            // Assert
+            Assert.NotNull(user);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
         public async Task GetOwnArchived_WithValidRequest_ReturnsNotFound()
         {
             // Arrange
@@ -160,6 +188,158 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             // Assert
             Assert.NotNull(user);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Create_WithEmptyMessage_ReturnsUnauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var emptyMessage = new SupportChat { UserId = Guid.NewGuid(), Text = "" };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/ws/message", emptyMessage);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Create_WithEmptyMessage_ReturnsOK()
+        {
+            // Arrange
+            var (client, user) = await GetClientWithAuth("Admin");
+            var id = user.Id;
+            var emptyMessage = new SupportChat { UserId = id, Text = "" };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/ws/message", emptyMessage);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetActiveById_WithInvalidId_ReturnsBadRequest()
+        {
+            // Arrange
+            var (client, _) = await GetClientWithAuth("Admin");
+            var invalidId = "invalid_id";
+
+            // Act
+            var response = await client.GetAsync($"/ws/message/getActive-{invalidId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetActiveById_WithValidId_ReturnsNotFound()
+        {
+            // Arrange
+            var (client, user) = await GetClientWithAuth("Admin");
+            var validId = user.Id;
+
+            // Act
+            var response = await client.GetAsync($"/ws/message/getActive-{validId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetActiveById_WithInvalidId_ReturnsUnauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var invalidId = "invalid_id";
+
+            // Act
+            var response = await client.GetAsync($"/ws/message/getActive-{invalidId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DropBackActiveToSupportById_WithNonexistentId_ReturnsNotFound()
+        {
+            // Arrange
+            var (client, _) = await GetClientWithAuth("Admin");
+            var nonexistentId = Guid.NewGuid();
+
+            // Act
+            var response = await client.PutAsync($"/ws/message/uActive-{nonexistentId}", null);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DropBackActiveToSupportById_WithNonexistentId_ReturnsUnauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var nonexistentId = Guid.NewGuid();
+
+            // Act
+            var response = await client.PutAsync($"/ws/message/uActive-{nonexistentId}", null);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetRoom_WithoutLogin_ReturnsUnauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/ws/message/get-room");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+
+        [Fact]
+        public async Task GetRoom_WithUserRole_ReturnsForbidden()
+        {
+            // Arrange
+            var (client, _) = await GetClientWithAuth("User");
+
+            // Act
+            var response = await client.GetAsync("/ws/message/get-room");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetRoom_WithAdminRole_ReturnsMethodNotAllowed()
+        {
+            // Arrange
+            var (client, _) = await GetClientWithAuth("Admin");
+
+            // Act
+            var response = await client.PutAsync("/ws/message/get-room", null);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetRoom_WithAdminRole_ReturnsOK()
+        {
+            // Arrange
+            var (client, _) = await GetClientWithAuth("Admin");
+
+            // Act
+            var response = await client.GetAsync("/ws/message/get-room");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
