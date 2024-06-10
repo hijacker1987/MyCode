@@ -5,12 +5,16 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Data
 {
-    public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
+    public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
-        public DbSet<Code>? CodesDb { get; set; }
-        public DbSet<Mfa>? MFADb { get; set; }
-        public DbSet<BotModel>? BotDb { get; set; }
-        public DbSet<SupportChat>? SupportDb { get; set; }
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+        public DataContext() : base(new DbContextOptionsBuilder<DataContext>().Options) { }
+
+        public virtual DbSet<Code>? CodesDb { get; set; }
+        public virtual DbSet<Mfa>? MFADb { get; set; }
+        public virtual DbSet<BotModel>? BotDb { get; set; }
+        public virtual DbSet<SupportChat>? SupportDb { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
