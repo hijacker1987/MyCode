@@ -111,8 +111,13 @@ The `appsettings.json` file should contain the address for the "live" test datab
   "AccessTokenExp": 10,
   "RefreshTokenExp": 2,
 
-  // "Live" database for test purposes
-  "TestConnectionString": "YourTestDatabaseConnection"
+    // "Live" database for test purposes
+  "ConnectionStrings": {
+    "TestConnectionString": "YourConnectionToYourLiveTestDatabase;"
+  },
+  "IssueSign": "V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1tsF0rT3st1ng",
+  "ValidAudience": "api With Test Authentication comes and goes here",
+  "ValidIssuer": "api With Test Authentication comes and goes here"
 }
 ```
 
