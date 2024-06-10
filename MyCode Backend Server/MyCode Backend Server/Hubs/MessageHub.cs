@@ -34,7 +34,19 @@ namespace MyCode_Backend_Server.Hubs
             try
             {
                 var currentUser = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userConnection.User);
+                if (currentUser == null)
+                {
+                    _logger.LogError("Unable to find user with the provided ID.");
+                    return new StatusCodeResult(404);
+                }
+
                 var userRole = await _authService.GetRoleStatusByIdAsync(currentUser!.Id.ToString());
+                if (userRole == null)
+                {
+                    _logger.LogError("Unable to find role with the provided user ID.");
+                    return new StatusCodeResult(404);
+                }
+
                 string sendMessage = userRole == "User" ? "Your connection to the Support established!" : "Your connection to the User established!";
 
                 if (userRole == "User")
@@ -105,24 +117,27 @@ namespace MyCode_Backend_Server.Hubs
                                                    .Where(msg => msg.UserId.ToString() == room.ChatRoom && msg.IsActive)
                                                    .ToListAsync();
 
-            foreach (var msg in messagesInRoom) { msg.IsActive = false; }
-            await _dataContext.SaveChangesAsync();
-
-            var remainingParticipants = await _dataContext.SupportDb!
-                                                          .Where(msg => msg.UserId.ToString() == room.ChatRoom && msg.IsActive)
-                                                          .Select(msg => msg.UserId.ToString())
-                                                          .Distinct()
-                                                          .CountAsync();
-
-            if (remainingParticipants == 0)
+            if (messagesInRoom.Count > 0)
             {
-                await Clients.Group(room.ChatRoom!.ToLower()).SendAsync("ConnectedUser", new Dictionary<string, string>());
-                _connections.Remove(Context.ConnectionId);
+                foreach (var msg in messagesInRoom) { msg.IsActive = false; }
+                await _dataContext.SaveChangesAsync();
 
-                return new StatusCodeResult(200);
+                var remainingParticipants = await _dataContext.SupportDb!
+                                                              .Where(msg => msg.UserId.ToString() == room.ChatRoom && msg.IsActive)
+                                                              .Select(msg => msg.UserId.ToString())
+                                                              .Distinct()
+                                                              .CountAsync();
+
+                if (remainingParticipants == 0)
+                {
+                    await Clients.Group(room.ChatRoom!.ToLower()).SendAsync("ConnectedUser", new Dictionary<string, string>());
+                    _connections.Remove(Context.ConnectionId);
+
+                    return new StatusCodeResult(200);
+                }
             }
 
-            return new StatusCodeResult(409);
+            return new StatusCodeResult(200);
         }
 
         private Task SendConnectedUser(string room)
@@ -140,7 +155,19 @@ namespace MyCode_Backend_Server.Hubs
 
         public async Task SendMessage(ChatMessageRequest request)
         {
-            if (_connections.TryGetValue(Context.ConnectionId, out ChatRooms? roomConnection))
+            if (request == null)
+            {
+                _logger.LogError("Request is null!");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(request.UserId))
+            {
+                _logger.LogError("No ID attached to the request.");
+                return;
+            }
+
+            if (Context.ConnectionId != null && _connections.TryGetValue(Context.ConnectionId, out ChatRooms? roomConnection))
             {
                 if (await _authService.GetRoleStatusByIdAsync(request.UserId) == "User")
                 {
@@ -172,6 +199,11 @@ namespace MyCode_Backend_Server.Hubs
                 await _dataContext.SaveChangesAsync();
 
                 var user = await _authService.TryGetUserById(request.UserId);
+                if (user == null)
+                {
+                    _logger.LogError("Unable to find user with the provided ID.");
+                    return;
+                }
 
                 await Clients.Group(roomConnection.ChatRoom!).SendAsync("ReceiveMessage", user!.DisplayName, request.Message, DateTime.Now);
             }
