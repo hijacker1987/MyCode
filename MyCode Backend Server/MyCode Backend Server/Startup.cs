@@ -82,7 +82,7 @@ namespace MyCode_Backend_Server
             }
 
             var connection = _configuration["ConnectionString"];
-            var testConnection = _configuration["TestConnectionString"];
+            var testConnection = _configuration["ConnectionStrings:TestConnectionString"];
 
             services.AddDbContext<DataContext>(options =>
             {

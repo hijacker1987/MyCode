@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using MyCode_Backend_Server.Models;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using AspNet.Security.OAuth.GitHub;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyCode_Backend_Server.Controllers
 {
@@ -18,6 +19,7 @@ namespace MyCode_Backend_Server.Controllers
         private readonly IAuthService _authenticationService = authService;
         private readonly UserManager<User> _userManager = userManager;
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("google-login")]
         public async Task GoogleLogin() => await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
@@ -32,6 +34,7 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalLoginHelper(result, "Google user") : BadRequest("Authentication failed");
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("facebook-login")]
         public async Task FacebookLogin() => await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme,
@@ -46,6 +49,7 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalLoginHelper(result, "Facebook user") : BadRequest("Authentication failed");
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("github-login")]
         public async Task GitHubLogin() => await HttpContext.ChallengeAsync(GitHubAuthenticationDefaults.AuthenticationScheme,
@@ -60,6 +64,7 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalLoginHelper(result, "GitHub user") : BadRequest("Authentication failed");
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("google-addon")]
         public async Task GoogleAddon(string attachment)
@@ -70,6 +75,7 @@ namespace MyCode_Backend_Server.Controllers
                 new AuthenticationProperties { RedirectUri = Url.Action(nameof(GoogleResponse2)) });
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("google-response2")]
         public async Task<IActionResult> GoogleResponse2()
@@ -81,6 +87,7 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalAddonHelper(result, attachment!) : BadRequest("Addon failed");
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("facebook-addon")]
         public async Task FacebookAddon(string attachment)
@@ -91,6 +98,7 @@ namespace MyCode_Backend_Server.Controllers
                 new AuthenticationProperties { RedirectUri = Url.Action(nameof(FacebookResponse2)) });
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("facebook-response2")]
         public async Task<IActionResult> FacebookResponse2()
@@ -102,6 +110,7 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalAddonHelper(result, attachment!) : BadRequest("Addon failed");
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("github-addon")]
         public async Task GitHubAddon(string attachment)
@@ -112,6 +121,7 @@ namespace MyCode_Backend_Server.Controllers
                 new AuthenticationProperties { RedirectUri = Url.Action(nameof(GitHubResponse2)) });
         }
 
+        [ExcludeFromCodeCoverage]
         [AllowAnonymous]
         [HttpGet("github-response2")]
         public async Task<IActionResult> GitHubResponse2()
@@ -123,6 +133,7 @@ namespace MyCode_Backend_Server.Controllers
             return result?.Principal != null ? await ExternalAddonHelper(result, attachment!) : BadRequest("Addon failed");
         }
 
+        [ExcludeFromCodeCoverage]
         private async Task<IActionResult> ExternalAddonHelper(AuthenticateResult result, string attachment)
         {
             var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new
@@ -176,6 +187,7 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
+        [ExcludeFromCodeCoverage]
         private async Task<IActionResult> ExternalLoginHelper(AuthenticateResult result, string externalUse)
         {
             var claims = result.Principal!.Identities.FirstOrDefault()!.Claims.Select(claim => new

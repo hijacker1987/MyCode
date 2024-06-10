@@ -9,6 +9,7 @@ using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Email_Sender;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
@@ -277,9 +278,12 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest("User not found!");
                 }
 
-                if (_configuration!["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                if (_environment.IsDevelopment())
                 {
-                    return Unauthorized();
+                    if (_configuration!["AEmail"]!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return Unauthorized();
+                    }
                 }
 
                 var result = await _userManager.DeleteAsync(user);

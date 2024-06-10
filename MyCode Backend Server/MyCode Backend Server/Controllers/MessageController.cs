@@ -40,41 +40,55 @@ namespace MyCode_Backend_Server.Controllers
         [HttpGet("get-room"), Authorize(Roles = "Support, Admin")]
         public IActionResult GetRoom()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId == null)
+            try
             {
-                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
-                return BadRequest("No 'NameIdentifier' claim found.");
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
+                {
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var activeUserIds = _dataContext.SupportDb!
+                                                .Where(u => u.IsActive && u.With == new Guid(userId!) || u.IsActive && u.With == Guid.Empty)
+                                                .Select(u => u.UserId.ToString())
+                                                .Distinct()
+                                                .ToList();
+
+                return Ok(activeUserIds);
             }
-
-            var activeUserIds = _dataContext.SupportDb!
-                                            .Where(u => u.IsActive && u.With == new Guid(userId!) || u.IsActive && u.With == Guid.Empty)
-                                            .Select(u => u.UserId.ToString())
-                                            .Distinct()
-                                            .ToList();
-
-            return Ok(activeUserIds);
+            catch (Exception e)
+            {
+                return StatusCode(500, new { ErrorMessage = "Error occurred while getting room!", ExceptionDetails = e.ToString() });
+            }
         }
 
         [HttpGet("get-active-room"), Authorize(Roles = "Admin")]
         public IActionResult GetActiveRoom()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId == null)
+            try
             {
-                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
-                return BadRequest("No 'NameIdentifier' claim found.");
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
+                {
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var activeUserIds = _dataContext.SupportDb!
+                                                .Where(u => u.IsActive && u.With == new Guid(userId!) || u.IsActive && u.With != Guid.Empty)
+                                                .Select(u => u.UserId.ToString())
+                                                .Distinct()
+                                                .ToList();
+
+                return Ok(activeUserIds);
             }
-
-            var activeUserIds = _dataContext.SupportDb!
-                                            .Where(u => u.IsActive && u.With == new Guid(userId!) || u.IsActive && u.With != Guid.Empty)
-                                            .Select(u => u.UserId.ToString())
-                                            .Distinct()
-                                            .ToList();
-
-            return Ok(activeUserIds);
+            catch (Exception e)
+            {
+                return StatusCode(500, new { ErrorMessage = "Error occurred while getting active room!", ExceptionDetails = e.ToString() });
+            }
         }
 
         [HttpGet("getAnyArchived"), Authorize(Roles = "Admin, Support, User")]
