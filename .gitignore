@@ -91,3 +91,4 @@ dkms.conf
 /MyCode Backend Server/MyCode Backend Server/Certs/MyCode Backend Server.pfx
 /mycodereactserver/certs/mycodereactserver.key
 /mycodereactserver/certs/mycodereactserver.pem
+/MyCode Backend Server/obj/Debug
