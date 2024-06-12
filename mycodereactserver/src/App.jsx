@@ -8,7 +8,7 @@ import { UserProvider } from "./Services/UserContext";
 import { uLogin, uReg, uUpdateOwn, uUpdate, uPwChange, u2fa,
          cReg, cUpdateOwn, cUpdate, cOwn, cOthers, uList, cList,
          errorOccured, homePage, accDel, priPol
-        } from "../src/Services/Frontend.Endpoints";
+        } from "./Services/Frontend.Endpoints";
 import { UsersList, CodesList } from "./Pages/Lists/index";
 import Layout from "./Pages/Layout/index";
 import Homepage from "./Components/Homepage";
