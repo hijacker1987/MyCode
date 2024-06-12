@@ -81,3 +81,14 @@ dkms.conf
 /MyCode Backend Server/MyCode Backend Server/Migrations/20240226132650_InitialCreate.cs
 /MyCode Backend Server/MyCode Backend Server/Migrations/20240226132650_InitialCreate.Designer.cs
 /MyCode Backend Server/MyCode Backend Server/Migrations
+/MyCode Backend Server/vars.env
+/MyCode Backend Server/vars.env
+/MyCode Backend Server/obj/Docker
+/MyCode Backend Server/.env
+/MyCode Backend Server/MyCode Backend Server/.env
+/MyCode Backend Server/MyCode Backend Server/.env
+/MyCode Backend Server/bin/Debug
+/MyCode Backend Server/MyCode Backend Server/Certs/MyCode Backend Server.pfx
+/mycodereactserver/certs/mycodereactserver.key
+/mycodereactserver/certs/mycodereactserver.pem
+/MyCode Backend Server/obj/Debug

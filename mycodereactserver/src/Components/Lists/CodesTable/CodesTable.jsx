@@ -6,7 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import { useUser } from "../../../Services/UserContext";
 import { codeTypeOptions } from "../../../Pages/Services/CodeLanguages";
 import { Notify, handleEditorDidMount, copyContentToClipboard, toggleFullscreen, changeFontSize, changeTheme } from "./../../../Pages/Services";
-import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.endpoints";
+import { cList, cOwn, cOthers, cUpdate } from "../../../Services/Frontend.Endpoints";
 import { deleteCode, deleteSuperCode } from "../../../Services/Backend.Endpoints";
 import ConstructPagination from "../../Forms/PaginationForm/index";
 import DeleteActions from "../../Delete/index";

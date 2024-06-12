@@ -4,10 +4,8 @@ using MyCode_Backend_Server.Models;
 
 namespace MyCode_Backend_Server.Data
 {
-     public class DbInitializer(IConfiguration configuration) : IDbInitializer
+     public class DbInitializer : IDbInitializer
      {
-        private readonly IConfiguration _configuration = configuration;
-
         public async Task Initialize(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager, FAQBotData fAQBotData, DummyData dummyData)
         {
             context.Database.EnsureCreated();
@@ -19,11 +17,11 @@ namespace MyCode_Backend_Server.Data
                 await CreateRole(roleManager, role);
             }
 
-            var pass = _configuration["APass"];
-            var mail = _configuration["AEmail"];
-            var phone = _configuration["ACall"];
-            var uName = _configuration["UName"];
-            var dName = _configuration["AName"];
+            var pass = Environment.GetEnvironmentVariable("APass");
+            var mail = Environment.GetEnvironmentVariable("AEmail");
+            var phone = Environment.GetEnvironmentVariable("ACall");
+            var uName = Environment.GetEnvironmentVariable("UName");
+            var dName = Environment.GetEnvironmentVariable("AName");
 
             var adminInDbExist = await userManager.FindByEmailAsync(mail!);
 
@@ -43,7 +41,7 @@ namespace MyCode_Backend_Server.Data
                 await fAQBotData.InitializeFAQBBotDataAsync(context);
             }
 
-            if (_configuration["InitDb"] == "False" || context.Users.Any(u => u.Email == "user1@example.com"))
+            if (Environment.GetEnvironmentVariable("InitDb") == "False" || context.Users.Any(u => u.Email == "user1@example.com"))
             {
                 context.SaveChanges();
 

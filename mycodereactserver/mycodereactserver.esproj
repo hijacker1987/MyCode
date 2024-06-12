@@ -4,6 +4,7 @@
     <JavaScriptTestRoot>src\</JavaScriptTestRoot>
     <JavaScriptTestFramework>Jest</JavaScriptTestFramework>
     <!-- Allows the build (or compile) script located on package.json to run on Build -->
+	<Docker>false</Docker>
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
     <PublishAssetsDirectory>$(MSBuildProjectDirectory)\dist</PublishAssetsDirectory>
@@ -15,5 +16,11 @@
     <Folder Include="src\Components\Lists\UsersTable\" />
     <Folder Include="src\Components\Styles\Loading\" />
     <Folder Include="src\Components\Styles\CustomBoxes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\MyCode Backend Server\.dockerignore">
+      <DependentUpon>$(DockerDefaultDockerfile)</DependentUpon>
+      <Link>.dockerignore</Link>
+    </None>
   </ItemGroup>
 </Project>

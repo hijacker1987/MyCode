@@ -1,0 +1,71 @@
+services:
+  mycodebackendserver:
+    image: ${DOCKER_REGISTRY-}mycodebackendserver
+    build:
+      context: .
+      dockerfile: MyCode Backend Server/Dockerfile
+    container_name: backend
+    ports:
+      - "7001:8081"
+      - "8082:443"
+    depends_on:
+      - mssql1
+      - mssql2
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ConnectionString: "Server=mssqllive,1433;Database=mycodes-sql-server;User Id=sa;Password=${MSSQL1_PASSWORD};Encrypt=False;"
+      TestConnectionString: "Server=mssqltest,1434;Database=mycode-testdatabase;User Id=sa;Password=${MSSQL2_PASSWORD};Encrypt=False;"
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      NUGET_FALLBACK_PACKAGES: /.nuget/fallbackpackages
+    env_file:
+      - .env
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ./../mycodereactserver
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:3000"
+    environment:
+      - VITE_FRONTEND_URL=${FE_URL}
+      - VITE_FRONTEND_PORT=${FE_PORT}
+      - VITE_BACKEND_URL=${BE_URL}
+      - VITE_BACKEND_PORT=${BE_PORT}
+      - DOCKER=true
+    env_file:
+      - .env
+    depends_on:
+      - mycodebackendserver
+    networks:
+      - frontend
+
+  mssql1:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssqllive
+    environment:
+      SA_PASSWORD: ${MSSQL1_PASSWORD}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - backend
+
+  mssql2:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssqltest
+    environment:
+      SA_PASSWORD: ${MSSQL2_PASSWORD}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    networks:
+      - backend
+
+networks:
+  backend:
+  frontend:

@@ -5,9 +5,9 @@ import Modal from "react-bootstrap/Modal";
 import { useUser } from "../../Services/UserContext";
 import { getApi, putStatApi } from "../../Services/Api";
 import { backendUrl } from "../../Services/Config";
-import { getActive, getAnyArc, getOwn, getRoom, getActRoom, dropBack } from "../../Services/Backend.endpoints";
+import { getActive, getAnyArc, getOwn, getRoom, getActRoom, dropBack } from "../../Services/Backend.Endpoints";
 import { formatElapsedTime, formattedTime } from "../../Services/ElapsedTime";
-import { Notify } from "./../../Pages/Services/Index";
+import { Notify } from "./../../Pages/Services/index";
 
 import { BlurredOverlayWrapper } from "../../Components/Styles/Containers/Wrappers.styled";
 import { StyledTr, StyledTd, RowSpacer } from "../../Components/Styles/CustomBoxes/Table.styled";
