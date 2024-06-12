@@ -5,11 +5,12 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
 ## Project Status
 
 **ONGOING Project!**
+*Docker Compose under construction*
 
 ## Backend Installation Instructions
   - Install the .NET SDK 8.0.300 (.NET 8.0.5)
   - Install dependencies.
-  - Set up the database connections, and other needs through the `secrets.json`, and `appsettings.json` files.
+  - Set up the database connections, and other needs through the `.env`, and `appsettings.json` files.
      
 ## About the Application
   - Register than log in to add your favorite code snippets.
@@ -38,8 +39,8 @@ The frontend is powered by React using VITE to provide a fast and an interactive
   - Easter eggs
   
 ## Security
-The application implements secure practices such as JWT token, refresh token and hashed password storage, password confirmation, currently running dockerized MSSQL databases,
-and sensitive data is stored in the `secrets.json`, `appsettings.json` and `.env` files.
+The application implements secure practices such as JWT token, refresh token and hashed password storage, password confirmation, currently running two dockerized MSSQL databases (one for proper testing),
+and sensitive data is stored in the `appsettings.json` and `.env` files.
 
 ## Configuration
 On the frontend side, sensitive data is stored in the `.env` file. To set up the application, create a `.env` file in the root directory and populate it with the following keys and values:
@@ -58,38 +59,56 @@ On the backend side, sensitive data is stored in the `secrets.json` file. To set
 
   - Database can be initialized, the basic setup contains dummy data (1 admin, 30 users, and about 80 codes being generated)
   - Test database will be initialized when You run tests, the basic setup contains dummy data (1 admin, 10 users, and about 80 codes being generated)
+   
+In the outer backend server folder with examples:
+```env
+# Required for Compose
+MSSQL1_PASSWORD=yourStrong(!)Password
+MSSQL2_PASSWORD=anotherStrong(!)Password
+FE_URL=https://localhost
+FE_PORT=5173
+BE_URL=https://localhost
+BE_PORT=7001
+# Required for Backend Server
+UName=MainAdmin
+ASPNETCORE_Kestrel_Certificates_Default_Password=guid
+ASPNETCORE_Kestrel__Certificates__Default__Path=toYourCertfile.pfx
+IssueSign=V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1ts
+IssueAudience=api With Authentication comes and goes here
+# If You need dummy data ->
+InitDb=True
+GoogleClientSecret=placeHere
+GoogleClientId=placeHere
+GitHubClientSecret=placeHere
+GitHubClientId=placeHere
+FacebookClientSecret=placeHere
+FacebookClientId=placeHere
+ConnectionString=Server=name,1433;Database=sql-server;User Id=sa;Password=somethingStrong;Encrypt=False;
+APass=AdminWithReallyStrongPassword
+AName=Super Admin
+AEmail=admin@sadmin.com
+ACall=12-34/567-8910
+```
 
-```json
-{
-  // Database Initialization <- change to false to avoid having dummy data
-  "InitDb": true,
-
-  // Database Connection
-  "ConnectionString": "YourDatabaseConnectionString",
-  
-  // Authentication Keys
-  "IssueAudience": "Your IssueAudience",
-  "IssueSign": "Your IssueSignature",
-
-  // Google Auth Keys <- Through Google Cloud Provider
-  "GoogleClientId": "Your unique key",
-  "GoogleClientSecret": "Your unique key",
-
-  // Facebook Auth Keys <- Through Facebook Meta For Developers
-  "FacebookClientId": "Your unique key",
-  "FacebookClientSecret": "Your unique key",
-
-  // GitHub Auth Keys <- Through GitHub Developer Settings
-  "GitHubClientId": "Your unique key",
-  "GitHubClientSecret": "Your unique key",
-  
-  // First Admin User Details
-  "AEmail": "admin@example.com",
-  "APass": "AdminPassword",
-  "ACall": "123-456-7890",
-  "UName": "AdminUserName",
-  "AName": "AdminDisplayName"
-}
+In the inner backend server folder with examples:
+```env
+UName=MainAdmin
+Kestrel_Certificates_Default_Password=guid
+IssueSign=V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1ts
+IssueAudience=api With Authentication comes and goes here
+# If You need dummy data ->
+InitDb=True
+GoogleClientSecret=placeHere
+GoogleClientId=placeHere
+GitHubClientSecret=placeHere
+GitHubClientId=placeHere
+FacebookClientSecret=placeHere
+FacebookClientId=placeHere
+ConnectionString=Server=name,1433;Database=sql-server;User Id=sa;Password=somethingStrong;Encrypt=False;
+APass=AdminWithReallyStrongPassword
+AName=Super Admin
+AEmail=admin@sadmin.com
+ACall=12-34/567-8910
 ```
 
 The `appsettings.json` file should contain the address for the "live" test database, and the frontend address:
