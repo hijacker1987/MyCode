@@ -1,22 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using MyCode_Backend_Server.Data;
-using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Authentication;
+using MyCode_Backend_Server.Service.Authentication.Token;
+using MyCode_Backend_Server.Service.Email_Sender;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using MyCode_Backend_Server.Models;
-using MyCode_Backend_Server.Service.Email_Sender;
-using IEmailSender = MyCode_Backend_Server.Service.Email_Sender.IEmailSender;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 using MyCode_Backend_Server.Data.Service;
-using MyCode_Backend_Server.Service.Bot;
 using MyCode_Backend_Server.Hubs;
+using MyCode_Backend_Server.Models;
+using MyCode_Backend_Server.Service.Bot;
 using MyCode_Backend_Server.Service.Chat;
+using System.Security.Claims;
 
 namespace MyCode_Backend_Server
 {
@@ -81,7 +80,7 @@ namespace MyCode_Backend_Server
                 services.AddScoped<IDbInitializer, DbInitializer>();
             }
 
-            var connection = _configuration["ConnectionString"];
+            var connection = Environment.GetEnvironmentVariable("ConnectionString");
             var testConnection = _configuration["ConnectionStrings:TestConnectionString"];
 
             services.AddDbContext<DataContext>(options =>
@@ -100,111 +99,111 @@ namespace MyCode_Backend_Server
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-                    .AddCookie(options => {
-                        options.Cookie.Name = "Authorization";
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                        options.Cookie.SameSite = SameSiteMode.None;
-                        options.Cookie.HttpOnly = true;
+                .AddCookie(options => {
+                    options.Cookie.Name = "Authorization";
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.HttpOnly = true;
 
-                        options.Events.OnRedirectToLogin = context =>
+                    options.Events.OnRedirectToLogin = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    };
+                    options.Events.OnRedirectToAccessDenied = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return Task.CompletedTask;
+                    };
+                })
+                .AddGoogle("Google", options =>
+                {
+                    if (_environment.IsEnvironment("Test"))
+                    {
+                        options.ClientId = "GoogleTestClientId";
+                        options.ClientSecret = "GoogleTestClientSecret";
+                    }
+                    else if (_environment.IsEnvironment("Development"))
+                    {
+                        options.ClientId = Environment.GetEnvironmentVariable("GoogleClientId")!;
+                        options.ClientSecret = Environment.GetEnvironmentVariable("GoogleClientSecret")!;
+                    }
+                })
+                .AddFacebook("Facebook", options =>
+                {
+                    if (_environment.IsEnvironment("Test"))
+                    {
+                        options.ClientId = "FacebookTestClientId";
+                        options.ClientSecret = "FacebookTestClientSecret";
+                    }
+                    else if (_environment.IsEnvironment("Development"))
+                    {
+                        options.ClientId = Environment.GetEnvironmentVariable("FacebookClientId")!;
+                        options.ClientSecret = Environment.GetEnvironmentVariable("FacebookClientSecret")!;
+                    }
+                })
+                .AddGitHub("GitHub", options =>
+                {
+                    if (_environment.IsEnvironment("Test"))
+                    {
+                        options.ClientId = "GitHubTestClientId";
+                        options.ClientSecret = "GitHubTestClientSecret";
+                    }
+                    else if (_environment.IsEnvironment("Development"))
+                    {
+                        options.ClientId = Environment.GetEnvironmentVariable("GitHubClientId")!;
+                        options.ClientSecret = Environment.GetEnvironmentVariable("GitHubClientSecret")!;
+                        options.CallbackPath = new PathString("/signin-github");
+                        options.Scope.Add("user:email");
+
+                        options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+                        options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+                        options.UserInformationEndpoint = "https://api.github.com/user";
+
+                        options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                        options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
+                        options.ClaimActions.MapJsonKey(ClaimValueTypes.Email, "email");
+                    }
+                })
+                .AddJwtBearer(options =>
+                {
+                    var issuer = "";
+                    var issueSign = "";
+
+                    if (_environment.IsEnvironment("Test"))
+                    {
+                        issuer = "api With Test Authentication comes and goes here";
+                        issueSign = "V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1tsF0rT3st1ng";
+                    }
+                    else if (_environment.IsEnvironment("Development"))
+                    {
+                        issuer = _configuration["IssueAudience"];
+                        issueSign = _configuration["IssueSign"];
+                    }
+
+                    if (issueSign != null)
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            return Task.CompletedTask;
+                            ClockSkew = TimeSpan.FromMinutes(5),
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = issuer,
+                            ValidAudience = issuer,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign)),
                         };
-                        options.Events.OnRedirectToAccessDenied = context =>
+                        options.Events = new JwtBearerEvents
                         {
-                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                            return Task.CompletedTask;
+                            OnMessageReceived = context =>
+                            {
+                                context.Token = context.Request.Cookies["Authorization"];
+                                return Task.CompletedTask;
+                            }
                         };
-                    })
-                    .AddGoogle("Google", options =>
-                    {
-                        if (_environment.IsEnvironment("Test"))
-                        {
-                            options.ClientId = "GoogleTestClientId"!;
-                            options.ClientSecret = "GoogleTestClientSecret"!;
-                        }
-                        else if (_environment.IsEnvironment("Development"))
-                        {
-                            options.ClientId = _configuration["GoogleClientId"]!;
-                            options.ClientSecret = _configuration["GoogleClientSecret"]!;
-                        }
-                    })
-                    .AddFacebook("Facebook", options =>
-                    {
-                        if (_environment.IsEnvironment("Test"))
-                        {
-                            options.ClientId = "FacebookTestClientId"!;
-                            options.ClientSecret = "FacebookTestClientSecret"!;
-                        }
-                        else if (_environment.IsEnvironment("Development"))
-                        {
-                            options.ClientId = _configuration["FacebookClientId"]!;
-                            options.ClientSecret = _configuration["FacebookClientSecret"]!;
-                        }
-                    })
-                    .AddGitHub("GitHub", options =>
-                    {
-                        if (_environment.IsEnvironment("Test"))
-                        {
-                            options.ClientId = "GitHubTestClientId"!;
-                            options.ClientSecret = "GitHubTestClientSecret"!;
-                        }
-                        else if (_environment.IsEnvironment("Development"))
-                        {
-                            options.ClientId = _configuration["GitHubClientId"]!;
-                            options.ClientSecret = _configuration["GitHubClientSecret"]!;
-                            options.CallbackPath = new PathString("/signin-github");
-                            options.Scope.Add("user:email");
-
-                            options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
-                            options.TokenEndpoint = "https://github.com/login/oauth/access_token";
-                            options.UserInformationEndpoint = "https://api.github.com/user";
-
-                            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-                            options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-                            options.ClaimActions.MapJsonKey(ClaimValueTypes.Email, "email");
-                        }
-                    })
-                    .AddJwtBearer(options =>
-                    {
-                        var issuer = "";
-                        var issueSign = "";
-
-                        if (_environment.IsEnvironment("Test"))
-                        {
-                            issuer = "api With Test Authentication comes and goes here";
-                            issueSign = "V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1tsF0rT3st1ng";
-                        }
-                        else if (_environment.IsEnvironment("Development"))
-                        {
-                            issuer = _configuration["IssueAudience"];
-                            issueSign = _configuration["IssueSign"];
-                        }
-
-                        if (issueSign != null)
-                        {
-                            options.TokenValidationParameters = new TokenValidationParameters
-                            {
-                                ClockSkew = TimeSpan.FromMinutes(5),
-                                ValidateIssuer = true,
-                                ValidateAudience = true,
-                                ValidateLifetime = true,
-                                ValidateIssuerSigningKey = true,
-                                ValidIssuer = issuer,
-                                ValidAudience = issuer,
-                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issueSign)),
-                            };
-                            options.Events = new JwtBearerEvents
-                            {
-                                OnMessageReceived = context =>
-                                {
-                                    context.Token = context.Request.Cookies["Authorization"];
-                                    return Task.CompletedTask;
-                                }
-                            };
-                        }
-                    });
+                    }
+                });
 
             services.AddIdentityCore<User>(options =>
             {
@@ -217,9 +216,9 @@ namespace MyCode_Backend_Server
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
             })
-                    .AddRoles<IdentityRole<Guid>>()
-                    .AddEntityFrameworkStores<DataContext>()
-                    .AddDefaultTokenProviders();
+                .AddRoles<IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<DataContext>()
+                .AddDefaultTokenProviders();
 
             var frontConnection = _configuration["FEAddress"];
 
@@ -228,9 +227,9 @@ namespace MyCode_Backend_Server
                 options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins(frontConnection!, "https://accounts.google.com/", "https://www.github.com/")
-                           .AllowAnyMethod()
-                           .AllowAnyHeader()
-                           .AllowCredentials();
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
         }
