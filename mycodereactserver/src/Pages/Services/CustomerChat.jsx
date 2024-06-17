@@ -116,7 +116,7 @@ const CustomerChat = () => {
                 message: item.text,
                 time: item.when,
             }));
-            setMessages(loadedMessages);
+            setMessages(prevMessages => [...loadedMessages, ...prevMessages]);
         } catch (error) {
             console.error("Failed to get archived messages: ", error);
         }
@@ -208,7 +208,7 @@ const CustomerChat = () => {
 
             try {
                 const response = await getApi(getAnyArc);
-                
+
                 if (response.status === 404) {
                     setGetButtonHidden(true);
                 }
@@ -252,23 +252,17 @@ const CustomerChat = () => {
         }
     };
 
-    useEffect(() => {
+    const scrollToBottom = () => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            setTimeout(() => {
+                chatContainerRef.current.scrollIntoView({ behavior: "smooth" });
+            }, 100);
         }
-    }, [messages]);
+    };
 
     useEffect(() => {
-        const scrollToBottom = () => {
-            if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-            }
-        };
-
-        if (showChat) {
-            scrollToBottom();
-        }
-    }, [showChat]);
+        scrollToBottom();
+    }, [messages, showChat]);
 
     return (
         <>
@@ -307,7 +301,7 @@ const CustomerChat = () => {
                 </>
                 <>
                     {showChat && (
-                        <CustomerChatContainer ref={chatContainerRef}>
+                        <CustomerChatContainer>
                             <MessagesList>
                                 {messages.map((msg, index) => (
                                     <MessageColorPicker key={index} own={msg.user === "Me"}>
@@ -318,12 +312,13 @@ const CustomerChat = () => {
                                 ))}
                                 <CustomerChatInputContainer>
                                     <CustomerChatTextInput
+                                        ref={chatContainerRef}
                                         type="text"
                                         value={inputMessage}
                                         onChange={(e) => setInputMessage(e.target.value)}
                                         disabled={inputDisabled}
                                     />
-                                <CustomerChatButton onClick={sendMessage} disabled={sendButtonDisabled}>Send</CustomerChatButton>
+                                    <CustomerChatButton onClick={sendMessage} disabled={sendButtonDisabled}>Send</CustomerChatButton>
                                 </CustomerChatInputContainer>
                             </MessagesList>
                         </CustomerChatContainer>
