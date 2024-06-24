@@ -1,5 +1,4 @@
 using DotNetEnv;
-using System.Net;
 
 namespace MyCode_Backend_Server
 {
@@ -15,15 +14,23 @@ namespace MyCode_Backend_Server
             {
                 builder.ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("https://*:443");
-                    webBuilder.UseKestrel(options =>
-                    {
-                        options.Listen(IPAddress.Any, 8081, listenOptions =>
+                    webBuilder.UseStartup<Startup>()
+                        .UseKestrel(options =>
                         {
-                            listenOptions.UseHttps("/etc/ssl/certs/MyCode Backend Server.pfx");
+                            options.ListenAnyIP(443, listenOptions =>
+                            {
+                                string certPath = "/https/mycode.pfx";
+                                string certPassword = "mycodessl";
+                                if (!File.Exists(certPath))
+                                {
+                                    Console.WriteLine($"Certificate file not found at path: {certPath}");
+                                }
+                                else
+                                {
+                                    listenOptions.UseHttps(certPath, certPassword);
+                                }
+                            });
                         });
-                    });
                 });
             }
 
