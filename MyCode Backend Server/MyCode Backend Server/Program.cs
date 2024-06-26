@@ -10,30 +10,6 @@ namespace MyCode_Backend_Server
 
             var builder = CreateHostBuilder(args);
 
-            if (IsDockerEnvironment())
-            {
-                builder.ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>()
-                        .UseKestrel(options =>
-                        {
-                            options.ListenAnyIP(443, listenOptions =>
-                            {
-                                string certPath = "/https/mycode.pfx";
-                                string certPassword = "mycodessl";
-                                if (!File.Exists(certPath))
-                                {
-                                    Console.WriteLine($"Certificate file not found at path: {certPath}");
-                                }
-                                else
-                                {
-                                    listenOptions.UseHttps(certPath, certPassword);
-                                }
-                            });
-                        });
-                });
-            }
-
             builder.Build().Run();
         }
 
@@ -47,10 +23,5 @@ namespace MyCode_Backend_Server
                 {
                     config.AddEnvironmentVariables();
                 });
-
-        private static bool IsDockerEnvironment()
-        {
-            return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOCKER_CONTAINER"));
-        }
     }
 }
