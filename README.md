@@ -40,7 +40,7 @@ The frontend is powered by React using VITE to provide a fast and an interactive
   
 ## Security
 The application implements secure practices such as JWT token, refresh token and hashed password storage, password confirmation, currently running two dockerized MSSQL databases (one for proper testing),
-and sensitive data is stored in the `appsettings.json` and `.env` files.
+and sensitive data is stored in the `appsettings.json` and `.env` files. Even Docker Compose can be used.
 
 ## Configuration
 On the frontend side, sensitive data is stored in the `.env` file. To set up the application, create a `.env` file in the root directory and populate it with the following keys and values:
@@ -71,7 +71,7 @@ BE_URL=https://localhost
 BE_PORT=7001
 # Required for Backend Server
 UName=MainAdmin
-ASPNETCORE_Kestrel_Certificates_Default_Password=guid
+ASPNETCORE_Kestrel_Certificates_Default_Password=CertFile'sPassword
 ASPNETCORE_Kestrel__Certificates__Default__Path=toYourCertfile.pfx
 IssueSign=V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1ts
 IssueAudience=api With Authentication comes and goes here
@@ -93,7 +93,7 @@ ACall=12-34/567-8910
 In the inner backend server folder with examples:
 ```env
 UName=MainAdmin
-Kestrel_Certificates_Default_Password=guid
+Kestrel_Certificates_Default_Password=CertFile'sPassword
 IssueSign=V3ryStr0ngP@ssw0rdW1thM0reTh@n256B1ts
 IssueAudience=api With Authentication comes and goes here
 # If You need dummy data ->
