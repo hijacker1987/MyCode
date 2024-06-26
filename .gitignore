@@ -92,3 +92,9 @@ dkms.conf
 /mycodereactserver/certs/mycodereactserver.key
 /mycodereactserver/certs/mycodereactserver.pem
 /MyCode Backend Server/obj/Debug
+/MyCode Backend Server/MyCode Backend Server/Certs/mycode.key
+/MyCode Backend Server/MyCode Backend Server/Certs/mycode.pem
+/MyCode Backend Server/MyCode Backend Server/Certs/mycode.pfx
+/mycodereactserver/certs/mycode.key
+/mycodereactserver/certs/mycode.pem
+/%USERPROFILE%/.aspnet/https

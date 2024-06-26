@@ -182,7 +182,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                            .Callback<IdentityRole<Guid>>(role => roles.Add(role));
 
             var configuration = new ConfigurationBuilder().Build();
-            var initializer = new DbInitializer(configuration);
+            var initializer = new DbInitializer();
 
             // Act
             await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object, faq, dummy);
@@ -241,7 +241,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                            .Callback<IdentityRole<Guid>>(role => roles.Add(role));
 
             var configuration = new ConfigurationBuilder().Build();
-            var initializer = new DbInitializer(configuration);
+            var initializer = new DbInitializer();
 
             // Act
             await initializer.Initialize(dbContext, userManagerMock.Object, roleManagerMock.Object, faq, dummy);

@@ -33,17 +33,23 @@ const Layout = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [logoutSuccess, setLogoutSuccess] = useState(null);
     const [chuckNorrisFact, setChuckNorrisFact] = useState([]);
+    const [chuckFact, setChuckFact] = useState(true);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
 
     useEffect(() => {
         const fetchJoke = async () => {
             try {
+                if (chuckFact) {
+                    setChuckNorrisFact("How well do You know Chuck Norris?");
+                    setChuckFact(false);
+                }
                 const chuckNorrisData = await fetch(recentChuckNorris);
                 const chuckNorrisFact = await chuckNorrisData.json();
                 setChuckNorrisFact(chuckNorrisFact.value);
             } catch (error) {
-                setError(`Error occurred while fetching Chuck Norris: ${error}`);
+                setChuckNorrisFact("Unfortunately I can't tell You more facts about Chuck at this moment, stay tuned!!!");
+                console.log(`Error occurred while fetching Chuck Norris: ${error}`);
             }
         };
         fetchJoke();

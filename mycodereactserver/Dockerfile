@@ -21,8 +21,8 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy SSL certificate and key
-COPY --from=build /app/certs/mycodereactserver.pem /etc/nginx/ssl/mycodereactserver.pem
-COPY --from=build /app/certs/mycodereactserver.key /etc/nginx/ssl/mycodereactserver.key
+COPY --from=build /app/certs/mycode.pem /etc/nginx/ssl/mycode.pem
+COPY --from=build /app/certs/mycode.key /etc/nginx/ssl/mycode.key
 
 # Remove the default nginx.conf
 RUN rm /etc/nginx/conf.d/default.conf

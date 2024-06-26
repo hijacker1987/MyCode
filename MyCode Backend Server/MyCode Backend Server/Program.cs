@@ -1,5 +1,4 @@
 using DotNetEnv;
-using System.Net;
 
 namespace MyCode_Backend_Server
 {
@@ -10,22 +9,6 @@ namespace MyCode_Backend_Server
             Env.Load();
 
             var builder = CreateHostBuilder(args);
-
-            if (IsDockerEnvironment())
-            {
-                builder.ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("https://*:443");
-                    webBuilder.UseKestrel(options =>
-                    {
-                        options.Listen(IPAddress.Any, 8081, listenOptions =>
-                        {
-                            listenOptions.UseHttps("/etc/ssl/certs/MyCode Backend Server.pfx");
-                        });
-                    });
-                });
-            }
 
             builder.Build().Run();
         }
@@ -40,10 +23,5 @@ namespace MyCode_Backend_Server
                 {
                     config.AddEnvironmentVariables();
                 });
-
-        private static bool IsDockerEnvironment()
-        {
-            return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOCKER_CONTAINER"));
-        }
     }
 }

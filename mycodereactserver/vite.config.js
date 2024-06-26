@@ -20,8 +20,8 @@ let certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 let keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 if (isNotWindowsBuild) {
-    certFilePath = path.join("/app/certs", "mycodereactserver.pem");
-    keyFilePath = path.join("/app/certs", "mycodereactserver.key");
+    certFilePath = path.join("/app/certs", "mycode.pem");
+    keyFilePath = path.join("/app/certs", "mycode.key");
 }
 
 const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];

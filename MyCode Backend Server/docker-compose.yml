@@ -7,16 +7,18 @@ services:
     container_name: backend
     ports:
       - "7001:8081"
-      - "8082:443"
+      - "443:443"
     depends_on:
       - mssql1
       - mssql2
     environment:
+      DOCKER_CONTAINER: "true"
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: https://+:443
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${Kestrel_Certificates_Default_Password}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/mycode.pfx
       ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
-      ConnectionString: "Server=mssqllive,1433;Database=mycodes-sql-server;User Id=sa;Password=${MSSQL1_PASSWORD};Encrypt=False;"
-      TestConnectionString: "Server=mssqltest,1434;Database=mycode-testdatabase;User Id=sa;Password=${MSSQL2_PASSWORD};Encrypt=False;"
+      ConnectionString: "Server=mssqllive,1433;Database=mycodes-sql-server;User Id=sa;Password=${MSSQL1_PASSWORD};Encrypt=True;TrustServerCertificate=True;"
+      TestConnectionString: "Server=mssqltest,1434;Database=mycode-testdatabase;User Id=sa;Password=${MSSQL2_PASSWORD};Encrypt=True;TrustServerCertificate=True;"
       DOTNET_USE_POLLING_FILE_WATCHER: "1"
       NUGET_FALLBACK_PACKAGES: /.nuget/fallbackpackages
     env_file:
