@@ -1,5 +1,3 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 # Stage 1: Base image with .NET runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
@@ -14,18 +12,18 @@ WORKDIR /src
 
 # Copy csproj and restore as distinct layers
 COPY ["MyCode Backend Server/MyCode Backend Server.csproj", "MyCode Backend Server/"]
-RUN dotnet restore "./MyCode Backend Server/MyCode Backend Server.csproj"
+RUN dotnet restore "MyCode Backend Server/MyCode Backend Server.csproj"
 
 # Copy the appsettings.json file
 COPY ["MyCode Backend Server/appsettings.json", "/app/appsettings.json"]
 
-# Copy the server certificate file
-COPY ["MyCode Backend Server/Certs/MyCode Backend Server.pfx", "/etc/ssl/certs/MyCode Backend Server.pfx"]
-
 # Copy everything else and build
 COPY . .
 WORKDIR "/src/MyCode Backend Server"
-RUN dotnet build "./MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Ensure OpenSSL is available and the certificate file has the correct permissions
+RUN apt-get update && apt-get install -y openssl
 
 # Set environment variables from arguments
 ARG IssueAudience
@@ -66,10 +64,14 @@ ENV DOCKER_CONTAINER=true \
 # Stage 3: Publish image
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Stage 4: Final image with runtime
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+# Copy the server certificate file from the build stage
+COPY --from=build ["/src/MyCode Backend Server/Certs/mycode.pfx", "/https/mycode.pfx"]
+RUN chmod 644 /https/mycode.pfx
+
 ENTRYPOINT ["dotnet", "MyCode Backend Server.dll"]
