@@ -19,7 +19,7 @@ COPY ["appsettings.json", "/app/appsettings.json"]
 
 # Copy everything else and build
 COPY . .
-WORKDIR "/src/MyCode Backend Server"
+WORKDIR "/src/MyCode Backend Server/MyCode Backend Server"
 RUN dotnet build "MyCode Backend Server/MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Ensure OpenSSL is available and the certificate file has the correct permissions
@@ -64,14 +64,14 @@ ENV DOCKER_CONTAINER=true \
 # Stage 3: Publish image
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "MyCode Backend Server/MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Stage 4: Final image with runtime
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 # Copy the server certificate file from the build stage
-COPY --from=build ["/src/MyCode Backend Server/Certs/mycode.pfx", "/https/mycode.pfx"]
+COPY --from=build ["/src/MyCode Backend Server/MyCode Backend Server/Certs/mycode.pfx", "/https/mycode.pfx"]
 RUN chmod 644 /https/mycode.pfx
 
 ENTRYPOINT ["dotnet", "MyCode Backend Server.dll"]
