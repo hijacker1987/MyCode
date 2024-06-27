@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 import Loading from "../Loading/index";
+import GoodbyeImage from "../../assets/84652613.jpg";
 
 import { InputForm, Form, FormRow } from "../Styles/Forms.styled";
 import { StyledButton } from "../Styles/Buttons/InternalButtons.styled";
-import { SmallTextContainer } from "../Styles/Containers/ComplexContainers.styled";
+import { SmallTextContainer, EditorContainer } from "../Styles/Containers/ComplexContainers.styled";
 import { RowButtonWithTopMarginContainer } from "../Styles/Containers/Containers.styled";
 import { ButtonContainerWrapper, InputWrapper } from "../Styles/Containers/Wrappers.styled";
 
@@ -88,6 +89,11 @@ const Login = ({ onLogin, user, onCancel }) => {
                     </RowButtonWithTopMarginContainer>
                 </FormRow>
             </Form>
+            {email === "Goodbye" && (
+                <EditorContainer>
+                    <img src={GoodbyeImage} alt="Goodbye" />
+                </EditorContainer>
+            )}
             {loading && <Loading />}
         </>
     );
