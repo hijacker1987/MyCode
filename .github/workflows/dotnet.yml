@@ -34,6 +34,10 @@ jobs:
       AName: ${{ secrets.AName }}
       AEmail: ${{ secrets.AEmail }}
       ACall: ${{ secrets.ACall }}
+      VITE_FRONTEND_URL: ${{ secrets.FE_URL }}
+      VITE_FRONTEND_PORT: ${{ secrets.FE_PORT }}
+      VITE_BACKEND_URL: ${{ secrets.BE_URL }}
+      VITE_BACKEND_PORT: ${{ secrets.BE_PORT }}
 
     steps:
       - name: Check out the repo
@@ -56,7 +60,7 @@ jobs:
       - name: Build and push Client Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: mycodereactserver
-          dockerfile: mycodereactserver
+          context: "mycodereactserver"
+          dockerfile: "mycodereactserver/Dockerfile"
           push: true
           tags: k1llerrat87/mycode:frontend
