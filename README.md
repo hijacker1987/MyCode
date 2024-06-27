@@ -5,7 +5,6 @@ MyCode is a full-stack ASP.NET application designed to store and share users fav
 ## Project Status
 
 **ONGOING Project!**
-*Docker Compose under construction*
 
 ## Backend Installation Instructions
   - Install the .NET SDK 8.0.300 (.NET 8.0.5)
@@ -40,7 +39,17 @@ The frontend is powered by React using VITE to provide a fast and an interactive
   
 ## Security
 The application implements secure practices such as JWT token, refresh token and hashed password storage, password confirmation, currently running two dockerized MSSQL databases (one for proper testing),
-and sensitive data is stored in the `appsettings.json` and `.env` files. Even Docker Compose can be used.
+and sensitive data is stored in the `appsettings.json` and `.env` files. Even Docker Compose can be used with self signed certificate.
+
+## Hint
+Commands to create self signed certificate:
+  `dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\mycode.pfx -p <YOUR PASSWORD>`
+  `dotnet dev-certs https --trust`
+
+To use the same cert for the frontend:
+  `openssl pkcs12 -in mycode.pfx -clcerts -nokeys -out mycode.pem`
+  `openssl pkcs12 -in mycode.pfx -nocerts -out mycode-encrypted.key`
+  `openssl rsa -in mycode-encrypted.key -out mycode.key`
 
 ## Configuration
 On the frontend side, sensitive data is stored in the `.env` file. To set up the application, create a `.env` file in the root directory and populate it with the following keys and values:
