@@ -44,27 +44,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Extract metadata for Server Docker image
-        id: server_meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: hijacker87/backend
-
+          
       - name: Build and push Server Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: "MyCode Backend Server"
           file: "MyCode Backend Server/MyCode Backend Server/Dockerfile"
           push: true
-          tags: ${{ steps.server_meta.outputs.tags }}
-          labels: ${{ steps.server_meta.outputs.labels }}
-
-      - name: Extract metadata for Client Docker image
-        id: client_meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: hijacker87/frontend
+          tags: k1llerrat87/mycode:backend
 
       - name: Build and push Client Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -72,5 +59,4 @@ jobs:
           context: mycodereactserver
           dockerfile: mycodereactserver
           push: true
-          tags: ${{ steps.client_meta.outputs.tags }}
-          labels: ${{ steps.client_meta.outputs.labels }}
+          tags: k1llerrat87/mycode:frontend
