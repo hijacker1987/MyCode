@@ -19,8 +19,8 @@ COPY ["appsettings.json", "/app/appsettings.json"]
 
 # Copy everything else and build
 COPY . .
-WORKDIR "/src/MyCode Backend Server/MyCode Backend Server"
-RUN dotnet build "MyCode Backend Server/MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/MyCode Backend Server"
+RUN dotnet build "MyCode Backend Server/MyCode Backend Server/MyCode Backend Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Ensure OpenSSL is available and the certificate file has the correct permissions
 RUN apt-get update && apt-get install -y openssl
