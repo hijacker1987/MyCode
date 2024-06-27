@@ -15,7 +15,6 @@ COPY ["MyCode Backend Server/MyCode Backend Server.csproj", "MyCode Backend Serv
 RUN dotnet restore "MyCode Backend Server/MyCode Backend Server.csproj"
 
 # Copy the appsettings.json file
-COPY ["appsettings.json", "/app/appsettings.json"]
 COPY ["MyCode Backend Server/appsettings.json", "/app/appsettings.json"]
 
 # Copy everything else and build
