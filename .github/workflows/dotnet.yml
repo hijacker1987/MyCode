@@ -34,6 +34,10 @@ jobs:
       AName: ${{ secrets.AName }}
       AEmail: ${{ secrets.AEmail }}
       ACall: ${{ secrets.ACall }}
+      VITE_FRONTEND_URL: ${{ secrets.FE_URL }}
+      VITE_FRONTEND_PORT: ${{ secrets.FE_PORT }}
+      VITE_BACKEND_URL: ${{ secrets.BE_URL }}
+      VITE_BACKEND_PORT: ${{ secrets.BE_PORT }}
 
     steps:
       - name: Check out the repo
