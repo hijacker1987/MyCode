@@ -11,7 +11,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY ["MyCode Backend Server/MyCode Backend Server.csproj", "MyCode Backend Server/"]
+COPY ["MyCode Backend Server.csproj", "MyCode Backend Server/"]
 RUN dotnet restore "MyCode Backend Server/MyCode Backend Server.csproj"
 
 # Copy the appsettings.json file
