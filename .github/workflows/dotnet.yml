@@ -1,29 +1,75 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: Publish Docker images
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
-  build:
-
+  push_to_registry:
+    name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
+    env:
+      MSSQL1_PASSWORD: ${{ secrets.MSSQL1_PASSWORD }}
+      MSSQL2_PASSWORD: ${{ secrets.MSSQL2_PASSWORD }}
+      FE_URL: ${{ secrets.FE_URL }}
+      FE_PORT: ${{ secrets.FE_PORT }}
+      BE_URL: ${{ secrets.BE_URL }}
+      BE_PORT: ${{ secrets.BE_PORT }}
+      UName: ${{ secrets.UName }}
+      Kestrel_Certificates_Default_Password: ${{ secrets.Kestrel_Certificates_Default_Password }}
+      IssueSign: ${{ secrets.IssueSign }}
+      IssueAudience: ${{ secrets.IssueAudience }}
+      InitDb: ${{ secrets.InitDb }}
+      GoogleClientSecret: ${{ secrets.GoogleClientSecret }}
+      GoogleClientId: ${{ secrets.GoogleClientId }}
+      GitHubClientSecret: ${{ secrets.GitHubClientSecret }}
+      GitHubClientId: ${{ secrets.GitHubClientId }}
+      FacebookClientSecret: ${{ secrets.FacebookClientSecret }}
+      FacebookClientId: ${{ secrets.FacebookClientId }}
+      ConnectionString: ${{ secrets.ConnectionString }}
+      APass: ${{ secrets.APass }}
+      AName: ${{ secrets.AName }}
+      AEmail: ${{ secrets.AEmail }}
+      ACall: ${{ secrets.ACall }}
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Extract metadata for Server Docker image
+        id: server_meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: hijacker87/backend
+
+      - name: Build and push Server Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: MyCode Backend Server/MyCode Backend Server
+          push: true
+          tags: ${{ steps.server_meta.outputs.tags }}
+          labels: ${{ steps.server_meta.outputs.labels }}
+
+      - name: Extract metadata for Client Docker image
+        id: client_meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: hijacker87/frontend
+
+      - name: Build and push Client Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: mycodereactserver
+          dockerfile: mycodereactserver
+          push: true
+          tags: ${{ steps.client_meta.outputs.tags }}
+          labels: ${{ steps.client_meta.outputs.labels }}
