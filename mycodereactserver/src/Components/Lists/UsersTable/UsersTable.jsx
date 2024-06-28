@@ -191,12 +191,12 @@ export const UsersTable = ({ users, headers, role, page }) => {
                                     </>
                                     )}
                                         <StyledTd>
-                                            {usersWithMessagesId.includes(user.id.toUpperCase())
-                                            ?
+                                            {Array.isArray(usersWithMessagesId) && usersWithMessagesId.includes(user.id.toUpperCase())
+                                                ?
                                                 <StyledButton type="button" onClick={() => getOldMessagesByIdModal(user.id)}>
                                                     Available
                                                 </StyledButton>
-                                            : ""}
+                                                : ""}
                                         </StyledTd>
                                 </StyledTr>
                                 <RowSpacer />
