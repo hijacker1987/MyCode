@@ -1,6 +1,6 @@
 import { Notify } from "../Services";
 
-export const handleEditorDidMount = (editor, monaco, editorRef) => {
+export const handleEditorDidMount = (editor, editorRef) => {
     if (editor) {
         editorRef.current = editor;
     }
@@ -39,25 +39,25 @@ export const toggleFullscreen = (editorRef, originalMeasure, setEditorMeasure) =
     }
 };
 
-export const changeFontSize = (e, setFontSize, userid) => {
+export const changeFontSize = (e, setFontSize, username) => {
     const selectedFontSize = e.target.value;
     setFontSize(parseInt(selectedFontSize));
 
-    localStorage.setItem(`fontsize-${userid}`, selectedFontSize);
+    localStorage.setItem(`fontsize-${username}`, selectedFontSize);
 
-    const storedFontSize = localStorage.getItem(`fontsize-${userid}`);
+    const storedFontSize = localStorage.getItem(`fontsize-${username}`);
     if (storedFontSize) {
         setFontSize(storedFontSize);
     }
 };
 
-export const changeTheme = (e, setTheme, userid) => {
+export const changeTheme = (e, setTheme, username) => {
     const selectedTheme = e.target.value;
     setTheme(selectedTheme);
 
-    localStorage.setItem(`theme-${userid}`, selectedTheme);
+    localStorage.setItem(`theme-${username}`, selectedTheme);
 
-    const storedTheme = localStorage.getItem(`theme-${userid}`);
+    const storedTheme = localStorage.getItem(`theme-${username}`);
     if (storedTheme) {
         setTheme(storedTheme);
     }

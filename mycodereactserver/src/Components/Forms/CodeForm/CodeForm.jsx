@@ -17,7 +17,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const editorRef = useRef(null);
     const originalEditorMeasure = ["30vh", "90vh"];
     const { userData } = useUser();
-    const { userid } = userData;
+    const { username } = userData;
     const [loading, setLoading] = useState(false);
     const [codeTitle, setCodeTitle] = useState(code?.codeTitle ?? "");
     const [myCode, setMyCode] = useState(code?.myCode ?? "");
@@ -26,8 +26,8 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
     const [isVisible, setIsVisible] = useState(code?.isVisible ?? false);
     const [otherCodeType, setOtherCodeType] = useState("");
     const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
-    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${userid}`) ?? 16);
-    const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
+    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${username}`) ?? 16);
+    const [theme, setTheme] = useState(localStorage.getItem(`theme-${username}`) ?? "vs-dark");
     const [errorMessage, setError] = useState("");
 
     const onSubmit = async (e) => {
@@ -142,7 +142,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                     />
                                     <EditorRowButtonContainer>
                                         <EditorLabel htmlFor="fontSizeSelector"> Font Size: </EditorLabel>
-                                        <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
+                                        <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, username)} value={fontSize}>
                                             {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                                 <option key={size} value={size}>{size}</option>
                                             ))}
@@ -152,7 +152,7 @@ const CodeForm = ({ onSave, code, role, onCancel }) => {
                                             <StyledButton onClick={handleToggleFullscreen}>Fullscreen</StyledButton>
                                         </ButtonRowWrapper>
                                         <EditorLabel htmlFor="themeSelector"> Change Theme: </EditorLabel>
-                                        <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
+                                        <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, username)} value={theme}>
                                             <EditorOption value="vs">Light</EditorOption>
                                             <EditorOption value="vs-dark">Dark</EditorOption>
                                         </EditorSelect>
