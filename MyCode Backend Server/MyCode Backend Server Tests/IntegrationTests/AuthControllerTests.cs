@@ -14,16 +14,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 {
     [Collection("firstSequence")]
 
-    public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
+    public class AuthControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory) : IClassFixture<CustomWebApplicationFactory<MyCode_Backend_Server.Program>>
     {
-        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory;
-        private readonly DataContext _dataContext;
-
-        public AuthControllerTests(CustomWebApplicationFactory<MyCode_Backend_Server.Program> factory)
-        {
-            _factory = factory;
-            _dataContext = _factory.Services.GetRequiredService<DataContext>();
-        }
+        private readonly CustomWebApplicationFactory<MyCode_Backend_Server.Program> _factory = factory;
 
         [Fact]
         public async Task BasicsTwoFactor_Returns_Unauthorized()
@@ -108,7 +101,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                 AllowAutoRedirect = false
             });
             var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
-            var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
             var request = new VerifyModel("verification_code", false);
 
             // Act

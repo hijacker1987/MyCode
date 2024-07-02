@@ -193,7 +193,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
             };
 
             userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed(errors.ToArray()));
+                .ReturnsAsync(IdentityResult.Failed([.. errors]));
 
             var authService = new AuthService(
                 Mock.Of<IConfiguration>(),
@@ -231,7 +231,7 @@ namespace MyCode_Backend_Server_Tests.Service.Auth
 
             var httpContext = new DefaultHttpContext
             {
-                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "Tester5") }))
+                User = new ClaimsPrincipal(new ClaimsIdentity([new(ClaimTypes.Name, "Tester5")]))
             };
 
             var httpRequest = httpContext.Request;

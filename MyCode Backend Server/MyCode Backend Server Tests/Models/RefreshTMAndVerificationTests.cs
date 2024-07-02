@@ -7,7 +7,7 @@ namespace MyCode_Backend_Server_Tests.Models
 {
     public class RefreshTM_And_Verification_Tests
     {
-        private void ValidateModel(object model)
+        /*private static void ValidateModel(object model)
         {
             var context = new ValidationContext(model);
             var results = new List<ValidationResult>();
@@ -16,7 +16,7 @@ namespace MyCode_Backend_Server_Tests.Models
             {
                 throw new ValidationException(results[0], null, null);
             }
-        }
+        }*/
 
         [Fact]
         public void RefreshTM_Validation_Success()
@@ -37,7 +37,6 @@ namespace MyCode_Backend_Server_Tests.Models
         public void VerifyModel_CanBeInitialized()
         {
             // Arrange
-            var userId = "user123";
             var attachment = "attachment.pdf";
             var external = true;
 
