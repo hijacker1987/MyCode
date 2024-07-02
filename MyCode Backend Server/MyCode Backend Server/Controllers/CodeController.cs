@@ -26,31 +26,23 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
                 var codes = _dataContext.CodesDb!
-                                        .Where(c => c.UserId == userIdGuid)
+                                        .Where(c => c.UserId.ToString() == userId)
                                         .ToList();
 
                 return Ok(codes);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return BadRequest();
             }
         }
@@ -63,24 +55,16 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
                 var codes = _dataContext.CodesDb!
-                                        .Where(c => c.IsVisible && c.UserId != userIdGuid)
+                                        .Where(c => c.IsVisible && c.UserId.ToString() != userId)
                                         .Select(c => new CodeWithAdditionalData
                                         {
                                             Id = c.Id,
@@ -97,7 +81,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return BadRequest();
             }
         }
@@ -114,7 +98,7 @@ namespace MyCode_Backend_Server.Controllers
 
                 if (code == null)
                 {
-                    _logger.LogInformation($"Code with id {id} not found.");
+                    _logger.LogInformation("Code with id {id} not found.", id);
                     return NotFound();
                 }
 
@@ -122,7 +106,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return NotFound();
             }
         }
@@ -140,33 +124,25 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
-                var user = _dataContext.Users!.FirstOrDefault(u => u.Id == userIdGuid);
+                var user = _dataContext.Users!.FirstOrDefault(u => u.Id.ToString() == userId);
 
                 if (user == null)
                 {
-                    _logger.LogInformation($"User with id {userIdGuid} not found.");
+                    _logger.LogInformation("User with id {id} not found.", userId);
                     return NotFound();
                 }
 
                 if (user.EmailConfirmed != true && user.TwoFactorEnabled)
                 {
-                    _logger.LogInformation($"User with id {userIdGuid} not verified.");
+                    _logger.LogInformation("User with id {id} not verified.", userId);
                     return BadRequest();
                 }
 
@@ -177,7 +153,7 @@ namespace MyCode_Backend_Server.Controllers
                     codeRequest.IsBackend,
                     codeRequest.IsVisible)
                     {
-                        UserId = userIdGuid
+                        UserId = new Guid(userId)
                     };
 
                 _dataContext.CodesDb!.Add(code);
@@ -195,7 +171,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return BadRequest();
             }
         }
@@ -212,42 +188,33 @@ namespace MyCode_Backend_Server.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
-                var user = _dataContext.Users!.FirstOrDefault(u => u.Id == userIdGuid);
+                var user = _dataContext.Users!.FirstOrDefault(u => u.Id.ToString() == userId);
 
                 if (user == null)
                 {
-                    _logger.LogInformation($"User with id {id} not found.");
+                    _logger.LogInformation("User with id {id} not found.", userId);
                     return NotFound();
                 }
 
                 if (user.EmailConfirmed != true && user.TwoFactorEnabled)
                 {
-                    _logger.LogInformation($"User with id {id} not verified.");
+                    _logger.LogInformation("User with id {id} not verified.", userId);
                     return BadRequest();
                 }
 
-                var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId == userIdGuid);
+                var existingCode = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId.ToString() == userId);
 
                 if (existingCode == null)
                 {
-                    _logger.LogInformation($"Code with id {id} not found or does not belong to the authenticated user.");
+                    _logger.LogInformation("Code with id {id} not found or does not belong to the authenticated user.", id);
                     return NotFound();
                 }
 
@@ -277,7 +244,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return BadRequest();
             }
         }
@@ -290,27 +257,19 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
-                var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId == userIdGuid);
+                var code = _dataContext.CodesDb!.FirstOrDefault(c => c.Id == id && c.UserId.ToString() == userId);
 
                 if (code == null)
                 {
-                    _logger.LogInformation($"Code with id {id} not found for the authenticated user.");
+                    _logger.LogInformation("Code with id {id} not found for the authenticated user.", id);
                     return NotFound();
                 }
 
@@ -321,7 +280,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return BadRequest();
             }
         }

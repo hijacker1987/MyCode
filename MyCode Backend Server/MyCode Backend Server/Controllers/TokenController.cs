@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyCode_Backend_Server.Models;
+using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
 {
     [ApiController]
     [Route("/token")]
-    public class TokenController(UserManager<User> userManager, ILogger<TokenController> logger) : Controller
+    public class TokenController(UserManager<User> userManager, ILogger<TokenController> logger) : ControllerBase
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly ILogger<TokenController> _logger = logger;
@@ -18,12 +19,12 @@ namespace MyCode_Backend_Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Revoke()
         {
-            var username = HttpContext.User.Identity?.Name;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (username == null)
+            if (userId == null)
                 return Unauthorized();
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
                 return Unauthorized();

@@ -9,7 +9,6 @@ using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication;
 using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Email_Sender;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
@@ -123,23 +122,15 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
-                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
+                var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
                 return Ok(user);
             }
@@ -158,23 +149,15 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                var userId = userIdClaim.Value;
-
-                if (!Guid.TryParse(userId, out var userIdGuid))
-                {
-                    _logger.LogError($"Unable to parse as a Guid.");
-                    return BadRequest($"Unable to parse 'NameIdentifier' claim value as a Guid.");
-                }
-
-                var user = _dataContext.Users.FirstOrDefault(u => u.Id == userIdGuid);
+                var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
                 return Ok(user!.Id);
             }
@@ -185,8 +168,8 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpPut("user-{id}"), Authorize(Roles = "User, Support")]
-        public ActionResult<User> UpdateUser([FromRoute] Guid id, [FromBody] User updatedUser)
+        [HttpPut("userUpdate"), Authorize(Roles = "User, Support")]
+        public ActionResult<User> UpdateUser([FromBody] User updatedUser)
         {
             try
             {
@@ -198,7 +181,15 @@ namespace MyCode_Backend_Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var existingUser = _dataContext.Users.FirstOrDefault(u => u.Id == id);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
+                {
+                    _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                    return BadRequest("No 'NameIdentifier' claim found.");
+                }
+
+                var existingUser = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
                 if (existingUser == null)
                 {
@@ -258,12 +249,15 @@ namespace MyCode_Backend_Server.Controllers
             }
         }
 
-        [HttpDelete("delete-{id}"), Authorize(Roles = "User, Support")]
-        public async Task<ActionResult> DeleteAccountAsync([FromRoute] Guid id)
+        [HttpDelete("userDelete"), Authorize(Roles = "User, Support")]
+        public async Task<ActionResult> DeleteAccountAsync()
         {
-            if (id == Guid.Empty)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
             {
-                return NotFound("Not Found!");
+                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                return BadRequest("No 'NameIdentifier' claim found.");
             }
 
             try
@@ -271,7 +265,7 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var user = await _userManager.FindByIdAsync(id.ToString());
+                var user = await _userManager.FindByIdAsync(userId);
 
                 if (user == null)
                 {
@@ -284,6 +278,10 @@ namespace MyCode_Backend_Server.Controllers
                     {
                         return Unauthorized();
                     }
+                }
+                else if ("admin@test.com".Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return Unauthorized();
                 }
 
                 var result = await _userManager.DeleteAsync(user);
@@ -298,7 +296,7 @@ namespace MyCode_Backend_Server.Controllers
 
                     await _dataContext.SaveChangesAsync();
 
-                    return Ok($"Account with ID {id} successfully deleted.");
+                    return Ok($"Account successfully deleted.");
                 }
                 else
                 {

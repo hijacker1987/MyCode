@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { getStatApi, postStatApi, postStatExtApi } from "../Services/Api";
+import { useUser } from "../Services/UserContext";
 import { ErrorPage, Notify } from "./Services";
 import { primary2fa, enable2fa, verify2fa, disable2fa, facebookAddon, gitHubAddon, googleAddon } from "../Services/Backend.Endpoints";
 import { backendUrl } from "../Services/Config";
@@ -10,7 +11,8 @@ import Loading from "../Components/Loading/index";
 
 const TwoFactorAuthentication = () => {
     const navigate = useNavigate();
-    const { userIdParam } = useParams();
+    const { userData } = useUser();
+    const { userid } = userData;
     const [isEmailConfirmed, setEmailConfirmed] = useState(false);
     const [isTwoFactorEnabled, setTwoFactorEnabled] = useState(false);
     const [reliableAddress, setReliableAddress] = useState(false);
@@ -23,7 +25,7 @@ const TwoFactorAuthentication = () => {
 
     const handleUserBasic = async () => {
         setLoading(true);
-        getStatApi(primary2fa, userIdParam)
+        getStatApi(primary2fa)
             .then((data) => {
                 setLoading(false);
                 setEmailConfirmed(data.emailConfirmed);
@@ -38,7 +40,7 @@ const TwoFactorAuthentication = () => {
 
     const handleSendEmailWithCode = async () => {
         setLoading(true);
-        postStatApi(enable2fa, userIdParam)
+        postStatApi(enable2fa)
             .then(() => {
                 setLoading(false);
                 Notify("Success", "Please check Your e-mail!");
@@ -52,7 +54,7 @@ const TwoFactorAuthentication = () => {
 
     const handleVerify2fa = (code) => {
         setLoading(true);
-        postStatExtApi(verify2fa, userIdParam, code, false)
+        postStatExtApi(verify2fa, code, false)
             .then((res) => {
                 setLoading(false);
                 navigate(-1);
@@ -71,7 +73,7 @@ const TwoFactorAuthentication = () => {
 
     const handleDisable2fa = async () => {
         setLoading(true);
-        postStatApi(disable2fa, userIdParam)
+        postStatApi(disable2fa)
             .then(() => {
                 setLoading(false);
                 Notify("Success", "2fa disabled!");
@@ -86,9 +88,9 @@ const TwoFactorAuthentication = () => {
     const handleAddressUpdate = async (ext) => {
         setLoading(true);
         try {
-            const whichExtAddon = ext == "GitHub" ? `${gitHubAddon}?attachment=${encodeURIComponent(userIdParam)}`
-                                : ext == "Google" ? `${googleAddon}?attachment=${encodeURIComponent(userIdParam)}`
-                                                  : `${facebookAddon}?attachment=${encodeURIComponent(userIdParam)}`;
+            const whichExtAddon = ext == "GitHub" ? `${gitHubAddon}?attachment=${encodeURIComponent(userid)}`
+                                : ext == "Google" ? `${googleAddon}?attachment=${encodeURIComponent(userid)}`
+                                                  : `${facebookAddon}?attachment=${encodeURIComponent(userid)}`;
 
             window.location.href = await `${backendUrl}${whichExtAddon}`;
             

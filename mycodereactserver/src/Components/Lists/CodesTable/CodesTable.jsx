@@ -27,7 +27,7 @@ export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const originalEditorMeasure = ["50vh", "152vh"];
     const originalEditorMeasurePreview = ["30vh", "91vh"];
     const { userData, setUserData } = useUser();
-    const { userid } = userData;
+    const { username } = userData;
     const [updatedCodes, setUpdatedCodes] = useState(codes);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCodeId, setSelectedCodeId] = useState(null);
@@ -42,8 +42,8 @@ export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
     const [previewCode, setPreviewCode] = useState(null);
     const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
     const [editorMeasurePreview, setEditorMeasurePreview] = useState([originalEditorMeasurePreview[0], originalEditorMeasurePreview[1]]);
-    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${userid}`) ?? 16);
-    const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
+    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${username}`) ?? 16);
+    const [theme, setTheme] = useState(localStorage.getItem(`theme-${username}`) ?? "vs-dark");
     const isAllowed = auth === "byAuth";
 
     useEffect(() => {
@@ -310,13 +310,13 @@ export const CodesTable = ({ codes, headers, kind, role, page, auth }) => {
                                     />
                                     <>
                                         <EditorLabel htmlFor="fontSizeSelector"> Font Size: </EditorLabel>
-                                        <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
+                                        <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, username)} value={fontSize}>
                                             {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                                 <option key={size} value={size}>{size}</option>
                                             ))}
                                         </EditorSelect>
                                         <EditorLabel htmlFor="themeSelector"> Change Theme: </EditorLabel>
-                                        <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
+                                        <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, username)} value={theme}>
                                             <EditorOption value="vs">Light</EditorOption>
                                             <EditorOption value="vs-dark">Dark</EditorOption>
                                         </EditorSelect>

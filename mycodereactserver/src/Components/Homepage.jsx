@@ -19,16 +19,16 @@ const Homepage = () => {
     const editorRef = useRef(null);
     const originalEditorMeasure = ["30vh", "90vh"];
     const { userData, setUserData } = useUser();
-    const { role, userid } = userData;
+    const { role, username } = userData;
     const [visibleCodes, setVisibleCodes] = useState([]);
     const [randomCodeIndex, setRandomCodeIndex] = useState(null);
     const [editorMeasure, setEditorMeasure] = useState([originalEditorMeasure[0], originalEditorMeasure[1]]);
-    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${userid}`) ?? 16);
-    const [theme, setTheme] = useState(localStorage.getItem(`theme-${userid}`) ?? "vs-dark");
+    const [fontSize, setFontSize] = useState(localStorage.getItem(`fontsize-${username}`) ?? 16);
+    const [theme, setTheme] = useState(localStorage.getItem(`theme-${username}`) ?? "vs-dark");
 
     useEffect(() => {
         const cookieDataASync = async () => {
-            if (userid == null || userid == "" || userid == undefined) {
+            if (username == null || username == "" || username == undefined) {
                 const userId = Cookies.get("UI");
                 const userName = Cookies.get("UD");
                 const userRole = Cookies.get("UR");
@@ -81,22 +81,22 @@ const Homepage = () => {
     }, [visibleCodes]);
 
     useEffect(() => {
-        const storedTheme = localStorage.getItem(`theme-${userid}`);
+        const storedTheme = localStorage.getItem(`theme-${username}`);
         if (storedTheme !== theme) {
             setTheme(storedTheme);
         }
-    }, [theme, userid]);
+    }, [theme, username]);
 
     useEffect(() => {
-        const storedFontSize = localStorage.getItem(`fontsize-${userid}`);
+        const storedFontSize = localStorage.getItem(`fontsize-${username}`);
         if (storedFontSize !== theme) {
             setFontSize(storedFontSize);
         }
-    }, [fontSize, userid]);
+    }, [fontSize, username]);
 
     return (
         <div>
-            {!role && !userid ? (
+            {!role && !username ? (
                 <MidContainer className="welcome-text">
                     Welcome Code Fanatic!
                     <p>Please login or register</p>
@@ -127,7 +127,7 @@ const Homepage = () => {
 
                         <EditorRowButtonContainer>
                             <EditorMiddleLabel htmlFor="fontSizeSelector"> Font Size: </EditorMiddleLabel>
-                            <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, userid)} value={fontSize}>
+                            <EditorSelect id="fontSizeSelector" onChange={(e) => changeFontSize(e, setFontSize, username)} value={fontSize}>
                                 {Array.from({ length: 23 }, (_, i) => i + 8).map(size => (
                                     <option key={size} value={size}>{size}</option>
                                 ))}
@@ -137,7 +137,7 @@ const Homepage = () => {
                                 <StyledButton onClick={() => toggleFullscreen(editorRef, originalEditorMeasure, setEditorMeasure)}>Fullscreen</StyledButton>
                             </ButtonRowWrapper>
                             <EditorMiddleLabel htmlFor="themeSelector"> Change Theme: </EditorMiddleLabel>
-                            <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, userid)} value={theme}>
+                            <EditorSelect id="themeSelector" onChange={(e) => changeTheme(e, setTheme, username)} value={theme}>
                                 <EditorOption value="vs">Light</EditorOption>
                                 <EditorOption value="vs-dark">Dark</EditorOption>
                             </EditorSelect>

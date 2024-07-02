@@ -54,7 +54,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
             Notify("Error", "Please provide a user name!");
             return;
         }
-        if (!password && isRegistration) {
+        if (!password && isRegistration && role === "User") {
             Notify("Error", "Please provide a password!");
             return;
         }
@@ -74,7 +74,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
             Notify("Error", "Password is too strong, also Real Chuck Norris registered already!!!");
             return;
         }
-        if (password.length < 8 && isRegistration) {
+        if (password.length < 8 && isRegistration && role === "User") {
             Notify("Error", "Password has to be at least 8 characters long.");
             return;
         }
@@ -201,7 +201,7 @@ const UserForm = ({ onSave, onRole, user, onCancel }) => {
                                 </InputWrapper>
                             </RowButtonWithTopMarginContainer>
 
-                            {isRegistration && (
+                            {isRegistration && role === "User" && (
                                 <RowButtonWithTopMarginContainer>
                                     <SmallTextContainer>Password:</SmallTextContainer>
                                     <InputWrapper>

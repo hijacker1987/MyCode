@@ -99,18 +99,18 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
-                if (await _authService.GetRoleStatusByIdAsync(userIdClaim) == "User")
+                if (await _authService.GetRoleStatusByIdAsync(userId) == "User")
                 {
                     var messagesInDb = await _dataContext.SupportDb!
-                                                        .Where(u => !u.IsActive && u.UserId.ToString() == userIdClaim)
+                                                        .Where(u => !u.IsActive && u.UserId.ToString() == userId)
                                                         .Select(u => u.UserId.ToString())
                                                         .Distinct()
                                                         .ToListAsync();
@@ -145,16 +145,16 @@ namespace MyCode_Backend_Server.Controllers
                 var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
                 if (tokenValidationResult != null) return tokenValidationResult;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (userIdClaim == null)
+                if (userId == null)
                 {
                     _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
                     return BadRequest("No 'NameIdentifier' claim found.");
                 }
 
                 var messagesInDb = await _dataContext.SupportDb!
-                                                     .Where(msg => msg.UserId.ToString() == userIdClaim && !msg.IsActive)
+                                                     .Where(msg => msg.UserId.ToString() == userId && !msg.IsActive)
                                                      .OrderBy(msg => msg.When)
                                                      .ToListAsync();
 
@@ -192,7 +192,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return NotFound();
             }
         }
@@ -215,7 +215,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return NotFound();
             }
         }
@@ -242,7 +242,7 @@ namespace MyCode_Backend_Server.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error: {e.Message}", e);
+                _logger.LogError("Error: {e}", e.Message);
                 return NotFound();
             }
         }

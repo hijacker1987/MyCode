@@ -166,7 +166,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             var invalidUserData = new User { /* invalid or missing data */ };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/users/user-{Guid.NewGuid()}", invalidUserData);
+            var response = await _client.PutAsJsonAsync("/users/userUpdate", invalidUserData);
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -188,11 +188,8 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         [Fact]
         public async Task Delete_DeleteAccountEndpoint_InvalidData_ReturnsUnauthorized()
         {
-            // Arrange
-            Guid invalidUserId = Guid.NewGuid();
-
-            // Act
-            var response = await _client.DeleteAsync($"/users/delete-{invalidUserId}");
+            // Arrange & Act
+            var response = await _client.DeleteAsync("/users/userDelete");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -230,7 +227,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             Assert.True(userExists, "User does not exist in the database.");
 
             // Act
-            var delResponse = await _client.DeleteAsync($"/users/delete-{user.Id}");
+            var delResponse = await _client.DeleteAsync("/users/userDelete");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, delResponse.StatusCode);
@@ -256,44 +253,6 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
 
             // Act
             var response = await _client.PatchAsJsonAsync("/users/changePassword", invalidPasswordChangeRequest);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task Delete_DeleteAccountEndpoint_WithInvalidData_ReturnsBadRequest()
-        {
-            //Pre register
-                // Arrange
-                var registeredUser = new UserRegRequest("regtest@test.com", "registeredthroughtest", "Password", "Test Via Reg", "123456789");
-
-                var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == "regtest@test.com");
-                if (existingUser != null)
-                {
-                    _dataContext.Users.Remove(existingUser);
-                    await _dataContext.SaveChangesAsync();
-                }
-
-                // Act
-                var regResponse = await _client.PostAsJsonAsync("/users/register", registeredUser);
-
-                // Assert
-                Assert.Equal(HttpStatusCode.OK, regResponse.StatusCode);
-            // Arrange
-            var authRequest = new AuthRequest("regtest@test.com", "Password", "Password");
-            var (authToken, cookies, _) = await TestLogin.Login_With_Test_User(authRequest, _client);
-
-            _client.DefaultRequestHeaders.Add("Authorization", authToken);
-            foreach (var cookie in cookies)
-            {
-                _client.DefaultRequestHeaders.Add("Cookie", cookie.Split(';')[0]);
-            }
-
-            Guid invalidUserId = Guid.NewGuid();
-
-            // Act
-            var response = await _client.DeleteAsync($"/users/delete-{invalidUserId}");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -329,7 +288,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
                                          PhoneNumber = rdm.Next(100, 10000).ToString() };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/users/user-{user.Id}", updatedUser);
+            var response = await _client.PutAsJsonAsync("/users/userUpdate", updatedUser);
             await _dataContext.SaveChangesAsync();
 
             // Assert
@@ -356,7 +315,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/users/user-{user.Id}", updatedUser);
+            var response = await _client.PutAsJsonAsync("/users/userUpdate", updatedUser);
             await _dataContext.SaveChangesAsync();
 
             // Assert
@@ -552,24 +511,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Put_UpdateUserEndpoint_Unauthorized_ReturnsUnauthorized()
         {
             var updateUserRequest = new User();
-            var id = _dataContext.Users.FirstOrDefault()!.Id;
 
-            var response = await _client.PutAsJsonAsync($"/users/user-{id}", updateUserRequest);
+            var response = await _client.PutAsJsonAsync("/users/userUpdate", updateUserRequest);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task Put_UpdateUserEndpoint_NonExistingUser_ReturnsNotFound()
-        {
-            var authRequest = new AuthRequest("tester1@test.com", "Password", "Password");
-            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
-
-            var updateUserRequest = new User();
-
-            var response = await _client.PutAsJsonAsync($"/users/user-{new Guid()}", updateUserRequest);
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -589,9 +534,9 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Delete_DeleteAccountEndpoint_AdminUser_ReturnsForbidden()
         {
             var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
-            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
 
-            var response = await _client.DeleteAsync($"/users/delete-{admin.Id}");
+            var response = await _client.DeleteAsync("/users/userDelete");
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
@@ -659,10 +604,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Put_UpdateUserEndpoint_Admin_ReturnsMethodNotAllowed()
         {
             var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
-            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
             var loginRequest = new AuthRequest("user@example.com", "", "");
 
-            var response = await _client.PostAsJsonAsync($"/users/user-{admin.Id}", loginRequest);
+            var response = await _client.PostAsJsonAsync($"/users/userUpdate", loginRequest);
 
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
@@ -671,10 +616,10 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Put_UpdateUserEndpoint_Admin_ReturnsForbidden()
         {
             var authRequest = new AuthRequest("admin@test.com", "AdminPassword", "AdminPassword");
-            var admin = await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
+            await TestLogin.Login_With_Test_User_Return_User(authRequest, _client);
             var loginRequest = new AuthRequest("user@example.com", "", "");
 
-            var response = await _client.PutAsJsonAsync($"/users/user-{admin.Id}", loginRequest);
+            var response = await _client.PutAsJsonAsync("/users/userUpdate", loginRequest);
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }

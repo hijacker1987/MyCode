@@ -18,11 +18,11 @@ const u = "users/";
     export const userRegistration = `${u}register`;
 
     //PATCH
-    export const userUpdate = `${u}user-`;                  //{id}
+    export const userUpdate = `${u}userUpdate`;
     export const changePassword = `${u}changePassword`;
 
     //DELETE
-    export const deleteAccount = `${u}delete-`;             //{id}
+    export const deleteAccount = `${u}userDelete`;
 
 //CODES
     //GET
