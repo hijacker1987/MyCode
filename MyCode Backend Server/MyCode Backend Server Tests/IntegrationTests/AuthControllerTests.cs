@@ -4,8 +4,6 @@ using System.Text;
 using Xunit;
 using Assert = Xunit.Assert;
 using System.Net;
-using MyCode_Backend_Server.Data;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using MyCode_Backend_Server.Contracts.Services;
 using MyCode_Backend_Server_Tests.Services;
