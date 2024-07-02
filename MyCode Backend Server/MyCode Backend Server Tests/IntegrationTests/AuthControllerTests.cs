@@ -58,7 +58,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         {
             // Arrange
             var client = _factory.CreateClient();
-            var request = new VerifyModel(Guid.NewGuid().ToString(), "verification_code", false);
+            var request = new VerifyModel("verification_code", false);
 
             // Act
             var response = await client.PostAsync("/auth/verifyTwoFactor", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
@@ -109,7 +109,7 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
             });
             var authRequest = new AuthRequest("tester7@test.com", "Password", "Password");
             var user = await TestLogin.Login_With_Test_User_Return_User(authRequest, client);
-            var request = new VerifyModel(user.Id.ToString(), "verification_code", false);
+            var request = new VerifyModel("verification_code", false);
 
             // Act
             var response = await client.PostAsync("/auth/verifyTwoFactor", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));

@@ -44,13 +44,11 @@ namespace MyCode_Backend_Server_Tests.Models
             // Act
             var verifyModel = new VerifyModel
             (
-                userId,
                 attachment,
                 external
             );
 
             // Assert
-            Assert.Equal(userId, verifyModel.UserId);
             Assert.Equal(attachment, verifyModel.Attachment);
             Assert.True(verifyModel.External);
         }
@@ -59,14 +57,12 @@ namespace MyCode_Backend_Server_Tests.Models
         public void VerifyModel_DefaultExternalValueIsFalse()
         {
             // Arrange
-            var userId = "user123";
             var attachment = "attachment.pdf";
 
             // Act
-            var verifyModel = new VerifyModel(userId, attachment);
+            var verifyModel = new VerifyModel(attachment);
 
             // Assert
-            Assert.Equal(userId, verifyModel.UserId);
             Assert.Equal(attachment, verifyModel.Attachment);
             Assert.False(verifyModel.External);
         }

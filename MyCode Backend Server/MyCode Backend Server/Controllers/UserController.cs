@@ -279,6 +279,10 @@ namespace MyCode_Backend_Server.Controllers
                         return Unauthorized();
                     }
                 }
+                else if ("admin@test.com".Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return Unauthorized();
+                }
 
                 var result = await _userManager.DeleteAsync(user);
 

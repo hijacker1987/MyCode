@@ -28,11 +28,16 @@ namespace MyCode_Backend_Server_Tests.IntegrationTests
         public async Task Revoke_AuthenticatedUser_TokenRevoked()
         {
             // Arrange
-            var user = new User { UserName = "testuser" };
-            _userManagerMock.Setup(um => um.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
+            var id = Guid.NewGuid();
+            var user = new User { UserName = "testuser", Id = id };
+            _userManagerMock.Setup(um => um.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
             _userManagerMock.Setup(um => um.UpdateAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
 
-            var claims = new[] { new Claim(ClaimTypes.Name, "testuser") };
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "testuser"),
+                new Claim(ClaimTypes.NameIdentifier, id.ToString())
+            };
             var identity = new ClaimsIdentity(claims, "TestAuthType");
             var claimsPrincipal = new ClaimsPrincipal(identity);
             _controller.ControllerContext = new ControllerContext
