@@ -7,13 +7,14 @@ using MyCode_Backend_Server.Models;
 using MyCode_Backend_Server.Service.Authentication.Token;
 using MyCode_Backend_Server.Service.Email_Sender;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 
 namespace MyCode_Backend_Server.Controllers
 {
     [ExcludeFromCodeCoverage]
     [ApiController]
     [Route("/auth")]
-    public class AuthController(UserManager<User> userManager, DataContext dataContext, ITokenService tokenService, IEmailSender emailSender, ILogger<TokenController> logger) : Controller
+    public class AuthController(UserManager<User> userManager, DataContext dataContext, ITokenService tokenService, IEmailSender emailSender, ILogger<TokenController> logger) : ControllerBase
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly DataContext _dataContext = dataContext;
@@ -22,13 +23,18 @@ namespace MyCode_Backend_Server.Controllers
         private readonly ILogger<TokenController> _logger = logger;
 
         [HttpGet("basicsTwoFactor"), Authorize(Roles = "Admin, Support, User")]
-        public ActionResult BasicsTwoFactor(string userId)
+        public ActionResult BasicsTwoFactor()
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
-            if (string.IsNullOrEmpty(userId))
-                return BadRequest("Must have an Id");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                return BadRequest("No 'NameIdentifier' claim found.");
+            }
 
             var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
@@ -49,13 +55,18 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpPost("enableTwoFactor"), Authorize(Roles = "Admin, Support, User")]
-        public async Task<ActionResult> EnableTwoFactor([FromBody] string userId)
+        public async Task<ActionResult> EnableTwoFactor()
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
-            if (string.IsNullOrEmpty(userId))
-                return BadRequest("Must have an Id");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                return BadRequest("No 'NameIdentifier' claim found.");
+            }
 
             var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
@@ -96,13 +107,18 @@ namespace MyCode_Backend_Server.Controllers
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
-            if (string.IsNullOrEmpty(request.UserId))
-                return BadRequest("Must provide a user Id");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                return BadRequest("No 'NameIdentifier' claim found.");
+            }
 
             if (string.IsNullOrEmpty(request.Attachment))
                 return BadRequest("Must provide a verification code");
 
-            var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == request.UserId);
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
             if (user == null)
                 return NotFound("User not found");
@@ -138,13 +154,18 @@ namespace MyCode_Backend_Server.Controllers
         }
 
         [HttpPost("disableTwoFactor"), Authorize(Roles = "Admin, Support, User")]
-        public async Task<ActionResult> DisableTwoFactor([FromBody] string userId)
+        public async Task<ActionResult> DisableTwoFactor()
         {
             var tokenValidationResult = TokenAndCookieHelper.ValidateAndRefreshToken(_tokenService, Request, Response, _logger);
             if (tokenValidationResult != null) return tokenValidationResult;
 
-            if (string.IsNullOrEmpty(userId))
-                return BadRequest("Must have an Id");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                _logger.LogError("No 'NameIdentifier' claim found in the ClaimsPrincipal.");
+                return BadRequest("No 'NameIdentifier' claim found.");
+            }
 
             var user = _dataContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
