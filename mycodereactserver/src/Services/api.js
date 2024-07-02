@@ -18,8 +18,8 @@ export const getApi = async (endpoint) => {
     }
 };
 
-export const getStatApi = async (endpoint, userId) => {
-    const response = await fetch(`${backendUrl}${endpoint}?userId=${userId}`, {
+export const getStatApi = async (endpoint) => {
+    const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -52,14 +52,14 @@ export const postApi = async (endpoint, user) => {
     }
 };
 
-export const postStatApi = async (endpoint, userId) => {
+export const postStatApi = async (endpoint, data) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(userId),
+        body: JSON.stringify(data),
     });
     if (response.status === 401) {
         return "Unauthorized";
@@ -68,14 +68,14 @@ export const postStatApi = async (endpoint, userId) => {
     }
 };
 
-export const postStatExtApi = async (endpoint, userId, attachment, external) => {
+export const postStatExtApi = async (endpoint, attachment, external) => {
     const response = await fetch(`${backendUrl}${endpoint}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ userId: userId, attachment: attachment, external: external }),
+        body: JSON.stringify({ attachment: attachment, external: external }),
     });
     if (response.status === 401) {
         return "Unauthorized";
