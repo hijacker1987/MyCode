@@ -43,9 +43,7 @@ const UserUpdate = () => {
 
     const handleOnSave = (user) => {
         setLoading(true);
-
-        const endpoint = role === "Admin" ? userSuperUpdate : userUpdate;
-        const apiUrl = `${endpoint}${user.id}`;
+        const apiUrl = role === "Admin" ? `${userSuperUpdate}${user.id}` : userUpdate;
 
         putApi(apiUrl, user)
             .then((data) => {
