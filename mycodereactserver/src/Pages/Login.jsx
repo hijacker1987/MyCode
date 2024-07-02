@@ -16,10 +16,10 @@ const UserLogin = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setError] = useState("");
 
-    const handleOnLogin = async (user) => {
+    const handleOnLogin = async (userData) => {
         setLoading(true);
         try {
-            const response = await postStatApi(userLogin, user);
+            const response = await postStatApi(userLogin, userData);
 
             const userId = Cookies.get("UI");
             const userName = Cookies.get("UD");
